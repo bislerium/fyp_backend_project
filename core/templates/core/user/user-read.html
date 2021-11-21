@@ -1,0 +1,13 @@
+{% extends 'core/base.html' %}
+
+{% block title %}View Users{% endblock %}
+{% block linkscript %}{% endblock %}
+
+{% block body %}
+    {{ object.full_name }}
+    {{ object.last_name }}
+    {{ object.gender }}
+    {{ object.date_of_birth }}
+    {{ object.last_login }}
+    {{ object.is_active }}
+{% endblock %}

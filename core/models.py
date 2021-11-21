@@ -92,7 +92,7 @@ class AdministrativeUser(User):
     is_admin = models.BooleanField(blank=True, default=False)
 
     def __str__(self):
-        return f'a{self.pk}-{self.full_name}'
+        return f'a{self.pk}-{self.username}'
 
 
 class UpdatedPolymorphicManager(PolymorphicManager):
@@ -113,7 +113,7 @@ class NormalUser(AppUser, User):
     verified = models.BooleanField(blank=True, default=False)
 
     def __str__(self):
-        return f'u{self.pk}-{self.full_name}'
+        return f'u{self.pk}-{self.username}'
 
 
 class NGOUser(AppUser, User):
@@ -130,7 +130,7 @@ class NGOUser(AppUser, User):
     bank = models.OneToOneField(Bank, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
-        return f'n{self.pk}-{self.full_name}'
+        return f'n{self.pk}-{self.username}'
 
 
 class PostAttachment(PolymorphicModel):
