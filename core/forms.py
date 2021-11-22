@@ -15,4 +15,7 @@ class StaffCreationForm(UserCreationForm):
 class NGOCreationForm(UserCreationForm):
     class Meta:
         model = NGOUser
-        fields = '__all__'
+        fields = ['full_name', 'establishment_date', 'fields_of_work', 'phone', 'address', 'display_picture',
+                  'e_pay_number', 'bank', 'email', 'password1', 'password2', ]
+        widgets = {'establishment_date': forms.DateInput(attrs={'type': 'date'}),
+                   'fields_of_work': forms.SelectMultiple, }
