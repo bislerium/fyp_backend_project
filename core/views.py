@@ -44,25 +44,25 @@ def create_staff(request):
 
 
 class read_staffs(ListView):
-    queryset = AdministrativeUser.objects.filter(is_admin=False)
+    model = Staff
     paginate_by = 20
     template_name = 'core/staff/staffs-read.html'
 
 
 class read_staff(DetailView):
-    model = AdministrativeUser
+    model = Staff
     template_name = 'core/staff/staff-read.html'
 
 
 class update_staff(UpdateView):
-    model = AdministrativeUser
+    model = Staff
     fields = '__all__'
     template_name = 'core/staff/staff-update.html'
     success_url = reverse_lazy('read-staffs')
 
 
 class delete_staff(DeleteView):
-    model = AdministrativeUser
+    model = Staff
     success_url = reverse_lazy('read-staffs')
 
 
@@ -125,3 +125,9 @@ class update_ngo(UpdateView):
 class delete_ngo(DeleteView):
     model = NGOUser
     success_url = reverse_lazy('read-ngos')
+
+    def delete(self, request, *args, **kwargs):
+        User.delete(id=request.user.id)
+        return super().delete(request, *args, **kwargs)
+
+

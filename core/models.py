@@ -1,9 +1,6 @@
-from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 from phonenumber_field.modelfields import PhoneNumberField
 from multiselectfield import MultiSelectField
-from polymorphic.managers import PolymorphicManager
-from polymorphic.models import PolymorphicModel
 
 from django.db import models
 
@@ -56,9 +53,8 @@ class Bank(models.Model):
     bank_account_number = models.CharField(max_length=20)
 
 
-class User(AbstractUser):
-    first_name = None
-    last_name = None
+class UserCommons(models.Model):
+    account = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     full_name = models.CharField(max_length=150)
     date_of_birth = models.DateField(null=True)
     GENDER = [
@@ -88,70 +84,75 @@ class User(AbstractUser):
         abstract = True
 
 
-class AdministrativeUser(User):
-    is_admin = models.BooleanField(blank=True, default=False)
-
-    def __str__(self):
-        return f'a{self.pk}-{self.username}'
-
-
-class UpdatedPolymorphicManager(PolymorphicManager):
-    @classmethod
-    def normalize_email(cls, email):
-        return BaseUserManager.normalize_email(email)
-
-
-class AppUser(PolymorphicModel):
-    objects = UpdatedPolymorphicManager()
-
-
-class NormalUser(AppUser, User):
-    groups = None
-    user_permissions = None
-    is_staff = None
-    is_superuser = None
-    verified = models.BooleanField(blank=True, default=False)
-
-    def __str__(self):
-        return f'u{self.pk}-{self.username}'
-
-
-class NGOUser(AppUser, User):
-    groups = None
-    user_permissions = None
-    is_staff = None
-    is_superuser = None
-    gender = None
-    date_of_birth = None
-    citizenship_photo = None
-    establishment_date = models.DateField()
-    fields_of_work = MultiSelectField(choices=FIELD_OF_WORK)
-    e_pay_number = models.CharField(max_length=20, blank=True)
-    bank = models.OneToOneField(Bank, on_delete=models.CASCADE, blank=True, null=True)
-
-    def __str__(self):
-        return f'n{self.pk}-{self.username}'
-
-
-class PostAttachment(PolymorphicModel):
+class Post(models.Model):
+    related_to = MultiSelectField(choices=FIELD_OF_WORK)
+    text_body = models.TextField(max_length=500)
+    created_on = models.DateTimeField(auto_now=True)
+    modified_on = models.DateTimeField(blank=True, null=True)
+    anonymous = models.BooleanField(blank=True, default=False)
+    removed = models.BooleanField(blank=True, default=False)
     POST_TYPE = [
         ('Normal', 'Normal'),
         ('Request', 'Request'),
         ('Poll', 'Poll'),
     ]
-    post_type = models.CharField(max_length=20, choices=POST_TYPE, blank=True)
+    post_type = models.CharField(max_length=20, choices=POST_TYPE)
+
+
+class Report(models.Model):
+    post = models.OneToOneField(Post, on_delete=models.CASCADE)
+    reason = models.TextField(max_length=500)
+    ACTION = [
+        ('Post Remove', 'Post Remove'),
+        ('Account Ban', 'Account Ban'),
+    ]
+    action = models.CharField(max_length=20, choices=ACTION)
+    review = models.BooleanField(blank=True, default=False)
+
+
+class Staff(UserCommons):
+    marital_status = models.BooleanField()
+    report_review = models.ManyToManyField(Report, blank=True)
+
+    def __str__(self):
+        return f'a{self.pk}-{self.account.username}'
+
+
+class NormalUser(UserCommons):
+    verified = models.BooleanField(blank=True, default=False)
+    posted_post = models.ManyToManyField(Post, blank=True)
+
+    def __str__(self):
+        return f'u{self.pk}-{self.account.username}'
+
+
+class NGOUser(UserCommons):
+    gender = None
+    date_of_birth = None
+    citizenship_photo = None
+    establishment_date = models.DateField()
+    field_of_work = MultiSelectField(choices=FIELD_OF_WORK)
+    epay_account = models.CharField(max_length=20, blank=True)
+    bank = models.OneToOneField(Bank, on_delete=models.CASCADE, blank=True, null=True)
+    posted_post = models.ManyToManyField(Post, blank=True, related_name='posted_post')
+    poked_on = models.ManyToManyField(Post, blank=True, related_name='poked_on')
+
+    def __str__(self):
+        return f'n{self.pk}-{self.account.username}'
+
+
+class PostAttachment(models.Model):
+    post = models.OneToOneField(Post, on_delete=models.CASCADE, primary_key=True)
+
+    class Meta:
+        abstract = True
 
 
 class PostNormal(PostAttachment):
     post_image = models.ImageField(upload_to='post', blank=True, null=True)
     up_vote = models.ManyToManyField(NormalUser, related_name='up_vote', blank=True)
     down_vote = models.ManyToManyField(NormalUser, related_name='down_vote', blank=True)
-    report = models.ManyToManyField(NormalUser, related_name='report', blank=True)
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.post_type = 'Normal'
-        return super().save(*args, **kwargs)
+    reported_by = models.ManyToManyField(NormalUser, related_name='reported_by', blank=True)
 
 
 class PostRequest(PostAttachment):
@@ -166,11 +167,6 @@ class PostRequest(PostAttachment):
     request_type = models.CharField(max_length=20, choices=REQUEST)
     reacted_by = models.ManyToManyField(NormalUser, blank=True)
 
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.post_type = 'Request'
-        return super().save(*args, **kwargs)
-
 
 class PollOption(models.Model):
     option = models.CharField(max_length=50)
@@ -183,29 +179,3 @@ class PollOption(models.Model):
 class PostPoll(PostAttachment):
     option = models.ManyToManyField(PollOption)
     ends_on = models.DateField()
-
-    def save(self, *args, **kwargs):
-        self.post_type = 'Poll'
-        return super().save(*args, **kwargs)
-
-
-class Post(models.Model):
-    posted_by = models.OneToOneField(AppUser, related_name='posted_by', on_delete=models.CASCADE)
-    related_to = MultiSelectField(choices=FIELD_OF_WORK)
-    text_body = models.TextField(max_length=500)
-    poked_to = models.ManyToManyField(NGOUser, blank=True)
-    created_on = models.DateTimeField(auto_now=True)
-    modified_on = models.DateTimeField(blank=True, null=True)
-    anonymous = models.BooleanField(blank=True, default=False)
-    removed = models.BooleanField(blank=True, default=False)
-    post_attachment = models.OneToOneField(PostAttachment, on_delete=models.CASCADE)
-
-
-class Report(models.Model):
-    post = models.OneToOneField(Post, on_delete=models.CASCADE)
-    reason = models.TextField(max_length=500)
-    ACTION = [
-        ('Post Remove', 'Post Remove'),
-        ('Account Ban', 'Account Ban'),
-    ]
-    action = models.CharField(max_length=20, choices=ACTION)

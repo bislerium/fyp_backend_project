@@ -1,10 +1,6 @@
-from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import *
 from django.urls import path
-from django.views.generic import CreateView
-
-from core.models import AdministrativeUser
 from core.views import *
 
 urlpatterns = [
