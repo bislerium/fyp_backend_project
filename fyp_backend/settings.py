@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'phonenumber_field',
     'widget_tweaks',
+    'bootstrap4',
     'multiselectfield',
     'polymorphic',
     'core',

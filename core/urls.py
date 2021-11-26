@@ -21,7 +21,7 @@ urlpatterns = [
                   path('web/user/<int:pk>/delete/', delete_user.as_view(), name='delete-user'),
 
                   path('web/ngo/create/', create_ngo.as_view(), name='create-ngo'),
-                  path('web/ngo/read/', read_ngos.as_view(), name='read-ngos'),
+                  path('web/ngos/read/', read_ngos.as_view(), name='read-ngos'),
                   path('web/ngo/<int:pk>/read/', read_ngo.as_view(), name='read-ngo'),
                   path('web/ngo/<int:pk>/update/', update_ngo.as_view(), name='update-ngo'),
                   path('web/ngo/<int:pk>/delete/', delete_ngo.as_view(), name='delete-ngo'),

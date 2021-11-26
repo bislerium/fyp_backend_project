@@ -106,7 +106,7 @@ class create_ngo(CreateView):
 
 class read_ngos(ListView):
     model = NGOUser
-    paginate_by = 20
+    # paginate_by = 20
     template_name = 'core/ngo/ngos-read.html'
 
 
@@ -126,8 +126,8 @@ class delete_ngo(DeleteView):
     model = NGOUser
     success_url = reverse_lazy('read-ngos')
 
-    def delete(self, request, *args, **kwargs):
-        User.delete(id=request.user.id)
-        return super().delete(request, *args, **kwargs)
+    # def delete(self, request, *args, **kwargs):
+    #     # User.delete(id=)
+    #     return super().delete(request, *args, **kwargs)
 
 

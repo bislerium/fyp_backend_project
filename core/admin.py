@@ -4,3 +4,4 @@ from django.contrib import admin
 from core.models import *
 
 admin.site.register([Staff, NormalUser, NGOUser, Bank, Post, PostNormal, PostRequest, PostPoll, Report, PollOption])
+

@@ -5,59 +5,55 @@
 
 {% block body %}
 
-    {% include  'core/extensions/navbar.html' with ngo='active' %}
-    {% include  'core/extensions/delete-confirmation-popup.html' %}
+    {% include  'core/extensions/navbar.html' with ngo='active' user='Bishal (Admin)'%}
 
     <!--------- Actual Start ---------->
 
-    <div class="table-responsive-xl">
-        <table class="table table-hover table-sm">
-            <thead class="table-dark">
+        <div class="table-responsive-xl" >
+            <table class="table table-hover table-sm">
+                <thead class="table-dark">
+                    <tr>
+                      <th scope="col">DP</th>
+                      <th scope="col">Full Name</th>
+                      <th scope="col">Est. Date</th>
+                      <th scope="col">Phone</th>
+                      <th scope="col">Address</th>
+                      <th scope="col">Date Joined</th>
+                      <th scope="col">Active</th>
+                      <th scope="col">Last Login</th>
+                      <th class="text-center" scope="col" colspan="3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for ngo in object_list %}
                 <tr>
-                  <th scope="col">DP</th>
-                  <th scope="col">Full Name</th>
-                  <th scope="col">Gender</th>
-                  <th scope="col">DOB</th>
-                  <th scope="col">Phone</th>
-                  <th scope="col">Address</th>
-                  <th scope="col">Date Joined</th>
-                  <th scope="col">Active</th>
-                  <th scope="col">Last Login</th>
-                  <th scope="col">Verified</th>
-                  <th class="text-center" scope="col" colspan="3">Action</th>
+                  <td><img src="{{ ngo.display_picture.url }}" height="40px" style="border-radius: 20px"></td>
+                  <td>{{ ngo.full_name }}</td>
+                  <td>{{ ngo.establishment_date|date }}</td>
+                  <td>{{ ngo.phone }}</td>
+                  <td>{{ ngo.address }}</td>
+                  <td>{{ ngo.account.date_joined|date }}</td>
+                  <td>{{ ngo.account.is_active }}</td>
+                  <td>{{ ngo.account.last_login }}</td>
+                  <td>
+                      <a href="{% url 'read-ngo' ngo.id%}">
+                          <button type="submit" class="btn btn-primary"><i class="bi bi-eye-fill"></i>&nbsp;&nbsp;View</button>
+                      </a>
+                  </td>
+                    <td>
+                        <a href="{% url 'update-ngo' ngo.id%}">
+                            <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i>&nbsp;&nbsp;Update</button>
+                        </a>
+                    </td>
+                  <td>
+                      <form action="{% url 'delete-ngo' ngo.id %}" method="post">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"><i class="bi bi-x-circle-fill"></i>&nbsp;&nbsp;Delete</button>
+                      </form>
+                  </td>
                 </tr>
-            </thead>
-            <tbody>
-            {% for user in object_list %}
-            <tr>
-              <td><img src="{{ user.display_picture.url }}" height="40px" style="border-radius: 20px"></td>
-              <td>{{ user.full_name }}</td>
-              <td>{{ user.gender }}</td>
-              <td>{{ user.date_of_birth|date }}</td>
-              <td>{{ user.phone }}</td>
-              <td>{{ user.address }}</td>
-              <td>{{ user.date_joined|date }}</td>
-              <td>{{ user.is_active }}</td>
-              <td>{{ user.last_login }}</td>
-              <td>{{ user.verified }}</td>
-              <td>
-                  <a href="{% url 'read-user' user.id%}">
-                      <button type="submit" class="btn btn-primary"><i class="bi bi-eye-fill"></i>&nbsp;&nbsp;View</button>
-                  </a>
-              </td>
-                <td>
-                    <a href="{% url 'update-user' user.id%}">
-                        <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i>&nbsp;&nbsp;Update</button>
-                    </a>
-                </td>
-              <td>
-                  <a href="#myModal" data-toggle="modal">
-                      <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle-fill"></i>&nbsp;&nbsp;Delete</button>
-                  </a>
-              </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 {% endblock %}

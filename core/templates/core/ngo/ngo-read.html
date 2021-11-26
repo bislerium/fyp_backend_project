@@ -2,11 +2,11 @@
 
 {% block title %}View Users{% endblock %}
 {% block linkscript %}{% endblock %}
-
 {% block body %}
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Create">
-</form>
+    {{ object.full_name }}
+    {{ object.last_name }}
+    {{ object.gender }}
+    {{ object.date_of_birth }}
+    {{ object.last_login }}
+    {{ object.is_active }}
 {% endblock %}

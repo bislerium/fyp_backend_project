@@ -54,7 +54,7 @@ class Bank(models.Model):
 
 
 class UserCommons(models.Model):
-    account = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    account = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=150)
     date_of_birth = models.DateField(null=True)
     GENDER = [
@@ -142,7 +142,7 @@ class NGOUser(UserCommons):
 
 
 class PostAttachment(models.Model):
-    post = models.OneToOneField(Post, on_delete=models.CASCADE, primary_key=True)
+    post = models.OneToOneField(Post, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
