@@ -7,7 +7,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link {{ home }}" aria-current="page" href="#">Home</a>
+          <a class="nav-link {{ home }}" aria-current="page" href={{ homepage }}>Home</a>
         </li>
         <li class="nav-item">
           <a class="nav-link {{ staff }}" href="{% url 'read-staffs' %}">Staff</a>
@@ -16,13 +16,13 @@
           <a class="nav-link {{ ngo }}" href="{% url 'read-ngos' %}">NGO</a>
         </li>
           <li class="nav-item">
-          <a class="nav-link {{ people }}" href="{% url 'read-users' %}">User</a>
+          <a class="nav-link {{ people }}" href="{% url 'read-peoples' %}">People</a>
         </li>
       </ul>
       <form class="d-flex">
-          <button class="btn btn-outline-success" type="submit">Change Password</button>
+          <button formaction="{% url 'password_change' %}" class="btn btn-outline-success" type="submit">Change Password</button>
           &nbsp;&nbsp;
-          <button class="btn btn-outline-danger" type="submit">Logout</button>
+          <button formaction="{% url 'logout' %}" class="btn btn-outline-danger" type="submit">Logout</button>
       </form>
     </div>
   </div>

@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>admin</title>
-</head>
-<body>
-<H1>This is Admin</H1>
-<H2>{{ pk }}</H2>
-</body>
-</html>
+{% extends 'core/base.html' %}
+
+{% block title %}Create NGO User{% endblock %}
+{% block linkscript %}{% endblock %}
+
+{% block body %}
+    {% include  'core/extensions/navbar.html' with home='active' user='Bishal (Admin)'%}
+    <H1>This is Admin</H1>
+    <H2>{{ pk }}</H2>
+{% endblock %}

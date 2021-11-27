@@ -118,7 +118,7 @@ class Staff(UserCommons):
         return f'a{self.pk}-{self.account.username}'
 
 
-class NormalUser(UserCommons):
+class PeopleUser(UserCommons):
     verified = models.BooleanField(blank=True, default=False)
     posted_post = models.ManyToManyField(Post, blank=True)
 
@@ -150,9 +150,9 @@ class PostAttachment(models.Model):
 
 class PostNormal(PostAttachment):
     post_image = models.ImageField(upload_to='post', blank=True, null=True)
-    up_vote = models.ManyToManyField(NormalUser, related_name='up_vote', blank=True)
-    down_vote = models.ManyToManyField(NormalUser, related_name='down_vote', blank=True)
-    reported_by = models.ManyToManyField(NormalUser, related_name='reported_by', blank=True)
+    up_vote = models.ManyToManyField(PeopleUser, related_name='up_vote', blank=True)
+    down_vote = models.ManyToManyField(PeopleUser, related_name='down_vote', blank=True)
+    reported_by = models.ManyToManyField(PeopleUser, related_name='reported_by', blank=True)
 
 
 class PostRequest(PostAttachment):
@@ -165,12 +165,12 @@ class PostRequest(PostAttachment):
         ('Join', 'Join'),
     ]
     request_type = models.CharField(max_length=20, choices=REQUEST)
-    reacted_by = models.ManyToManyField(NormalUser, blank=True)
+    reacted_by = models.ManyToManyField(PeopleUser, blank=True)
 
 
 class PollOption(models.Model):
     option = models.CharField(max_length=50)
-    reacted_by = models.ManyToManyField(NormalUser, blank=True)
+    reacted_by = models.ManyToManyField(PeopleUser, blank=True)
 
     def __str__(self):
         return f'{self.pk}-{self.option}'
