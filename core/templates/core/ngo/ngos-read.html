@@ -17,6 +17,7 @@
                       <th scope="col">Full Name</th>
                       <th scope="col">Est. Date</th>
                       <th scope="col">Phone</th>
+                      <th scope="col">Email</th>
                       <th scope="col">Address</th>
                       <th scope="col">Date Joined</th>
                       <th scope="col">Active</th>
@@ -31,6 +32,7 @@
                   <td>{{ ngo.full_name }}</td>
                   <td>{{ ngo.establishment_date|date }}</td>
                   <td>{{ ngo.phone }}</td>
+                  <td>{{ ngo.account.email }}</td>
                   <td>{{ ngo.address }}</td>
                   <td>{{ ngo.account.date_joined|date }}</td>
                   <td>{{ ngo.account.is_active }}</td>

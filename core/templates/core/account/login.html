@@ -9,22 +9,25 @@
 {% endblock %}
 
 {% block body %}
-    <body class="text-center">
-        <form class="form-signin" method="post" action="{% url 'login-web' %}">
+    <body>
+    <div class="form-signin">
+        <form class="text-center" method="post" action="{% url 'login' %}">
             {% csrf_token %}
             <img class="mb-4" src="{% static 'core/img/supersonic.svg' %}" alt="" width="72" height="72">
 
-            <h1 class="h3 mb-3 font-weight-normal">Please Login</h1>
+            <p class="h1 mb-3">Please Login</p>
+            <p>'Only for Staff and Admin'</p>
             {% render_field form.username class="form-control" placeholder="Username" %}
             {% render_field form.password type="password" id="inputPassword" class="form-control" placeholder="Password" %}
             {% if form.errors %}
-                <div class="alert alert-danger text-center">Incorrect username and/or password</div>
+                <div class="alert alert-danger text-center">Incorrect username/password</div>
             {% endif %}
             <div class="mb-3" style="text-align: right">
                 <a href="{% url 'password_reset'%}" class="text-decoration-none">Forgot password?</a>
             </div>
             <button class="btn btn-primary btn-block" style="width: 100%" type="submit">Login</button>
-            <p class="mt-4 mb-3 text-muted">&copy; 2021-2022</p>
         </form>
+    </div>
+    {% include 'core/extensions/footer.html' %}
   </body>
 {% endblock %}

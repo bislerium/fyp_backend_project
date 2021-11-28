@@ -19,11 +19,11 @@
                   <th scope="col">DOB</th>
                   <th scope="col">Married</th>
                   <th scope="col">Phone</th>
+                  <th scope="col">Email</th>
                   <th scope="col">Address</th>
                   <th scope="col">Date Joined</th>
                   <th scope="col">Active</th>
                   <th scope="col">Last Login</th>
-                  <th scope="col">Verified</th>
                   <th class="text-center" scope="col" colspan="3">Action</th>
                 </tr>
             </thead>
@@ -36,11 +36,11 @@
                   <td>{{ staff.date_of_birth|date }}</td>
                   <td>{{ staff.marital_status}}</td>
                   <td>{{ staff.phone }}</td>
+                  <td>{{ staff.account.email }}</td>
                   <td>{{ staff.address }}</td>
                   <td>{{ staff.account.date_joined|date }}</td>
                   <td>{{ staff.account.is_active }}</td>
                   <td>{{ staff.account.last_login }}</td>
-                  <td>{{ staff.verified }}</td>
                   <td>
                       <a href="{% url 'read-staff' staff.id%}">
                           <button type="submit" class="btn btn-primary"><i class="bi bi-eye-fill"></i>&nbsp;&nbsp;View</button>

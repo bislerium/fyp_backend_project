@@ -4,11 +4,24 @@ from django.urls import path
 from core.views import *
 
 urlpatterns = [
-                  path('web/login/', CustomLoginView.as_view(template_name='core/auth/index.html'), name='login-web'),
-                  # path('web/reset/password/', PasswordResetView.as_view(), name='password-reset'),
-                  # path('web/reset/password/done', PasswordResetDoneView.as_view(), name='password_reset_done'),
-                  # path('web/reset/password/confirm', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-                  # path('web/reset/password/done', PasswordResetDoneView.as_view(), name='password_reset_done'),
+                  path('web/account/login/', CustomLoginView.as_view(
+                      template_name='core/account/login.html'), name='login'),
+                  path('web/account/logout/', LogoutView.as_view(
+                      template_name='core/account/logged_out.html'), name='logout'),
+                  path('web/account/password_change/', PasswordChangeView.as_view(
+                      template_name='core/account/password_change_form.html'), name='password_change'),
+                  path('web/account/password_change/done/', PasswordChangeDoneView.as_view(
+                      template_name='core/account/password_change_done.html'), name='password_change_done'),
+                  path('web/account/password_reset/', PasswordResetView.as_view(
+                      template_name='core/account/password_reset_form.html',
+                      email_template_name='core/account/password_reset_email.html'), name='password_reset'),
+                  path('web/account/password_reset/done/', PasswordResetDoneView.as_view(
+                      template_name='core/account/password_reset_done.html'), name='password_reset_done'),
+                  path('web/account/reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(
+                      template_name='core/account/password_reset_confirm.html'), name='password_reset_confirm'),
+                  path('web/account/reset/done/', PasswordResetCompleteView.as_view(
+                      template_name='core/account/password_reset_complete.html'), name='password_reset_complete'),
+
                   path('web/admin/', admin_index, name='admin-home'),
                   path('web/staff/', staff_index, name='staff-home'),
                   path('web/forbid/', forbid, name='forbid'),

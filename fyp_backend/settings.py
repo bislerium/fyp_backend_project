@@ -35,12 +35,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core',
     'phonenumber_field',
     'widget_tweaks',
     'bootstrap5',
     'multiselectfield',
     'polymorphic',
-    'core',
 ]
 
 MIDDLEWARE = [
