@@ -98,8 +98,12 @@ class delete_people(DeleteView):
     success_url = reverse_lazy('read-peoples')
 
 
-def forbid(request):
-    return render(request, 'core/extensions/forbidden-page.html')
+def forbidden_page(request):
+    return render(request, 'core/extensions/403-page.html')
+
+
+def page_not_found(request):
+    return render(request, 'core/extensions/404-page.html')
 
 
 # NGO Crud

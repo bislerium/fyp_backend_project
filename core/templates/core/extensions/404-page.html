@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Access Forbidden{% endblock %}
+{% block linkscript %}{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-center align-items-center" style="height: 95vh;">
+        <div class="text-center">
+            <div>
+                <img src="{% static 'core/gif/404.gif' %}" class="img-fluid" width="600px" alt="email-sent.gif">
+            </div>
+            <h1>Page not found</h1>
+            <p>The requested url or page doesn't exist or an error occurred!</p>
+        </div>
+    </div>
+{% endblock %}

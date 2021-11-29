@@ -1,14 +1,18 @@
-{% extends "admin/base_site.html" %}
-{% load i18n %}
+{% extends 'core/base.html' %}
+{% load widget_tweaks %}
+{% block linkscript %}{% endblock %}
+{% load static %}
 
-{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">{% translate 'Home' %}</a></div>{% endblock %}
-
-{% block nav-sidebar %}{% endblock %}
-
-{% block content %}
-
-<p>{% translate "Thanks for spending some quality time with the web site today." %}</p>
-
-<p><a href="{% url 'login' %}">{% translate 'Log in again' %}</a></p>
-
+{% block body %}
+    <div class="d-flex justify-content-center align-items-center" style="height: 90vh">
+        <div class="text-center" style="width: 500px; padding: 20px">
+            <div>
+                <img src="{% static 'core/gif/logged-out.gif' %}" class="img-fluid" width="400px" alt="email-sent.gif">
+            </div>
+            <H1 class="mb-3">{{ title }}</H1>
+            <p>"Thanks for spending some quality time with the web site today."</p>
+            <p><a href="{% url 'login' %}" style="text-decoration: none">Login again</a></p>
+        </div>
+    </div>
+    {% include 'core/extensions/footer.html' %}
 {% endblock %}

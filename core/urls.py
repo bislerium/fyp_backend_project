@@ -24,7 +24,8 @@ urlpatterns = [
 
                   path('web/admin/', admin_index, name='admin-home'),
                   path('web/staff/', staff_index, name='staff-home'),
-                  path('web/forbid/', forbid, name='forbid'),
+                  path('web/403/', forbidden_page, name='forbid'),
+                  path('web/404/', page_not_found, name='no_page'),
                   path('test', testCreate, name='test'),
 
                   path('web/staff/create/', create_staff, name='create-staff'),
