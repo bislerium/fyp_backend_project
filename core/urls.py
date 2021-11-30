@@ -26,7 +26,6 @@ urlpatterns = [
                   path('web/staff/', staff_index, name='staff-home'),
                   path('web/403/', forbidden_page, name='forbid'),
                   path('web/404/', page_not_found, name='no_page'),
-                  path('test', testCreate, name='test'),
 
                   path('web/staff/create/', create_staff, name='create-staff'),
                   path('web/staff/read/', read_staffs.as_view(), name='read-staffs'),
@@ -39,7 +38,7 @@ urlpatterns = [
                   path('web/people/<int:pk>/update/', update_people.as_view(), name='update-people'),
                   path('web/people/<int:pk>/delete/', delete_people.as_view(), name='delete-people'),
 
-                  path('web/ngo/create/', create_ngo.as_view(), name='create-ngo'),
+                  path('web/ngo/create/', create_ngo, name='create-ngo'),
                   path('web/ngos/read/', read_ngos.as_view(), name='read-ngos'),
                   path('web/ngo/<int:pk>/read/', read_ngo.as_view(), name='read-ngo'),
                   path('web/ngo/<int:pk>/update/', update_ngo.as_view(), name='update-ngo'),

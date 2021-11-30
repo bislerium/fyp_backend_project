@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block body %}
-    <div class="d-flex justify-content-center align-items-center" style="height: 90vh">
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
         <div class="text-center" style="width: 500px; padding: 20px">
             <div>
                 <img src="{% static 'core/gif/logged-out.gif' %}" class="img-fluid" width="400px" alt="email-sent.gif">
@@ -14,5 +14,6 @@
             <p><a href="{% url 'login' %}" style="text-decoration: none">Login again</a></p>
         </div>
     </div>
-    {% include 'core/extensions/footer.html' %}
+    <div style="position: absolute">
+    </div>
 {% endblock %}

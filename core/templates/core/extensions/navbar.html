@@ -22,7 +22,7 @@
       <form class="d-flex">
           <button formaction="{% url 'password_change' %}" class="btn btn-outline-success" type="submit">Change Password</button>
           &nbsp;&nbsp;
-          <button formaction="{% url 'logout' %}" class="btn btn-outline-danger" type="submit">Logout</button>
+          <button formaction="{% url 'logout' %}" class="btn btn-outline-danger" type="submit" onclick="return confirm('Are you sure you want to Logout?');">Logout</button>
       </form>
     </div>
   </div>

@@ -65,17 +65,18 @@ class UserCommons(models.Model):
     gender = models.CharField(max_length=6, choices=GENDER)
     phone = PhoneNumberField(blank=True, unique=True, null=True)
     address = models.CharField(max_length=150)
-    citizenship_photo = models.ImageField(
-        upload_to='citizenship',
-        blank=True,
-        null=True,
-    )
     display_picture = models.ImageField(
         upload_to='display_picture',
         blank=True,
         null=True,
         default='default/default_dp.png'
     )
+    citizenship_photo = models.ImageField(
+        upload_to='citizenship',
+        blank=True,
+        null=True,
+    )
+    verified = models.BooleanField(blank=True, default=False)
 
     def get_acronym_name(self):
         return ''.join(c[0].capitalize() for c in self.full_name.split())
@@ -101,16 +102,17 @@ class Post(models.Model):
 
 class Report(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE)
-    reason = models.TextField(max_length=500)
+    reason = models.TextField(max_length=500, blank=True)
     ACTION = [
         ('Post Remove', 'Post Remove'),
         ('Account Ban', 'Account Ban'),
     ]
-    action = models.CharField(max_length=20, choices=ACTION)
+    action = models.CharField(max_length=20, choices=ACTION, blank=True)
     review = models.BooleanField(blank=True, default=False)
 
 
 class Staff(UserCommons):
+    verified = False
     marital_status = models.BooleanField()
     report_review = models.ManyToManyField(Report, blank=True)
 
@@ -119,7 +121,6 @@ class Staff(UserCommons):
 
 
 class PeopleUser(UserCommons):
-    verified = models.BooleanField(blank=True, default=False)
     posted_post = models.ManyToManyField(Post, blank=True)
 
     def __str__(self):
@@ -130,10 +131,26 @@ class NGOUser(UserCommons):
     gender = None
     date_of_birth = None
     citizenship_photo = None
+    full_name = models.CharField(max_length=150, verbose_name='Organization Name')
     establishment_date = models.DateField()
     field_of_work = MultiSelectField(choices=FIELD_OF_WORK)
-    epay_account = models.CharField(max_length=20, blank=True)
-    bank = models.OneToOneField(Bank, on_delete=models.CASCADE, blank=True, null=True)
+    epay_account = models.CharField(max_length=20, blank=True, help_text=(
+        '- Default: Khalti as an Electronic Payment Gateway'
+    ))
+    bank = models.OneToOneField(Bank, on_delete=models.CASCADE, blank=True, null=True, )
+    swc_affl_cert = models.ImageField(
+        upload_to='ngo/swc',
+        blank=True,
+        null=True,
+        verbose_name="Social Welfare Council Affl Certificate"
+    )
+    pan_cert = models.ImageField(
+        upload_to='ngo/pan',
+        blank=True,
+        null=True,
+        verbose_name="PAN Certificate"
+    )
+    verified = models.BooleanField(blank=True, default=False)
     posted_post = models.ManyToManyField(Post, blank=True, related_name='posted_post')
     poked_on = models.ManyToManyField(Post, blank=True, related_name='poked_on')
 
