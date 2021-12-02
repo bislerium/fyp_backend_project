@@ -154,3 +154,48 @@ class update_ngo(UpdateView):
 class delete_ngo(DeleteView):
     model = NGOUser
     success_url = reverse_lazy('read-ngos')
+
+
+class read_post(DetailView):
+    model = Post
+    template_name = 'core/staff/staff-home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post: Post = context.get('object')
+        if post.post_type == 'Poll':
+            cont: list = []
+            total_reaction = 0
+            for option in post.postpoll.option.all():
+                total_reaction += option.reacted_by.count()
+            for option in post.postpoll.option.all():
+                reaction = option.reacted_by.count()
+                percentage = (reaction / total_reaction) * 100
+                cont.append((option.option, reaction, round(percentage)))
+            context['object'].poll_data = cont
+            context['object'].poll_reactions = total_reaction
+        if post.post_type == 'Request':
+            min_ = post.postrequest.min
+            target = post.postrequest.target
+            max_ = post.postrequest.max
+            sign = post.postrequest.reacted_by.count()
+            cont: dict = {'min_': min_,
+                          'target': target,
+                          'sign': sign,
+                          'target_percentage': 100,
+                          'min_percentage': round((100 / target) * min_, 2),
+                          'sign_percentage': round((100 / target) * sign, 2),
+                          }
+            if max_ is not None:
+                cont['max_'] = max_
+                cont['max_percentage'] = 100
+                cont['target_percentage'] = round((100 / max_) * target, 2)
+                cont['min_percentage'] = round((100 / max_) * min_, 2)
+                cont['sign_percentage'] = round((100 / max_) * sign, 2)
+            context['object'].request_data = cont
+        return context
+
+
+class update_report(UpdateView):
+    model = Report
+    # template_name = 'core/staff/staff-home.html'

@@ -121,7 +121,7 @@ class Staff(UserCommons):
 
 
 class PeopleUser(UserCommons):
-    posted_post = models.ManyToManyField(Post, blank=True)
+    posted_post = models.ManyToManyField(Post, related_name='people_posted_post_rn', blank=True)
 
     def __str__(self):
         return f'u{self.pk}-{self.account.username}'
@@ -151,8 +151,8 @@ class NGOUser(UserCommons):
         verbose_name="PAN Certificate"
     )
     verified = models.BooleanField(blank=True, default=False)
-    posted_post = models.ManyToManyField(Post, blank=True, related_name='posted_post')
-    poked_on = models.ManyToManyField(Post, blank=True, related_name='poked_on')
+    posted_post = models.ManyToManyField(Post, blank=True, related_name='ngo_posted_post_rn')
+    poked_on = models.ManyToManyField(Post, blank=True, related_name='poked_on_rn')
 
     def __str__(self):
         return f'n{self.pk}-{self.account.username}'
@@ -166,10 +166,10 @@ class PostAttachment(models.Model):
 
 
 class PostNormal(PostAttachment):
-    post_image = models.ImageField(upload_to='post', blank=True, null=True)
-    up_vote = models.ManyToManyField(PeopleUser, related_name='up_vote', blank=True)
-    down_vote = models.ManyToManyField(PeopleUser, related_name='down_vote', blank=True)
-    reported_by = models.ManyToManyField(PeopleUser, related_name='reported_by', blank=True)
+    post_image = models.ImageField(upload_to='post_image_rn', blank=True, null=True)
+    up_vote = models.ManyToManyField(PeopleUser, related_name='up_vote_rn', blank=True)
+    down_vote = models.ManyToManyField(PeopleUser, related_name='down_vote_rn', blank=True)
+    reported_by = models.ManyToManyField(PeopleUser, related_name='normal_reported_by_rn', blank=True)
 
 
 class PostRequest(PostAttachment):
@@ -183,6 +183,7 @@ class PostRequest(PostAttachment):
     ]
     request_type = models.CharField(max_length=20, choices=REQUEST)
     reacted_by = models.ManyToManyField(PeopleUser, blank=True)
+    reported_by = models.ManyToManyField(PeopleUser, related_name='req_reported_by_rn', blank=True)
 
 
 class PollOption(models.Model):
@@ -196,3 +197,5 @@ class PollOption(models.Model):
 class PostPoll(PostAttachment):
     option = models.ManyToManyField(PollOption)
     ends_on = models.DateField()
+    reported_by = models.ManyToManyField(PeopleUser, related_name='poll_reported_by_rn', blank=True)
+
