@@ -102,10 +102,11 @@ class Post(models.Model):
 
 class Report(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE)
-    reason = models.TextField(max_length=500, blank=True)
+    reason = models.TextField(max_length=1000, blank=True)
     ACTION = [
         ('Post Remove', 'Post Remove'),
         ('Account Ban', 'Account Ban'),
+        ('Account Delete', 'Account Delete'),
     ]
     action = models.CharField(max_length=20, choices=ACTION, blank=True)
     review = models.BooleanField(blank=True, default=False)

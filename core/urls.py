@@ -44,6 +44,7 @@ urlpatterns = [
                   path('web/ngo/<int:pk>/update/', update_ngo.as_view(), name='update-ngo'),
                   path('web/ngo/<int:pk>/delete/', delete_ngo.as_view(), name='delete-ngo'),
 
-                  path('web/post/<int:pk>/read/', read_post.as_view(), name='read-post'),
+                  path('web/report/<int:pk>/post/', read_post.as_view(), name='read-post'),
+                  path('web/report/<int:pk>/review/', update_report.as_view(), name='report-review'),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

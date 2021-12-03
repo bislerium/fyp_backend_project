@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import Group
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, UpdateView, DetailView
@@ -163,6 +164,7 @@ class read_post(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         post: Post = context.get('object')
+        report_form = ReportForm(instance=Report.objects.get(post=post))
         if post.post_type == 'Poll':
             cont: list = []
             total_reaction = 0
@@ -193,9 +195,18 @@ class read_post(DetailView):
                 cont['min_percentage'] = round((100 / max_) * min_, 2)
                 cont['sign_percentage'] = round((100 / max_) * sign, 2)
             context['object'].request_data = cont
+        context['object'].report_form = report_form
         return context
 
 
 class update_report(UpdateView):
     model = Report
-    # template_name = 'core/staff/staff-home.html'
+    form_class = ReportForm
+    success_url = reverse_lazy('read-staffs')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method.lower() == 'get':
+            return self.http_method_not_allowed(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
+
+

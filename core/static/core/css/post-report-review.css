@@ -6,9 +6,14 @@
     }
 
     @media only screen and (max-width: 600px) {
+
         #report-post {
             position: relative!important;
         }
+    }
+
+    textarea {
+        resize: none;
     }
 
     .pills {

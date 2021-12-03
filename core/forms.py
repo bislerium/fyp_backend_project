@@ -31,3 +31,14 @@ class BankCreationForm(forms.ModelForm):
     class Meta:
         model = Bank
         fields = '__all__'
+
+
+class ReportForm(forms.ModelForm):
+    class Meta:
+        model = Report
+        fields = ['reason', 'action']
+        widgets = {'reason': forms.Textarea(attrs={'rows': '12', }), }
+
+    # def __init__(self, *args, **kwargs):
+    #     super(ReportForm, self).__init__(*args, **kwargs)
+    #     self.fields['reason'].widget.attrs["maxlength"] = 900
