@@ -38,7 +38,7 @@ def admin_index(request):
 
 
 def staff_index(request):
-    return render(request, 'core/staff/staff-home.html', context={'pk': request.user.username})
+    return render(request, 'core/staff/staff-reported-post-review.html', context={'pk': request.user.username})
 
 
 # Staff Crud
@@ -157,9 +157,9 @@ class delete_ngo(DeleteView):
     success_url = reverse_lazy('read-ngos')
 
 
-class read_post(DetailView):
+class read_report(DetailView):
     model = Post
-    template_name = 'core/staff/staff-home.html'
+    template_name = 'core/staff/staff-reported-post-review.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -199,6 +199,11 @@ class read_post(DetailView):
         return context
 
 
+class read_reports(ListView):
+    model = Post
+    template_name = 'core/staff/staff-home-reported-post.html'
+
+
 class update_report(UpdateView):
     model = Report
     form_class = ReportForm
@@ -208,5 +213,3 @@ class update_report(UpdateView):
         if request.method.lower() == 'get':
             return self.http_method_not_allowed(request, *args, **kwargs)
         return super().dispatch(request, *args, **kwargs)
-
-

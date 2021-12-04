@@ -13,11 +13,6 @@
     <div class="container-fluid my-4">
         <div class="row">
             <section class="col-sm-7" style="padding: 0 3vh;">
-                <!--<H1>Reported Posts</H1>
-                <div class="row">
-                    <div class="col my-2">Total Report Posts: 14</div>
-                    <div class="col my-2" style="text-align: right">Total Reviewed Posts: 5</div>
-                </div>-->
                 <div class="px-2">
                     <div class="my-2"><i class="bi bi-person-lines-fill"></i> Posted by: {% if object.people_posted_post_rn.count != 0 %}
                             {{ object.people_posted_post_rn.first.account.username  }}
@@ -112,7 +107,7 @@
                     </ul>
                 </div>
                 <div id="report-post-in-div">
-                    <form action="{% url 'report-review' object.report.id %}" method="post">
+                    <form action="{% url 'review-report' object.report.id %}" method="post">
                         {% csrf_token %}
                         {% bootstrap_form object.report_form %}
                         <button type="submit" class="btn btn-primary w-100">Take Action</button>
@@ -121,10 +116,4 @@
             </section>
         </div>
     </div>
-    <script>
-// Initialize tooltips
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)})
-    </script>
 {% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Review Report Post{% endblock %}
+{% block linkscript %}
+    <link rel="stylesheet" type="text/css" href="{% static 'core/css/post-report-review.css' %}">
+{% endblock %}
+
+{% block body %}
+    <div class="album py-4">
+        <div class="container">
+            <H1 class="my-5">Reported Posts</H1>
+            <div class="row my-2">
+                <div class="col my-1">Total Report Posts: <span class="fw-bold">{{ object_list.count }}</span></div>
+                <div class="col my-2" style="text-align: right">Total Reviewed Posts: <span class="fw-bold">{{ object_list.count }}</span></div>
+            </div>
+            <div class="row">
+            {% for post in object_list %}
+                <div class="col-lg-4 mb-3 d-flex align-items-stretch">
+                    <div class="card w-100">
+                        <a href="{% url 'read-report' post.id %}" class="text-decoration-none">
+                            <div class="card-body">
+                                <div class="btn-group mb-3">
+                                {% for field in post.related_to %}
+                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ field }}"><span class="badge bg-secondary">{{ field|slice:"0:2" }}</span></div>
+                                {% endfor %}
+                                </div>
+                                <p class="card-text h-100 text-dark">{{ post.text_body|truncatewords:25 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        {% if post.anonymous %}
+                                            <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Posted Anonymously"><span class="badge bg-danger">A</span></div>
+                                        {% endif %}
+                                        {% if post.poked_on_rn.count != 0 %}
+                                            <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="NGO was poked in this post"><span class="badge bg-success">P</span></div>
+                                        {% endif %}
+                                        {% if post.post_type == 'Normal' %}
+                                            <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Normal Post"><span class="badge bg-primary">P|N</span></div>
+                                        {% endif %}
+                                        {% if post.post_type == 'Poll' %}
+                                            <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Poll Post"><span class="badge bg-primary">P|P</span></div>
+                                        {% endif %}
+                                        {% if post.post_type == 'Request' and post.postrequest.request_type == 'Petition'%}
+                                            <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Petition-Request Post"><span class="badge bg-primary">P|R|P</span></div>
+                                        {% endif %}
+                                        {% if post.post_type == 'Request' and post.postrequest.request_type == 'Join'%}
+                                            <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Join-Request Post"><span class="badge bg-primary">P|R|J</span></div>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted">{{ post.created_on.date }}</small>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
