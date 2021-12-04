@@ -1,13 +1,30 @@
+from typing import Union
+
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import Group
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, UpdateView, DetailView
 
 from .forms import *
+
+
+def redirection(request, **kwargs: Union[reverse_lazy, redirect]):
+    print("hellothere")
+    user_: User = request.user
+    print(user_.groups)
+    if user_.is_staff and user_.is_superuser:
+        print('a')
+        return kwargs['admin_redirect']
+    if user_.groups.filter(name=Group.objects.get(name__iexact='Staff')).exists():
+        print('b')
+        return kwargs['staff_redirect']
+    if user_.groups.filter(name=Group.objects.get(name__iexact='People')).exists() or \
+            user_.groups.filter(name=Group.objects.get(name__iexact='NGO')).exists():
+        print('c')
+        return kwargs['user_redirect']
 
 
 def forbidden_page(request):
@@ -18,19 +35,22 @@ def page_not_found(request):
     return render(request, 'core/extensions/404-page.html')
 
 
+def home_page(request):
+    return redirection(request,
+                       admin_redirect=redirect('admin-home'),
+                       staff_redirect=redirect('read-reports'),
+                       user_redirect=redirect('forbid'))
+
+
 # Create your views here.
 
 class CustomLoginView(LoginView):
 
     def get_success_url(self):
-        user_: User = self.request.user
-        if user_.is_staff and user_.is_superuser:
-            return reverse_lazy('admin-home')
-        if user_.groups.filter(name=Group.objects.get(name__iexact='People')).exists() or \
-                user_.groups.filter(name=Group.objects.get(name__iexact='NGO')).exists():
-            return reverse_lazy('forbid')
-        if user_.groups.filter(name=Group.objects.get(name__iexact='Staff')).exists():
-            return reverse_lazy('staff-home')
+        return redirection(self.request,
+                           admin_redirect=reverse_lazy('admin-home'),
+                           staff_redirect=reverse_lazy('read-reports'),
+                           user_redirect=reverse_lazy('forbid'))
 
 
 def admin_index(request):

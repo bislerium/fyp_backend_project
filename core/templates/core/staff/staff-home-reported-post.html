@@ -7,9 +7,10 @@
 {% endblock %}
 
 {% block body %}
-    <div class="album py-4">
+    {% include 'core/extensions/navbar.html' with home='active' %}
+    <div class="album">
         <div class="container">
-            <H1 class="my-5">Reported Posts</H1>
+            <H1 class="my-3">Reported Posts</H1>
             <div class="row my-2">
                 <div class="col my-1">Total Report Posts: <span class="fw-bold">{{ object_list.count }}</span></div>
                 <div class="col my-2" style="text-align: right">Total Reviewed Posts: <span class="fw-bold">{{ object_list.count }}</span></div>

@@ -22,6 +22,8 @@ urlpatterns = [
                   path('web/account/reset/done/', PasswordResetCompleteView.as_view(
                       template_name='core/account/password_reset_complete.html'), name='password_reset_complete'),
 
+                  path('web/home/', home_page, name='home'),
+
                   path('web/admin/', admin_index, name='admin-home'),
                   path('web/staff/', staff_index, name='staff-home'),
                   path('web/403/', forbidden_page, name='forbid'),

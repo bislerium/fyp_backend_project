@@ -8,9 +8,9 @@
 {% endblock %}
 
 {% block body %}
-    <h1 class="d-block position-fixed px-4 py-3 w-100" style="top: 0; left: 0; background-color: #f5f5f5; z-index: 1">Review Post</h1>
-    <div class="d-block" style="margin: 12vh; "></div>
-    <div class="container-fluid my-4">
+    {% include 'core/extensions/navbar.html' with home='active' %}
+    <h1 class="d-block  w-100">Review Post</h1>
+    <div class="container-fluid my-2">
         <div class="row">
             <section class="col-sm-7" style="padding: 0 3vh;">
                 <div class="px-2">
