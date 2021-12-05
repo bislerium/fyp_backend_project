@@ -227,7 +227,7 @@ class read_reports(ListView):
 class update_report(UpdateView):
     model = Report
     form_class = ReportForm
-    success_url = reverse_lazy('read-staffs')
+    success_url = reverse_lazy('read-reports')
 
     def dispatch(self, request, *args, **kwargs):
         if request.method.lower() == 'get':
