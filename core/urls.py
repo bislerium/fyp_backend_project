@@ -24,7 +24,7 @@ urlpatterns = [
 
                   path('web/home/', home_page, name='home'),
 
-                  path('web/admin/', admin_index, name='admin-home'),
+                  path('web/admin/home', admin_home.as_view(), name='admin-home'),
                   path('web/staff/', staff_index, name='staff-home'),
                   path('web/403/', forbidden_page, name='forbid'),
                   path('web/404/', page_not_found, name='no_page'),

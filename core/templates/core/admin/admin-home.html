@@ -1,10 +1,57 @@
 {% extends 'core/base.html' %}
 
 {% block title %}Create NGO User{% endblock %}
-{% block linkscript %}{% endblock %}
+{% block linkscript %}
+{% endblock %}
 
 {% block body %}
     {% include  'core/extensions/navbar.html' with home='active'%}
     <H1>This is Admin</H1>
-    <H2>{{ pk }}</H2>
+
+        <div>
+            <div class="row">
+                <div class="col-sm-3 card bg-primary" style="border-radius: 10%" >
+                    <div >Header</div>
+  <div class="card-body" style="background-color: #0a53be">
+    <h5 >Primary card title</h5>
+    <p >Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div>
+                        <div class="p-2" style="text-align: right; background-color: #e54b4b">
+                            <h3>23%</h3>
+                            <h1>127438</h1>
+                        </div>
+                        <div>
+                            Total Normal Users wow goof
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div >
+                                <div class="p-2" style="text-align: right; background-color: #e54b4b">
+                                    <h3>23%</h3>
+                                    <h1>127438</h1>
+                                </div>
+                                <div>
+                                    Total Normal Users wow goof
+                                </div>
+                            </div>
+                </div>
+                <div class="col-sm-3">
+                    <div >
+                                <div class="p-2" style="text-align: right; background-color: #e54b4b">
+                                    <h3>23%</h3>
+                                    <h1>127438</h1>
+                                </div>
+                                <div>
+                                    Total Normal Users wow goof
+                                </div>
+                            </div>
+                </div>
+            </div>
+        </div>
 {% endblock %}

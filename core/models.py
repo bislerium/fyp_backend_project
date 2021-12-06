@@ -60,7 +60,7 @@ class UserCommons(models.Model):
     GENDER = [
         ('Male', 'Male'),
         ('Female', 'Female'),
-        ('LGBT', 'LGBT'),
+        ('LGBTQ+', 'LGBTQ+'),
     ]
     gender = models.CharField(max_length=6, choices=GENDER)
     phone = PhoneNumberField(blank=True, unique=True, null=True)

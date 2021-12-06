@@ -1,12 +1,13 @@
 from typing import Union
 
+from datetime import date, datetime
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DeleteView, UpdateView, DetailView
+from django.views.generic import ListView, DeleteView, UpdateView, DetailView, TemplateView
 
 from .forms import *
 
@@ -51,10 +52,6 @@ class CustomLoginView(LoginView):
                            admin_redirect=reverse_lazy('admin-home'),
                            staff_redirect=reverse_lazy('read-reports'),
                            user_redirect=reverse_lazy('forbid'))
-
-
-def admin_index(request):
-    return render(request, 'core/admin/admin-home.html', context={'pk': request.user.username})
 
 
 def staff_index(request):
@@ -233,3 +230,99 @@ class update_report(UpdateView):
         if request.method.lower() == 'get':
             return self.http_method_not_allowed(request, *args, **kwargs)
         return super().dispatch(request, *args, **kwargs)
+
+
+class admin_home(TemplateView):
+    template_name = 'core/admin/admin-home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today_date: date = date.today()
+
+        total_people = PeopleUser.objects.count()
+        total_male_people = PeopleUser.objects.filter(gender='Male').count()
+        total_female_people = PeopleUser.objects.filter(gender='Female').count()
+        total_lgbtq_people = PeopleUser.objects.filter(gender='LGBTQ+').count()
+        total_minor_people = PeopleUser.objects.filter(
+            date_of_birth__gte=datetime(today_date.year - 18, today_date.month,
+                                        today_date.day)).count()
+        total_verified_people = PeopleUser.objects.filter(verified=True).count()
+        total_active_people = PeopleUser.objects.filter(account__is_active=True).count()
+
+        total_ngos = NGOUser.objects.count()
+        total_verified_ngos = NGOUser.objects.filter(verified=True).count()
+        total_active_ngos = NGOUser.objects.filter(account__is_active=True).count()
+        ngos_per_field: dict = {}
+        for fields in FIELD_OF_WORK:
+            ngos_per_field[fields[0]] = NGOUser.objects.filter(field_of_work__contains=fields[0]).count()
+
+        total_staffs = Staff.objects.count()
+        total_married_staff = Staff.objects.filter(marital_status=True).count()
+        total_male_staff = Staff.objects.filter(gender='Male').count()
+        total_female_staff = Staff.objects.filter(gender='Female').count()
+        total_lgbtq_staff = Staff.objects.filter(gender='LGBTQ+').count()
+
+        total_post = Post.objects.all().count()
+        total_normal_posts = PostNormal.objects.count()
+        total_poll_posts = PostPoll.objects.count()
+        total_request_posts = PostRequest.objects.count()
+        total_join_request_posts = PostRequest.objects.filter(request_type='Join').count()
+        total_petition_request_posts = PostRequest.objects.filter(request_type='Petition').count()
+        total_removed_post = Post.objects.filter(removed=True).count()
+        total_anonymous_post = Post.objects.filter(anonymous=True).count()
+        total_post_normal_up_vote = 0
+        total_post_normal_down_vote = 0
+        total_reports = 0
+        total_post_poll_options = PollOption.objects.count()
+        total_post_poll_options_polled = 0
+        total_post_request_petition_signed = 0
+        total_post_request_join_signed = 0
+        for normal_post in PostNormal.objects.all():
+            total_post_normal_up_vote += normal_post.up_vote.count()
+            total_post_normal_down_vote += normal_post.down_vote.count()
+            total_reports += normal_post.reported_by.count()
+        for poll_post in PostPoll.objects.all():
+            total_reports += poll_post.reported_by.count()
+        for poll_option in PollOption.objects.all():
+            total_post_poll_options_polled += poll_option.reacted_by.count()
+        for request_post in PostRequest.objects.all():
+            total_reports += request_post.reported_by.count()
+            if request_post.request_type == 'Petition':
+                total_post_request_petition_signed += request_post.reacted_by.count()
+            if request_post.request_type == 'Join':
+                total_post_request_join_signed += request_post.reacted_by.count()
+        context['home'] = {
+            'total_people': total_people,
+            'total_male_people': total_male_people,
+            'total_female_people': total_female_people,
+            'total_lgbtq_people': total_lgbtq_people,
+            'total_minor_people': total_minor_people,
+            'total_verified_people': total_verified_people,
+            'total_active_people': total_active_people,
+            'total_ngos': total_ngos,
+            'total_verified_ngos': total_verified_ngos,
+            'total_active_ngos': total_active_ngos,
+            'ngos_per_field': ngos_per_field,
+            'total_staffs': total_staffs,
+            'total_married_staff': total_married_staff,
+            'total_male_staff': total_male_staff,
+            'total_female_staff': total_female_staff,
+            'total_lgbtq_staff': total_lgbtq_staff,
+            'total_post': total_post,
+            'total_normal_posts': total_normal_posts,
+            'total_poll_posts': total_poll_posts,
+            'total_request_posts': total_request_posts,
+            'total_join_request_posts': total_join_request_posts,
+            'total_petition_request_posts': total_petition_request_posts,
+            'total_removed_post': total_removed_post,
+            'total_anonymous_post': total_anonymous_post,
+            'total_post_normal_up_vote': total_post_normal_up_vote,
+            'total_post_normal_down_vote': total_post_normal_down_vote,
+            'total_reports': total_reports,
+            'total_post_poll_options': total_post_poll_options,
+            'total_post_poll_options_polled': total_post_poll_options_polled,
+            'total_post_request_petition_signed': total_post_request_petition_signed,
+            'total_post_request_join_signed': total_post_request_join_signed,
+        }
+        print(context['home'])
+        return context
