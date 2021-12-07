@@ -7,51 +7,454 @@
 {% block body %}
     {% include  'core/extensions/navbar.html' with home='active'%}
     <H1>This is Admin</H1>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-7 mb-3">
+                <div class="row">
 
-        <div>
-            <div class="row">
-                <div class="col-sm-3 card bg-primary" style="border-radius: 10%" >
-                    <div >Header</div>
-  <div class="card-body" style="background-color: #0a53be">
-    <h5 >Primary card title</h5>
-    <p >Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-  </div>
-                </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="row">
 
-                <div class="col-sm-3">
-                    <div>
-                        <div class="p-2" style="text-align: right; background-color: #e54b4b">
-                            <h3>23%</h3>
-                            <h1>127438</h1>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h1 class="fw-bold">
+                                            {{ home.total_people }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total People Users
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_minor_people_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_minor_people }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Minor People
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h1 class="fw-bold">
+                                            {{ home.total_ngos }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total NGOs
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h1 class="fw-bold">
+                                            {{ home.total_staffs}}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Staffs
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_married_staff_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_married_staff }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Married Staffs
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_poll_posts_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_poll_posts }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Poll Posts
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_request_posts_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_request_posts }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Request Posts
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.avg_pn_up_vote_np }} up-votes/post
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_post_normal_up_vote }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total up-votes (Normal Post)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.avg_pp_options_pp }} options/poll
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_post_poll_options }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Polls' Options
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.avg_pp_options_polled_pp }} polls/option
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_post_poll_options_polled }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Polls
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            Total Normal Users wow goof
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="row">
+
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_active_people_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_active_people }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Active People Account
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_verified_people_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_verified_people }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total verified People
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_active_ngos_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_active_ngos }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Active NGOs
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7; text-align: right">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Male</span>
+                                        <h5>{{ home.total_male_staff_percentage }}%</h5>
+                                    </div>
+                                    <h1 class="fw-bold">
+                                        {{ home.total_male_staff }}
+                                    </h1>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Female</span>
+                                        <h5>{{ home.total_female_staff_percentage }}%</h5>
+                                    </div>
+                                    <h1 class="fw-bold">
+                                        {{ home.total_female_staff }}
+                                    </h1>
+                                    <div class="d-flex justify-content-between">
+                                        <span>LGBTQ+</span>
+                                        <h5>{{ home.total_lgbtq_staff_percentage }}%</h5>
+                                    </div>
+                                    <h1 class="fw-bold">
+                                        {{ home.total_lgbtq_staff }}
+                                    </h1>
+                                    <div class="pt-1" style="border-top: 1px solid; text-align: left;">
+                                        Total Staffs based on Gender
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_join_request_posts_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_join_request_posts }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Join Request Posts
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_anonymous_post_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_anonymous_post }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Anonymous Posts
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.avg_pn_down_vote_np }} down-votes/post
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_post_normal_down_vote }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total down-votes (Normal Post)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                        <div style="text-align: right">
+                                            <h5>
+                                                {{ home.avg_pr_join_signed_rp }} signs/join
+                                            </h5>
+                                            <h1 class="fw-bold">
+                                                {{ home.total_post_request_join_signed }}
+                                            </h1>
+                                        </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Join Signs
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="row">
+
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7; text-align: right">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Male</span>
+                                        <h5>{{ home.total_male_people_percentage }}%</h5>
+                                    </div>
+                                    <h1 class="fw-bold">
+                                        {{ home.total_male_people }}
+                                    </h1>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Female</span>
+                                        <h5>{{ home.total_female_people_percentage }}%</h5>
+                                    </div>
+                                    <h1 class="fw-bold">
+                                        {{ home.total_female_people }}
+                                    </h1>
+                                    <div class="d-flex justify-content-between">
+                                        <span>LGBTQ+</span>
+                                        <h5>{{ home.total_lgbtq_people_percentage }}%</h5>
+                                    </div>
+                                    <h1 class="fw-bold">
+                                        {{ home.total_lgbtq_people }}
+                                    </h1>
+                                    <div class="pt-1" style="border-top: 1px solid; text-align: left">
+                                        Total People User based on Gender
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_verified_ngos_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_verified_ngos }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Verified NGOs
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h1 class="fw-bold">
+                                            {{ home.total_posts }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Posts
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_normal_posts_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_normal_posts }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Normal Posts
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_petition_request_posts_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_petition_request_posts }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Petition Request Posts
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.total_removed_post_percentage }}%
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_removed_post }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total removed Posts
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.avg_reports_posts }} reports/post
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_reports }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total reported Posts
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                                    <div style="text-align: right">
+                                        <h5>
+                                            {{ home.avg_pr_petition_signed_rp }} signs/petition
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            {{ home.total_post_request_petition_signed }}
+                                        </h1>
+                                    </div>
+                                    <div class="pt-1" style="border-top: 1px solid">
+                                        Total Petition Signs
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="col-sm-3">
-                    <div >
-                                <div class="p-2" style="text-align: right; background-color: #e54b4b">
-                                    <h3>23%</h3>
-                                    <h1>127438</h1>
-                                </div>
-                                <div>
-                                    Total Normal Users wow goof
-                                </div>
-                            </div>
-                </div>
-                <div class="col-sm-3">
-                    <div >
-                                <div class="p-2" style="text-align: right; background-color: #e54b4b">
-                                    <h3>23%</h3>
-                                    <h1>127438</h1>
-                                </div>
-                                <div>
-                                    Total Normal Users wow goof
-                                </div>
-                            </div>
+            </div>
+            <div class="col-md-5 mb-3">
+                <div class="p-3 rounded-3" style="background-color: #0b5ed7;">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Field of Work</th>
+                                <th scope="col">NGO Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for k,v in home.ngos_per_field.items %}
+                                <tr>
+                                    <th scope="row">{{ k }}</th>
+                                    <td>{{ v }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+    </div>
 {% endblock %}

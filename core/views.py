@@ -231,6 +231,9 @@ class update_report(UpdateView):
             return self.http_method_not_allowed(request, *args, **kwargs)
         return super().dispatch(request, *args, **kwargs)
 
+    def form_valid(self, form):
+        return super().form_valid(form)
+
 
 class admin_home(TemplateView):
     template_name = 'core/admin/admin-home.html'
@@ -262,7 +265,7 @@ class admin_home(TemplateView):
         total_female_staff = Staff.objects.filter(gender='Female').count()
         total_lgbtq_staff = Staff.objects.filter(gender='LGBTQ+').count()
 
-        total_post = Post.objects.all().count()
+        total_posts = Post.objects.all().count()
         total_normal_posts = PostNormal.objects.count()
         total_poll_posts = PostPoll.objects.count()
         total_request_posts = PostRequest.objects.count()
@@ -294,35 +297,63 @@ class admin_home(TemplateView):
         context['home'] = {
             'total_people': total_people,
             'total_male_people': total_male_people,
+            'total_male_people_percentage': round((total_male_people / total_people) * 100, 2),
             'total_female_people': total_female_people,
+            'total_female_people_percentage': round((total_female_people / total_people) * 100, 2),
             'total_lgbtq_people': total_lgbtq_people,
+            'total_lgbtq_people_percentage': round((total_lgbtq_people / total_people) * 100, 2),
             'total_minor_people': total_minor_people,
+            'total_minor_people_percentage': round((total_minor_people / total_people) * 100, 2),
             'total_verified_people': total_verified_people,
+            'total_verified_people_percentage': round((total_verified_people / total_people) * 100, 2),
             'total_active_people': total_active_people,
+            'total_active_people_percentage': round((total_active_people / total_people) * 100, 2),
             'total_ngos': total_ngos,
             'total_verified_ngos': total_verified_ngos,
+            'total_verified_ngos_percentage': round((total_verified_ngos / total_people) * 100, 2),
             'total_active_ngos': total_active_ngos,
+            'total_active_ngos_percentage': round((total_active_ngos / total_people) * 100, 2),
             'ngos_per_field': ngos_per_field,
             'total_staffs': total_staffs,
             'total_married_staff': total_married_staff,
+            'total_married_staff_percentage': round((total_married_staff / total_staffs) * 100, 2),
             'total_male_staff': total_male_staff,
+            'total_male_staff_percentage': round((total_male_staff / total_staffs) * 100, 2),
             'total_female_staff': total_female_staff,
+            'total_female_staff_percentage': round((total_male_staff / total_staffs) * 100, 2),
             'total_lgbtq_staff': total_lgbtq_staff,
-            'total_post': total_post,
+            'total_lgbtq_staff_percentage': round((total_lgbtq_staff / total_staffs) * 100, 2),
+            'total_posts': total_posts,
             'total_normal_posts': total_normal_posts,
+            'total_normal_posts_percentage': round((total_normal_posts / total_posts) * 100, 2),
             'total_poll_posts': total_poll_posts,
+            'total_poll_posts_percentage': round((total_poll_posts / total_posts) * 100, 2),
             'total_request_posts': total_request_posts,
+            'total_request_posts_percentage': round((total_request_posts / total_posts) * 100, 2),
             'total_join_request_posts': total_join_request_posts,
+            'total_join_request_posts_percentage': round((total_join_request_posts / total_request_posts) * 100, 2),
             'total_petition_request_posts': total_petition_request_posts,
+            'total_petition_request_posts_percentage': round((total_petition_request_posts / total_request_posts) * 100, 2),
             'total_removed_post': total_removed_post,
+            'total_removed_posts_percentage': round((total_removed_post / total_posts) * 100, 2),
             'total_anonymous_post': total_anonymous_post,
+            'total_anonymous_posts_percentage': round((total_anonymous_post / total_posts) * 100, 2),
             'total_post_normal_up_vote': total_post_normal_up_vote,
+            'avg_pn_up_vote_np': round(total_post_normal_up_vote / total_normal_posts),
             'total_post_normal_down_vote': total_post_normal_down_vote,
+            'avg_pn_down_vote_np': round(total_post_normal_down_vote / total_normal_posts),
             'total_reports': total_reports,
+            'avg_reports_posts': round(total_reports / total_posts),
             'total_post_poll_options': total_post_poll_options,
+            'avg_pp_options_pp': round(total_post_poll_options / total_poll_posts),
             'total_post_poll_options_polled': total_post_poll_options_polled,
+            'avg_pp_options_polled_pp': round(total_post_poll_options_polled / total_post_poll_options),
             'total_post_request_petition_signed': total_post_request_petition_signed,
+            'avg_pr_petition_signed_rp': round(
+                total_post_request_petition_signed / total_petition_request_posts),
             'total_post_request_join_signed': total_post_request_join_signed,
+            'avg_pr_join_signed_rp': round(
+                total_post_request_join_signed / total_join_request_posts),
         }
         print(context['home'])
         return context
