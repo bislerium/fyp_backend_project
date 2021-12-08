@@ -1,32 +1,54 @@
-
 {% extends 'core/base.html' %}
 {% load static %}
 {% load widget_tweaks %}
 
 {% block title %}Login{% endblock %}
 {% block linkscript %}
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+            }
+        }
+    </style>
+    <!-- Custom styles for this template -->
     <link href="{% static 'core/css/login.css' %}" rel="stylesheet"/>
 {% endblock %}
 
 {% block body %}
-    <body>
-    <div class="form-signin">
-        <form class="text-center" method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            <img class="mb-4" src="{% static 'core/img/supersonic.svg' %}" alt="" width="72" height="72">
+    <div class="body-class">
+        <main class="form-signin">
+            <form class="text-center" method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <img class="mb-4" src="{% static 'core/img/supersonic.svg' %}" alt="" width="72">
+                <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+                <p>'Only for Staff and Admin'</p>
 
-            <p class="h1 mb-3">Please Login</p>
-            <p>'Only for Staff and Admin'</p>
-            {% render_field form.username class="form-control" placeholder="Username" %}
-            {% render_field form.password type="password" id="inputPassword" class="form-control" placeholder="Password" %}
-            {% if form.errors %}
-                <div class="alert alert-danger text-center">Incorrect username/password</div>
-            {% endif %}
-            <div class="mb-3" style="text-align: right">
-                <a href="{% url 'password_reset'%}" class="text-decoration-none">Forgot password?</a>
-            </div>
-            <button class="btn btn-primary btn-block" style="width: 100%" type="submit">Login</button>
-        </form>
+                <div class="form-floating">
+                    {% render_field form.username class="form-control" id="floatingInput" placeholder="Username" %}
+                    <label for="floatingInput">Username</label>
+                </div>
+                <div class="form-floating">
+                    {% render_field form.password type="password" id="inputPassword" class="form-control" id="floatingPassword" placeholder="Password" %}
+                    <label for="floatingPassword">Password</label>
+                </div>
+                {% if form.errors %}
+                    <div class="alert alert-danger text-center">Incorrect username/password</div>
+                {% endif %}
+
+                <div class="mb-3" style="text-align: right">
+                    <a href="{% url 'password_reset'%}" class="text-decoration-none">Forgot password?</a>
+                </div>
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+            </form>
+        </main>
     </div>
-  </body>
 {% endblock %}

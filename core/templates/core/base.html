@@ -1,35 +1,35 @@
 {% load static %}
 {% load widget_tweaks %}
 
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="The page belongs to Staff-admin portal of Sasae">
-    <meta name="author" content="Bishal Gharti Chhetri">
-    <title>{{ title }}</title>
-    <!-- CSS only -->
-    <link rel="stylesheet" type="text/css" href="{% static 'core/bootstrap-5.1.3-dist/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
-    <!-- JavaScript Bundle with Popper -->
-    <script src="{% static 'core/bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js' %}"></script>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="The page belongs to Staff-admin portal of Sasae">
+        <meta name="author" content="Bishal Gharti Chhetri">
+        <title>{{ title }}</title>
+        <!-- CSS only -->
+        <link rel="stylesheet" type="text/css" href="{% static 'core/bootstrap-5.1.3-dist/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'core/css/footer.css' %}">
+        <!-- JavaScript Bundle with Popper -->
+        <script src="{% static 'core/bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js' %}"></script>
 
-    {% block linkscript %}
-        This block contains any CSS & JS file required for the HTML page. (can be used to override the bootstrap)
-    {% endblock %}
-</head>
-<body class="font-monospace" style="background-color: #f5f5f5;">
-     {% block body %}
-            This block contains the body of rendered HTML
-     {% endblock %}
-     <script>
-        // Initialize tooltips
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)})
-    </script>
-    {% include 'core/extensions/footer.html' %}
-</body>
+        {% block linkscript %}
+            This block contains any CSS & JS file required for the HTML page. (can be used to override the bootstrap)
+        {% endblock %}
+    </head>
+    <body class="font-monospace" style="background-color: #f5f5f5;">
+         {% block body %}
+                This block contains the body of rendered HTML
+         {% endblock %}
+         {% include 'core/extensions/footer.html' %}
+         <script>
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)})
+        </script>
+    </body>
 </html>

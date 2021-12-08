@@ -9,11 +9,11 @@
 
 {% block body %}
     {% include 'core/extensions/navbar.html' with home='active' %}
-    <h1 class="d-block  w-100">Review Post</h1>
     <div class="container-fluid my-2">
         <div class="row">
-            <section class="col-sm-7" style="padding: 0 3vh;">
-                <div class="px-2">
+            <section class="col-sm-7 px-4">
+                <div>
+                    <h1 class="d-block my-3 w-100">Review Post</h1>
                     <div class="my-2"><i class="bi bi-person-lines-fill"></i> Posted by: {% if object.people_posted_post_rn.count != 0 %}
                             {{ object.people_posted_post_rn.first.account.username  }}
                         {% else %}

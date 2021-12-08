@@ -320,7 +320,7 @@ class admin_home(TemplateView):
             'total_male_staff': total_male_staff,
             'total_male_staff_percentage': round((total_male_staff / total_staffs) * 100, 2),
             'total_female_staff': total_female_staff,
-            'total_female_staff_percentage': round((total_male_staff / total_staffs) * 100, 2),
+            'total_female_staff_percentage': round((total_female_staff / total_staffs) * 100, 2),
             'total_lgbtq_staff': total_lgbtq_staff,
             'total_lgbtq_staff_percentage': round((total_lgbtq_staff / total_staffs) * 100, 2),
             'total_posts': total_posts,

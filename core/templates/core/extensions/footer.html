@@ -1,4 +1,18 @@
-<div class="d-block"style="height: 6vh">&nbsp;</div>
-<div class="fixed-bottom text-center py-3" style="background-color: white;">
-    <small><a href="mailto:chhetrigbishal@gmail.com" title="Contact me!"><i class="bi bi-envelope-fill"></i></a> Bishal Gharti Chhteri | &copy;2022 Copyright: <span class="fw-bold">सासेए</span></small>
+{% load static %}
+<div class="d-block" style="height: 7vh">&nbsp;</div>
+<div class="d-block footer-all fixed-bottom w-100"  style="background-color: #f8f9fa;">
+    <footer class="d-flex flex-wrap justify-content-between align-items-center p-3" id="footer-whole">
+        <div class="col-md d-flex align-items-center">
+            <a href="#" class="text-muted text-decoration-none">
+                <img class="bi" src="{% static 'core/img/supersonic.svg'%}" width="30" height="24" alt="supersonic.svg"/>
+            </a>
+            <span class="text-muted">&nbsp;&copy;2022 Copyright: <span class="fw-bold">सासेए</span> (Sasae)</span>
+        </div>
+        <ul class="nav col-md justify-content-end list-unstyled d-flex" id="footer-contact-me" style="text-align: right">
+            <li class="ms-3 text-muted">Bishal Gharti Chhetri |</li>
+            <li class="ms-3"><a class="text-muted" href="mailto:chhetrigbishal@gmail.com"><i class="bi bi-envelope-fill"></i></a></li>
+            <li class="ms-3"><a class="text-muted" href="https://github.com/gcbishal"><i class="bi bi-github"></i></a></li>
+            <li class="ms-3"><a class="text-muted" href="https://www.instagram.com/bigc.tmp/"><i class="bi bi-instagram"></i></a></li>
+        </ul>
+    </footer>
 </div>
