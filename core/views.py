@@ -61,6 +61,8 @@ def staff_index(request):
 # Staff Crud
 
 def create_staff(request):
+    user_form = UserCreationForm()
+    staff_form = StaffCreationForm()
     if request.method == 'POST':
         user_form = UserCreationForm(request.POST)
         staff_form = StaffCreationForm(request.POST, request.FILES or None)
@@ -72,8 +74,8 @@ def create_staff(request):
             messages.success(request, f'Account created for {staff_form.data["full_name"]}')
             return redirect('read-staffs')
     context = {
-        'form1': UserCreationForm(),
-        'form2': PeopleCreationForm(),
+        'form1': user_form,
+        'form2': staff_form,
     }
     return render(request, 'core/staff/staff-create.html', context)
 
@@ -134,6 +136,8 @@ class delete_people(DeleteView):
 # NGO Crud
 
 def create_ngo(request):
+    user_form = UserCreationForm()
+    ngo_form = NGOCreationForm()
     if request.method == 'POST':
         user_form = UserCreationForm(request.POST)
         ngo_form = NGOCreationForm(request.POST, request.FILES or None)
@@ -145,8 +149,8 @@ def create_ngo(request):
             messages.success(request, f'Account created for {ngo_form.data["full_name"]}')
             return redirect('read-ngos')
     context = {
-        'form1': UserCreationForm(),
-        'form2': NGOCreationForm(),
+        'form1': user_form,
+        'form2': ngo_form,
     }
     return render(request, 'core/ngo/ngo-create.html', context)
 
@@ -220,6 +224,11 @@ class read_reports(ListView):
     model = Post
     template_name = 'core/staff/staff-home-reported-post.html'
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['post_reviewed'] = Report.objects.filter(review=True).count()
+        return context
+
 
 class update_report(UpdateView):
     model = Report
@@ -232,6 +241,23 @@ class update_report(UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
+        action_option = form['action'].data
+        post = form.instance.post
+        form.instance.review = True
+        if action_option == Report.ACTION[0][0]:
+            post.removed = True
+            post.save()
+        if action_option == Report.ACTION[1][0]:
+            people: PeopleUser = post.people_posted_post_rn.first()
+            ngo: NGOUser = post.ngo_posted_post_rn.first()
+            if people is not None:
+                account = people.account
+                account.is_active = False
+                account.save()
+            if ngo is not None:
+                account = ngo.account
+                account.is_active = False
+                account.save()
         return super().form_valid(form)
 
 

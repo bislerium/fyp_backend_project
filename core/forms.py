@@ -34,11 +34,16 @@ class BankCreationForm(forms.ModelForm):
 
 
 class ReportForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ReportForm, self).__init__(*args, **kwargs)
+        self.fields['reason'].widget.attrs["maxlength"] = 950
+        self.fields['reason'].required = True
+        self.fields['action'].required = True
+
     class Meta:
         model = Report
-        fields = ['reason', 'action']
-        widgets = {'reason': forms.Textarea(attrs={'rows': '12', }), }
 
-    # def __init__(self, *args, **kwargs):
-    #     super(ReportForm, self).__init__(*args, **kwargs)
-    #     self.fields['reason'].widget.attrs["maxlength"] = 900
+        fields = ['post', 'reason', 'action', 'review']
+        widgets = {'reason': forms.Textarea(attrs={'rows': '12'}),
+                   'post': forms.HiddenInput(), 'review': forms.HiddenInput()}

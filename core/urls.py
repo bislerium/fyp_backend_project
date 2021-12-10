@@ -30,7 +30,7 @@ urlpatterns = [
                   path('web/404/', page_not_found, name='no_page'),
 
                   path('web/staff/create/', create_staff, name='create-staff'),
-                  path('web/staff/read/', read_staffs.as_view(), name='read-staffs'),
+                  path('web/staffs/read/', read_staffs.as_view(), name='read-staffs'),
                   path('web/staff/<int:pk>/read/', read_staff.as_view(), name='read-staff'),
                   path('web/staff/<int:pk>/update/', update_staff.as_view(), name='update-staff'),
                   path('web/staff/<int:pk>/delete/', delete_staff.as_view(), name='delete-staff'),

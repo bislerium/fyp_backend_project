@@ -13,7 +13,7 @@
             <H1 class="my-3">Reported Posts</H1>
             <div class="row my-2">
                 <div class="col my-1">Total Report Posts: <span class="fw-bold">{{ object_list.count }}</span></div>
-                <div class="col my-2" style="text-align: right">Total Reviewed Posts: <span class="fw-bold">{{ object_list.count }}</span></div>
+                <div class="col my-2" style="text-align: right">Total Reviewed Posts: <span class="fw-bold">{{ post_reviewed }}</span></div>
             </div>
             <div class="row">
             {% for post in object_list %}

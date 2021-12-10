@@ -199,4 +199,3 @@ class PostPoll(PostAttachment):
     option = models.ManyToManyField(PollOption)
     ends_on = models.DateField()
     reported_by = models.ManyToManyField(PeopleUser, related_name='poll_reported_by_rn', blank=True)
-
