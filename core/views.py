@@ -2,38 +2,38 @@ from typing import Union
 
 from datetime import date, datetime
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, UpdateView, DetailView, TemplateView
 
+from .decorators import allowed_groups
 from .forms import *
 
 
 def redirection(request, **kwargs: Union[reverse_lazy, redirect]):
-    print("hellothere")
     user_: User = request.user
-    print(user_.groups)
     if user_.is_staff and user_.is_superuser:
-        print('a')
         return kwargs['admin_redirect']
-    if user_.groups.filter(name=Group.objects.get(name__iexact='Staff')).exists():
-        print('b')
+    if user_.groups.filter(name='Staff').exists():
         return kwargs['staff_redirect']
-    if user_.groups.filter(name=Group.objects.get(name__iexact='People')).exists() or \
-            user_.groups.filter(name=Group.objects.get(name__iexact='NGO')).exists():
-        print('c')
+    if user_.groups.filter(name__in=['People', 'NGO']).exists():
         return kwargs['user_redirect']
 
 
-def forbidden_page(request):
+def forbidden_page(request, exception):
     return render(request, 'core/extensions/403-page.html')
 
 
-def page_not_found(request):
+def page_not_found(request, exception):
     return render(request, 'core/extensions/404-page.html')
+
+
+def bad_request(request, exception):
+    return render(request, 'core/extensions/400-page.html')
 
 
 def home_page(request):
@@ -60,6 +60,8 @@ def staff_index(request):
 
 # Staff Crud
 
+@login_required(login_url=reverse_lazy('login'))
+@allowed_groups('Staff', 'Admin')
 def create_staff(request):
     user_form = UserCreationForm()
     staff_form = StaffCreationForm()
@@ -80,7 +82,9 @@ def create_staff(request):
     return render(request, 'core/staff/staff-create.html', context)
 
 
-class read_staffs(ListView):
+class read_staffs(PermissionRequiredMixin, ListView):
+    login_url = reverse_lazy('login')
+    permission_required = 'core.view_staff'
     model = Staff
     # paginate_by = 20
     template_name = 'core/staff/staffs-read.html'
@@ -359,7 +363,8 @@ class admin_home(TemplateView):
             'total_join_request_posts': total_join_request_posts,
             'total_join_request_posts_percentage': round((total_join_request_posts / total_request_posts) * 100, 2),
             'total_petition_request_posts': total_petition_request_posts,
-            'total_petition_request_posts_percentage': round((total_petition_request_posts / total_request_posts) * 100, 2),
+            'total_petition_request_posts_percentage': round((total_petition_request_posts / total_request_posts) * 100,
+                                                             2),
             'total_removed_post': total_removed_post,
             'total_removed_posts_percentage': round((total_removed_post / total_posts) * 100, 2),
             'total_anonymous_post': total_anonymous_post,
