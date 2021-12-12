@@ -4,7 +4,7 @@ from django.urls import path
 from core.views import *
 
 urlpatterns = [
-                  path('web/account/login/', CustomLoginView.as_view(
+                  path('web/account/login/', LoginView.as_view(
                       template_name='core/account/login.html'), name='login'),
                   path('web/account/logout/', LogoutView.as_view(
                       template_name='core/account/logged_out.html'), name='logout'),

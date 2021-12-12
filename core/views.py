@@ -1,27 +1,16 @@
-from typing import Union
-
 from datetime import date, datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.models import Group
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, UpdateView, DetailView, TemplateView
 
 from .decorators import allowed_groups
 from .forms import *
-
-
-def redirection(request, **kwargs: Union[reverse_lazy, redirect]):
-    user_: User = request.user
-    if user_.is_staff and user_.is_superuser:
-        return kwargs['admin_redirect']
-    if user_.groups.filter(name='Staff').exists():
-        return kwargs['staff_redirect']
-    if user_.groups.filter(name__in=['People', 'NGO']).exists():
-        return kwargs['user_redirect']
 
 
 def forbidden_page(request, exception):
@@ -37,233 +26,19 @@ def bad_request(request, exception):
 
 
 def home_page(request):
-    return redirection(request,
-                       admin_redirect=redirect('admin-home'),
-                       staff_redirect=redirect('read-reports'),
-                       user_redirect=redirect('forbid'))
+    user_: User = request.user
+    if user_.is_staff and user_.is_superuser:
+        print('admin')
+        return redirect('admin-home')
+    if user_.groups.filter(name='Staff').exists():
+        print('wow')
+        return redirect('read-reports')
+    if user_.groups.filter(name__in=['People', 'NGO']).exists():
+        print('Hello')
+        raise PermissionDenied(f'{user_} is not identified, falls under {user_.groups.first()}!')
 
 
 # Create your views here.
-
-class CustomLoginView(LoginView):
-
-    def get_success_url(self):
-        return redirection(self.request,
-                           admin_redirect=reverse_lazy('admin-home'),
-                           staff_redirect=reverse_lazy('read-reports'),
-                           user_redirect=reverse_lazy('forbid'))
-
-
-def staff_index(request):
-    return render(request, 'core/staff/staff-reported-post-review.html', context={'pk': request.user.username})
-
-
-# Staff Crud
-
-@login_required(login_url=reverse_lazy('login'))
-@allowed_groups('Staff', 'Admin')
-def create_staff(request):
-    user_form = UserCreationForm()
-    staff_form = StaffCreationForm()
-    if request.method == 'POST':
-        user_form = UserCreationForm(request.POST)
-        staff_form = StaffCreationForm(request.POST, request.FILES or None)
-        if user_form.is_valid() and staff_form.is_valid():
-            user_form.save()
-            staff_form_ = staff_form.save(commit=False)
-            staff_form_.account = User.objects.get(username=user_form.data['username'])
-            staff_form_.save()
-            messages.success(request, f'Account created for {staff_form.data["full_name"]}')
-            return redirect('read-staffs')
-    context = {
-        'form1': user_form,
-        'form2': staff_form,
-    }
-    return render(request, 'core/staff/staff-create.html', context)
-
-
-class read_staffs(PermissionRequiredMixin, ListView):
-    login_url = reverse_lazy('login')
-    permission_required = 'core.view_staff'
-    model = Staff
-    # paginate_by = 20
-    template_name = 'core/staff/staffs-read.html'
-
-
-class read_staff(DetailView):
-    model = Staff
-    template_name = 'core/staff/staff-read.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.get('object').reviewed_posts = self.get_object().report_review.filter(review=True).count()
-        return context
-
-
-class update_staff(UpdateView):
-    model = Staff
-    form_class = StaffCreationForm
-    template_name = 'core/staff/staff-update.html'
-    success_url = reverse_lazy('read-staffs')
-
-
-class delete_staff(DeleteView):
-    model = Staff
-    success_url = reverse_lazy('read-staffs')
-
-
-# People CRUD
-
-class read_peoples(ListView):
-    model = PeopleUser
-    # paginate_by = 20
-    template_name = 'core/user/peoples-read.html'
-
-
-class read_people(DetailView):
-    model = PeopleUser
-    template_name = 'core/user/people-read.html'
-
-
-class update_people(UpdateView):
-    model = PeopleUser
-    form_class = PeopleCreationForm
-    template_name = 'core/user/people-update.html'
-    success_url = reverse_lazy('read-peoples')
-
-
-class delete_people(DeleteView):
-    model = PeopleUser
-    success_url = reverse_lazy('read-peoples')
-
-
-# NGO Crud
-
-def create_ngo(request):
-    user_form = UserCreationForm()
-    ngo_form = NGOCreationForm()
-    if request.method == 'POST':
-        user_form = UserCreationForm(request.POST)
-        ngo_form = NGOCreationForm(request.POST, request.FILES or None)
-        if user_form.is_valid() and ngo_form.is_valid():
-            user_form.save()
-            ngo_form_ = ngo_form.save(commit=False)
-            ngo_form_.account = User.objects.get(username=user_form.data['username'])
-            ngo_form_.save()
-            messages.success(request, f'Account created for {ngo_form.data["full_name"]}')
-            return redirect('read-ngos')
-    context = {
-        'form1': user_form,
-        'form2': ngo_form,
-    }
-    return render(request, 'core/ngo/ngo-create.html', context)
-
-
-class read_ngos(ListView):
-    model = NGOUser
-    # paginate_by = 20
-    template_name = 'core/ngo/ngos-read.html'
-
-
-class read_ngo(DetailView):
-    model = NGOUser
-    template_name = 'core/ngo/ngo-read.html'
-
-
-class update_ngo(UpdateView):
-    model = NGOUser
-    form_class = NGOCreationForm
-    template_name = 'core/ngo/ngo-update.html'
-    success_url = reverse_lazy('read-ngos')
-
-
-class delete_ngo(DeleteView):
-    model = NGOUser
-    success_url = reverse_lazy('read-ngos')
-
-
-class read_report(DetailView):
-    model = Post
-    template_name = 'core/staff/staff-reported-post-review.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        post: Post = context.get('object')
-        report_form = ReportForm(instance=Report.objects.get(post=post))
-        if post.post_type == 'Poll':
-            cont: list = []
-            total_reaction = 0
-            for option in post.postpoll.option.all():
-                total_reaction += option.reacted_by.count()
-            for option in post.postpoll.option.all():
-                reaction = option.reacted_by.count()
-                percentage = (reaction / total_reaction) * 100
-                cont.append((option.option, reaction, round(percentage)))
-            context['object'].poll_data = cont
-            context['object'].poll_reactions = total_reaction
-        if post.post_type == 'Request':
-            min_ = post.postrequest.min
-            target = post.postrequest.target
-            max_ = post.postrequest.max
-            sign = post.postrequest.reacted_by.count()
-            cont: dict = {'min_': min_,
-                          'target': target,
-                          'sign': sign,
-                          'target_percentage': 100,
-                          'min_percentage': round((100 / target) * min_, 2),
-                          'sign_percentage': round((100 / target) * sign, 2),
-                          }
-            if max_ is not None:
-                cont['max_'] = max_
-                cont['max_percentage'] = 100
-                cont['target_percentage'] = round((100 / max_) * target, 2)
-                cont['min_percentage'] = round((100 / max_) * min_, 2)
-                cont['sign_percentage'] = round((100 / max_) * sign, 2)
-            context['object'].request_data = cont
-        context['object'].report_form = report_form
-        return context
-
-
-class read_reports(ListView):
-    model = Post
-    template_name = 'core/staff/staff-home-reported-post.html'
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(object_list=object_list, **kwargs)
-        context['post_reviewed'] = Report.objects.filter(review=True).count()
-        return context
-
-
-class update_report(UpdateView):
-    model = Report
-    form_class = ReportForm
-    success_url = reverse_lazy('read-reports')
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.method.lower() == 'get':
-            return self.http_method_not_allowed(request, *args, **kwargs)
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        action_option = form['action'].data
-        post = form.instance.post
-        form.instance.review = True
-        if action_option == Report.ACTION[0][0]:
-            post.removed = True
-            post.save()
-        if action_option == Report.ACTION[1][0]:
-            people: PeopleUser = post.people_posted_post_rn.first()
-            ngo: NGOUser = post.ngo_posted_post_rn.first()
-            if people is not None:
-                account = people.account
-                account.is_active = False
-                account.save()
-            if ngo is not None:
-                account = ngo.account
-                account.is_active = False
-                account.save()
-        return super().form_valid(form)
-
 
 class admin_home(TemplateView):
     template_name = 'core/admin/admin-home.html'
@@ -388,3 +163,219 @@ class admin_home(TemplateView):
         }
         print(context['home'])
         return context
+
+
+# Staff Crud
+
+def staff_index(request):
+    return render(request, 'core/staff/staff-reported-post-review.html')
+
+
+@login_required(login_url=reverse_lazy('login'))
+@allowed_groups('Staff', 'Admin')
+def create_staff(request):
+    user_form = UserCreationForm()
+    staff_form = StaffCreationForm()
+    if request.method == 'POST':
+        user_form = UserCreationForm(request.POST)
+        staff_form = StaffCreationForm(request.POST, request.FILES or None)
+        if user_form.is_valid() and staff_form.is_valid():
+            user_form.save()
+            user_account = User.objects.get(username=user_form.data['username'])
+            user_account.groups.add(Group.objects.get(name='Staff'))
+            user_account.save()
+            staff_form_ = staff_form.save(commit=False)
+            staff_form_.account = user_account
+            staff_form_.save()
+            messages.success(request, f'Account created for {staff_form.data["full_name"]}')
+            return redirect('read-staffs')
+    context = {
+        'form1': user_form,
+        'form2': staff_form,
+    }
+    return render(request, 'core/staff/staff-create.html', context)
+
+
+class read_staffs(PermissionRequiredMixin, ListView):
+    permission_required = 'core.view_staff'
+    model = Staff
+    # paginate_by = 20
+    template_name = 'core/staff/staffs-read.html'
+
+
+class read_staff(DetailView):
+    model = Staff
+    template_name = 'core/staff/staff-read.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.get('object').reviewed_posts = self.get_object().report_review.filter(review=True).count()
+        return context
+
+
+class update_staff(UpdateView):
+    model = Staff
+    form_class = StaffCreationForm
+    template_name = 'core/staff/staff-update.html'
+    success_url = reverse_lazy('read-staffs')
+
+
+class delete_staff(DeleteView):
+    model = Staff
+    success_url = reverse_lazy('read-staffs')
+
+
+# People CRUD
+
+class read_peoples(ListView):
+    model = PeopleUser
+    # paginate_by = 20
+    template_name = 'core/user/peoples-read.html'
+
+
+class read_people(DetailView):
+    model = PeopleUser
+    template_name = 'core/user/people-read.html'
+
+
+class update_people(UpdateView):
+    model = PeopleUser
+    form_class = PeopleCreationForm
+    template_name = 'core/user/people-update.html'
+    success_url = reverse_lazy('read-peoples')
+
+
+class delete_people(DeleteView):
+    model = PeopleUser
+    success_url = reverse_lazy('read-peoples')
+
+
+# NGO Crud
+
+def create_ngo(request):
+    user_form = UserCreationForm()
+    ngo_form = NGOCreationForm()
+    if request.method == 'POST':
+        user_form = UserCreationForm(request.POST)
+        ngo_form = NGOCreationForm(request.POST, request.FILES or None)
+        if user_form.is_valid() and ngo_form.is_valid():
+            user_form.save()
+            user_account = User.objects.get(username=user_form.data['username'])
+            user_account.groups.add(Group.objects.get(name='NGO'))
+            user_account.save()
+            ngo_form_ = ngo_form.save(commit=False)
+            ngo_form_.account = user_account
+            ngo_form_.save()
+            messages.success(request, f'Account created for {ngo_form.data["full_name"]}')
+            return redirect('read-ngos')
+    context = {
+        'form1': user_form,
+        'form2': ngo_form,
+    }
+    return render(request, 'core/ngo/ngo-create.html', context)
+
+
+class read_ngos(ListView):
+    model = NGOUser
+    # paginate_by = 20
+    template_name = 'core/ngo/ngos-read.html'
+
+
+class read_ngo(DetailView):
+    model = NGOUser
+    template_name = 'core/ngo/ngo-read.html'
+
+
+class update_ngo(UpdateView):
+    model = NGOUser
+    form_class = NGOCreationForm
+    template_name = 'core/ngo/ngo-update.html'
+    success_url = reverse_lazy('read-ngos')
+
+
+class delete_ngo(DeleteView):
+    model = NGOUser
+    success_url = reverse_lazy('read-ngos')
+
+
+class read_report(DetailView):
+    model = Post
+    template_name = 'core/staff/staff-reported-post-review.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post: Post = context.get('object')
+        report_form = ReportForm(instance=Report.objects.get(post=post))
+        if post.post_type == 'Poll':
+            cont: list = []
+            total_reaction = 0
+            for option in post.postpoll.option.all():
+                total_reaction += option.reacted_by.count()
+            for option in post.postpoll.option.all():
+                reaction = option.reacted_by.count()
+                percentage = (reaction / total_reaction) * 100
+                cont.append((option.option, reaction, round(percentage)))
+            context['object'].poll_data = cont
+            context['object'].poll_reactions = total_reaction
+        if post.post_type == 'Request':
+            min_ = post.postrequest.min
+            target = post.postrequest.target
+            max_ = post.postrequest.max
+            sign = post.postrequest.reacted_by.count()
+            cont: dict = {'min_': min_,
+                          'target': target,
+                          'sign': sign,
+                          'target_percentage': 100,
+                          'min_percentage': round((100 / target) * min_, 2),
+                          'sign_percentage': round((100 / target) * sign, 2),
+                          }
+            if max_ is not None:
+                cont['max_'] = max_
+                cont['max_percentage'] = 100
+                cont['target_percentage'] = round((100 / max_) * target, 2)
+                cont['min_percentage'] = round((100 / max_) * min_, 2)
+                cont['sign_percentage'] = round((100 / max_) * sign, 2)
+            context['object'].request_data = cont
+        context['object'].report_form = report_form
+        return context
+
+
+class read_reports(ListView):
+    model = Post
+    template_name = 'core/staff/staff-home-reported-post.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['post_reviewed'] = Report.objects.filter(review=True).count()
+        return context
+
+
+class update_report(UpdateView):
+    model = Report
+    form_class = ReportForm
+    success_url = reverse_lazy('read-reports')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method.lower() == 'get':
+            return self.http_method_not_allowed(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        action_option = form['action'].data
+        post = form.instance.post
+        form.instance.review = True
+        if action_option == Report.ACTION[0][0]:
+            post.removed = True
+            post.save()
+        if action_option == Report.ACTION[1][0]:
+            people: PeopleUser = post.people_posted_post_rn.first()
+            ngo: NGOUser = post.ngo_posted_post_rn.first()
+            if people is not None:
+                account = people.account
+                account.is_active = False
+                account.save()
+            if ngo is not None:
+                account = ngo.account
+                account.is_active = False
+                account.save()
+        return super().form_valid(form)
