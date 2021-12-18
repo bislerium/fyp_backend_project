@@ -1,7 +1,12 @@
 from django.conf.urls.static import static
 from django.contrib.auth.views import *
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
 from core.views import *
+from core.api_views import *
+
+# router = DefaultRouter()
 
 urlpatterns = [
                   path('web/account/login/', LoginView.as_view(
@@ -51,4 +56,11 @@ urlpatterns = [
                   path('web/report/<int:pk>/post/', read_report.as_view(), name='read-report'),
                   path('web/report/<int:pk>/review/', update_report.as_view(), name='review-report'),
 
+                  path('api/ngos/', NGOList.as_view(), name='api-ngo-list'),
+                  path('api/ngos/<int:pk>/', NGODetail.as_view(), name='api-ngo-detail'),
+                  path('api/posts/', PostList.as_view(), name='api-post-list'),
+                  path('api/posts/<int:pk>/', PostDetail.as_view(), name='api-post-detail'),
+                  path('api/banks/<int:pk>/', BankDetail.as_view(), name='api-bank-detail'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+

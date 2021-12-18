@@ -19,7 +19,7 @@
                         {% else %}
                             {{ object.ngo_posted_post_rn.first.account.username }}
                         {% endif%} </div>
-                    <div class="my-2"><i class="bi bi-calendar2-week-fill"></i> Date Posted: {{ object.created_on.ctime }}</div>
+                    <div class="my-2"><i class="bi bi-calendar2-week-fill"></i> Date Posted: {{ object.created_on.astimezone }}</div>
                     <div class="my-2"><i class="bi bi-signpost-2-fill"></i> Post Type:
                         <span class="badge bg-primary">{{ object.post_type }}</span>
                         {% if object.post_type == 'Request' %}
@@ -62,7 +62,7 @@
                             {% endfor %}
                         {% endif %}
                         {% if object.post_type == 'Request' %}
-                            <div class="d-block" style="text-align: right"><span class="badge bg-secondary">Total Signs: {{ object.postrequest.reacted_by.count }}</span> | Poll ends on: <span class="fw-bold">{{ object.postrequest.ends_on }}</span></div>
+                            <div class="d-block" style="text-align: right"><span class="badge bg-secondary">Total Signs: {{ object.postrequest.reacted_by.count }}</span> | Request ends on: <span class="fw-bold">{{ object.postrequest.ends_on }}</span></div>
                             <div class="progress my-2">
                                 <div class="progress-bar bg-warning" role="progressbar" style="width: {{ object.request_data.sign_percentage }}%" aria-valuenow="{{ object.request_data.sign_percentage }}" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" data-bs-placement="top" title="People who signed: {{ object.request_data.sign }} | {{ object.request_data.sign_percentage }}%"></div>
                                 <div class="progress-bar bg-secondary" role="progressbar" style="width: {{ object.request_data.min_percentage }}%" aria-valuenow="{{ object.request_data.min_percentage }}" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" data-bs-placement="top" title="Minimum Number of People: {{ object.request_data.min_ }} | {{ object.request_data.min_percentage }}%"></div>
