@@ -60,6 +60,8 @@ urlpatterns = [
                   path('api/ngos/<int:pk>/', NGODetail.as_view(), name='api-ngo-detail'),
                   path('api/posts/', PostList.as_view(), name='api-post-list'),
                   path('api/posts/<int:pk>/', PostDetail.as_view(), name='api-post-detail'),
+                  path('api/people/', PeopleList.as_view(), name='api-people-list'),
+                  path('api/people/<int:pk>/', PeopleDetail.as_view(), name='api-people-detail'),
                   path('api/banks/<int:pk>/', BankDetail.as_view(), name='api-bank-detail'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

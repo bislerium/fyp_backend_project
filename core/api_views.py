@@ -19,6 +19,16 @@ class BankDetail(RetrieveAPIView):
     serializer_class = BankSerializer
 
 
+class PeopleList(ListAPIView):
+    queryset = PeopleUser.objects.all()
+    serializer_class = PeopleSerializer
+
+
+class PeopleDetail(RetrieveAPIView):
+    queryset = PeopleUser.objects.all()
+    serializer_class = PeopleSerializer
+
+
 class PostList(ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostListSerializer

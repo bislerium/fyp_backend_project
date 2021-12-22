@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.reverse import reverse_lazy
+
 from .models import *
 
 
@@ -24,9 +26,23 @@ class NGOSerializer(serializers.ModelSerializer):
 
 
 class NormalPostSerializer(serializers.ModelSerializer):
+    # up_vote = serializers.HyperlinkedRelatedField(view_name='api-people-detail', many=True, read_only=True)
+    post_image = serializers.SerializerMethodField()
+
     class Meta:
         model = PostNormal
         fields = '__all__'
+
+    def get_post_image(self, instance):
+        request = self.context.get('request')
+        print('-----',self,'-----------')
+        img = instance.post_image
+        if img and hasattr(img, 'url'):
+            photo_url = img.url
+            print(photo_url)
+            return request.build_absolute_uri(photo_url)
+        else:
+            return None
 
 
 class PollOptionSerializer(serializers.ModelSerializer):
@@ -62,6 +78,17 @@ class PostListSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['url', 'related_to', 'text_body', 'anonymous', 'is_ngo_poked', 'post_type', 'created_on']
 
+    def to_representation(self, instance: Post):
+        data = super().to_representation(instance)
+        a = instance.people_posted_post_rn.first()
+        if a is None:
+            a = instance.ngo_posted_post_rn.first()
+            view = 'api-ngo-detail'
+        else:
+            view = 'api-people-detail'
+        data['posted_by'] = self.context.get('request').build_absolute_uri(reverse_lazy(view, kwargs={'pk': a.id}))
+        return data
+
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -76,4 +103,16 @@ class PostSerializer(serializers.ModelSerializer):
             data['post_poll'] = PollPostSerializer(instance.postpoll).data
         if instance.post_type == 'Request':
             data['post_request'] = RequestPostSerializer(instance.postrequest).data
+        return data
+
+
+class PeopleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PeopleUser
+        fields = '__all__'
+
+    def to_representation(self, instance: PeopleUser):
+        data = super().to_representation(instance)
+        data['email'] = instance.account.email
+        data['date_joined'] = instance.account.date_joined
         return data
