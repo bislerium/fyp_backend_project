@@ -363,9 +363,9 @@ class update_report(UpdateView):
     def form_valid(self, form):
         action_option = form['action'].data
         post = form.instance.post
-        form.instance.review = True
+        form.instance.is_reviewed = True
         if action_option == Report.ACTION[0][0]:
-            post.removed = True
+            post.is_removed = True
             post.save()
         if action_option == Report.ACTION[1][0]:
             people: PeopleUser = post.people_posted_post_rn.first()

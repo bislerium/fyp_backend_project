@@ -144,3 +144,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_SSL_KEYFILE=
 # EMAIL_SSL_CERTFILE=
 
+PHONENUMBER_DEFAULT_REGION='NP'
+

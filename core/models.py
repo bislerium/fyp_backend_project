@@ -76,7 +76,7 @@ class UserCommons(models.Model):
         blank=True,
         null=True,
     )
-    verified = models.BooleanField(blank=True, default=False)
+    is_verified = models.BooleanField(blank=True, default=False)
 
     def get_acronym_name(self):
         return ''.join(c[0].capitalize() for c in self.full_name.split())
@@ -87,11 +87,11 @@ class UserCommons(models.Model):
 
 class Post(models.Model):
     related_to = MultiSelectField(choices=FIELD_OF_WORK)
-    text_body = models.TextField(max_length=500)
+    post_content = models.TextField(max_length=500)
     created_on = models.DateTimeField(auto_now=True)
     modified_on = models.DateTimeField(blank=True, null=True)
-    anonymous = models.BooleanField(blank=True, default=False)
-    removed = models.BooleanField(blank=True, default=False)
+    is_anonymous = models.BooleanField(blank=True, default=False)
+    is_removed = models.BooleanField(blank=True, default=False)
     POST_TYPE = [
         ('Normal', 'Normal'),
         ('Request', 'Request'),
@@ -109,12 +109,12 @@ class Report(models.Model):
         ('Account Delete', 'Account Delete'),
     ]
     action = models.CharField(max_length=20, choices=ACTION, blank=True)
-    review = models.BooleanField(blank=True, default=False)
+    is_reviewed = models.BooleanField(blank=True, default=False)
 
 
 class Staff(UserCommons):
     verified = False
-    marital_status = models.BooleanField()
+    is_married = models.BooleanField()
     report_review = models.ManyToManyField(Report, blank=True)
 
     def __str__(self):
@@ -151,7 +151,7 @@ class NGOUser(UserCommons):
         null=True,
         verbose_name="PAN Certificate"
     )
-    verified = models.BooleanField(blank=True, default=False)
+    is_verified = models.BooleanField(blank=True, default=False)
     posted_post = models.ManyToManyField(Post, blank=True, related_name='ngo_posted_post_rn')
     poked_on = models.ManyToManyField(Post, blank=True, related_name='poked_on_rn')
 

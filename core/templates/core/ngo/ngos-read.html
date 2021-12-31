@@ -59,7 +59,7 @@
                   <td>{{ ngo.account.date_joined|date }}</td>
                   <td>{{ ngo.account.is_active }}</td>
                   <td>{{ ngo.account.last_login }}</td>
-                    <td>{{ ngo.verified }}</td>
+                    <td>{{ ngo.is_verified }}</td>
                   <td class="d-flex">
                       <a href="{% url 'read-ngo' ngo.id%}" class="px-1">
                           <button type="submit" class="btn btn-primary"><i class="bi bi-eye-fill"></i> View</button>

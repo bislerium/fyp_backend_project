@@ -27,11 +27,11 @@
                                     <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ field }}"><span class="badge bg-secondary">{{ field|slice:"0:2" }}</span></div>
                                 {% endfor %}
                                 </div>
-                                <p class="card-text text-dark">{{ post.text_body|truncatewords:25 }}</p>
+                                <p class="card-text text-dark">{{ post.post_content|truncatewords:25 }}</p>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="btn-group">
-                                        {% if post.anonymous %}
+                                        {% if post.is_anonymous %}
                                             <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Posted Anonymously"><span class="badge bg-danger">A</span></div>
                                         {% endif %}
                                         {% if post.poked_on_rn.count != 0 %}
