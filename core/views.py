@@ -45,6 +45,10 @@ class admin_home(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        def division(x, y):
+            return x / y if y else 0
+
         today_date: date = date.today()
 
         total_people = PeopleUser.objects.count()
@@ -54,30 +58,32 @@ class admin_home(TemplateView):
         total_minor_people = PeopleUser.objects.filter(
             date_of_birth__gte=datetime(today_date.year - 18, today_date.month,
                                         today_date.day)).count()
-        total_verified_people = PeopleUser.objects.filter(verified=True).count()
+        total_verified_people = PeopleUser.objects.filter(is_verified=True).count()
         total_active_people = PeopleUser.objects.filter(account__is_active=True).count()
 
         total_ngos = NGOUser.objects.count()
-        total_verified_ngos = NGOUser.objects.filter(verified=True).count()
+        total_verified_ngos = NGOUser.objects.filter(is_verified=True).count()
         total_active_ngos = NGOUser.objects.filter(account__is_active=True).count()
         ngos_per_field: dict = {}
         for fields in FIELD_OF_WORK:
             ngos_per_field[fields[0]] = NGOUser.objects.filter(field_of_work__contains=fields[0]).count()
 
         total_staffs = Staff.objects.count()
-        total_married_staff = Staff.objects.filter(marital_status=True).count()
+        total_married_staff = Staff.objects.filter(is_married=True).count()
         total_male_staff = Staff.objects.filter(gender='Male').count()
         total_female_staff = Staff.objects.filter(gender='Female').count()
         total_lgbtq_staff = Staff.objects.filter(gender='LGBTQ+').count()
 
         total_posts = Post.objects.all().count()
+        print(total_posts)
         total_normal_posts = PostNormal.objects.count()
+        print(total_normal_posts)
         total_poll_posts = PostPoll.objects.count()
         total_request_posts = PostRequest.objects.count()
         total_join_request_posts = PostRequest.objects.filter(request_type='Join').count()
         total_petition_request_posts = PostRequest.objects.filter(request_type='Petition').count()
-        total_removed_post = Post.objects.filter(removed=True).count()
-        total_anonymous_post = Post.objects.filter(anonymous=True).count()
+        total_removed_post = Post.objects.filter(is_removed=True).count()
+        total_anonymous_post = Post.objects.filter(is_anonymous=True).count()
         total_post_normal_up_vote = 0
         total_post_normal_down_vote = 0
         total_reports = 0
@@ -102,64 +108,64 @@ class admin_home(TemplateView):
         context['home'] = {
             'total_people': total_people,
             'total_male_people': total_male_people,
-            'total_male_people_percentage': round((total_male_people / total_people) * 100, 2),
+            'total_male_people_percentage': round(division(total_male_people, total_people) * 100, 2),
             'total_female_people': total_female_people,
-            'total_female_people_percentage': round((total_female_people / total_people) * 100, 2),
+            'total_female_people_percentage': round(division(total_female_people, total_people) * 100, 2),
             'total_lgbtq_people': total_lgbtq_people,
-            'total_lgbtq_people_percentage': round((total_lgbtq_people / total_people) * 100, 2),
+            'total_lgbtq_people_percentage': round(division(total_lgbtq_people, total_people) * 100, 2),
             'total_minor_people': total_minor_people,
-            'total_minor_people_percentage': round((total_minor_people / total_people) * 100, 2),
+            'total_minor_people_percentage': round(division(total_minor_people, total_people) * 100, 2),
             'total_verified_people': total_verified_people,
-            'total_verified_people_percentage': round((total_verified_people / total_people) * 100, 2),
+            'total_verified_people_percentage': round(division(total_verified_people, total_people) * 100, 2),
             'total_active_people': total_active_people,
-            'total_active_people_percentage': round((total_active_people / total_people) * 100, 2),
+            'total_active_people_percentage': round(division(total_active_people, total_people) * 100, 2),
             'total_ngos': total_ngos,
             'total_verified_ngos': total_verified_ngos,
-            'total_verified_ngos_percentage': round((total_verified_ngos / total_people) * 100, 2),
+            'total_verified_ngos_percentage': round(division(total_verified_ngos, total_people) * 100, 2),
             'total_active_ngos': total_active_ngos,
-            'total_active_ngos_percentage': round((total_active_ngos / total_people) * 100, 2),
+            'total_active_ngos_percentage': round(division(total_active_ngos, total_people) * 100, 2),
             'ngos_per_field': ngos_per_field,
             'total_staffs': total_staffs,
             'total_married_staff': total_married_staff,
-            'total_married_staff_percentage': round((total_married_staff / total_staffs) * 100, 2),
+            'total_married_staff_percentage': round(division(total_married_staff, total_staffs) * 100, 2),
             'total_male_staff': total_male_staff,
-            'total_male_staff_percentage': round((total_male_staff / total_staffs) * 100, 2),
+            'total_male_staff_percentage': round(division(total_male_staff, total_staffs) * 100, 2),
             'total_female_staff': total_female_staff,
-            'total_female_staff_percentage': round((total_female_staff / total_staffs) * 100, 2),
+            'total_female_staff_percentage': round(division(total_female_staff, total_staffs) * 100, 2),
             'total_lgbtq_staff': total_lgbtq_staff,
-            'total_lgbtq_staff_percentage': round((total_lgbtq_staff / total_staffs) * 100, 2),
+            'total_lgbtq_staff_percentage': round(division(total_lgbtq_staff, total_staffs) * 100, 2),
             'total_posts': total_posts,
             'total_normal_posts': total_normal_posts,
-            'total_normal_posts_percentage': round((total_normal_posts / total_posts) * 100, 2),
+            'total_normal_posts_percentage': round(division(total_normal_posts, total_posts) * 100, 2),
             'total_poll_posts': total_poll_posts,
-            'total_poll_posts_percentage': round((total_poll_posts / total_posts) * 100, 2),
+            'total_poll_posts_percentage': round(division(total_poll_posts, total_posts) * 100, 2),
             'total_request_posts': total_request_posts,
-            'total_request_posts_percentage': round((total_request_posts / total_posts) * 100, 2),
+            'total_request_posts_percentage': round(division(total_request_posts, total_posts) * 100, 2),
             'total_join_request_posts': total_join_request_posts,
-            'total_join_request_posts_percentage': round((total_join_request_posts / total_request_posts) * 100, 2),
+            'total_join_request_posts_percentage': round(division(total_join_request_posts, total_request_posts) * 100, 2),
             'total_petition_request_posts': total_petition_request_posts,
-            'total_petition_request_posts_percentage': round((total_petition_request_posts / total_request_posts) * 100,
+            'total_petition_request_posts_percentage': round(division(total_petition_request_posts, total_request_posts) * 100,
                                                              2),
             'total_removed_post': total_removed_post,
-            'total_removed_posts_percentage': round((total_removed_post / total_posts) * 100, 2),
+            'total_removed_posts_percentage': round(division(total_removed_post, total_posts) * 100, 2),
             'total_anonymous_post': total_anonymous_post,
-            'total_anonymous_posts_percentage': round((total_anonymous_post / total_posts) * 100, 2),
+            'total_anonymous_posts_percentage': round(division(total_anonymous_post, total_posts) * 100, 2),
             'total_post_normal_up_vote': total_post_normal_up_vote,
-            'avg_pn_up_vote_np': round(total_post_normal_up_vote / total_normal_posts),
+            'avg_pn_up_vote_np': round(division(total_post_normal_up_vote, total_normal_posts)),
             'total_post_normal_down_vote': total_post_normal_down_vote,
-            'avg_pn_down_vote_np': round(total_post_normal_down_vote / total_normal_posts),
+            'avg_pn_down_vote_np': round(division(total_post_normal_down_vote, total_normal_posts)),
             'total_reports': total_reports,
-            'avg_reports_posts': round(total_reports / total_posts),
+            'avg_reports_posts': round(division(total_reports, total_posts)),
             'total_post_poll_options': total_post_poll_options,
-            'avg_pp_options_pp': round(total_post_poll_options / total_poll_posts),
+            'avg_pp_options_pp': round(division(total_post_poll_options, total_poll_posts)),
             'total_post_poll_options_polled': total_post_poll_options_polled,
-            'avg_pp_options_polled_pp': round(total_post_poll_options_polled / total_post_poll_options),
+            'avg_pp_options_polled_pp': round(division(total_post_poll_options_polled, total_post_poll_options)),
             'total_post_request_petition_signed': total_post_request_petition_signed,
-            'avg_pr_petition_signed_rp': round(
-                total_post_request_petition_signed / total_petition_request_posts),
+            'avg_pr_petition_signed_rp': round(division(
+                total_post_request_petition_signed, total_petition_request_posts)),
             'total_post_request_join_signed': total_post_request_join_signed,
             'avg_pr_join_signed_rp': round(
-                total_post_request_join_signed / total_join_request_posts),
+                division(total_post_request_join_signed, total_join_request_posts)),
         }
         print(context['home'])
         return context
@@ -209,7 +215,7 @@ class read_staff(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.get('object').reviewed_posts = self.get_object().report_review.filter(review=True).count()
+        context.get('object').reviewed_posts = self.get_object().report_review.filter(is_reviewed=True).count()
         return context
 
 
@@ -346,7 +352,7 @@ class read_reports(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context['post_reviewed'] = Report.objects.filter(review=True).count()
+        context['post_reviewed'] = Report.objects.filter(is_reviewed=True).count()
         return context
 
 

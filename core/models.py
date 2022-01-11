@@ -113,7 +113,7 @@ class Report(models.Model):
 
 
 class Staff(UserCommons):
-    verified = False
+    is_verified = None
     is_married = models.BooleanField()
     report_review = models.ManyToManyField(Report, blank=True)
 
@@ -151,7 +151,6 @@ class NGOUser(UserCommons):
         null=True,
         verbose_name="PAN Certificate"
     )
-    is_verified = models.BooleanField(blank=True, default=False)
     posted_post = models.ManyToManyField(Post, blank=True, related_name='ngo_posted_post_rn')
     poked_on = models.ManyToManyField(Post, blank=True, related_name='poked_on_rn')
 

@@ -1,7 +1,10 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}View Users{% endblock %}
-{% block linkscript %}{% endblock %}
+{% block linkscript %}
+    <link rel="stylesheet" type="text/css" href="{% static 'core/css/table.css' %}">
+{% endblock %}
 
 {% block body %}
 
@@ -30,49 +33,43 @@
                 </div>
             </div>
         </div>
-        <div class="table-responsive-xl" >
-            <table class="table table-hover table-sm">
+        <div class="table-responsive">
+            <table>
                 <thead>
-                    <tr>
-                      <th scope="col">DP</th>
-                      <th scope="col">Full Name</th>
-                      <th scope="col">Est. Date</th>
-                      <th scope="col">Phone</th>
-                      <th scope="col">Email</th>
-                      <th scope="col">Address</th>
-                      <th scope="col">Date Joined</th>
-                      <th scope="col">Active</th>
-                      <th scope="col">Last Login</th>
-                      <th scope="col">Verified</th>
-                      <th class="text-center" scope="col">Action</th>
-                    </tr>
+                <tr>
+                    <th scope="col">DP</th>
+                    <th scope="col">NGO Name</th>
+                    <th scope="col">Date Joined</th>
+                    <th scope="col">Active</th>
+                    <th scope="col">Last Login</th>
+                    <th scope="col">Verified</th>
+                    <th scope="col" style="width: 25%">Action</th>
+                </tr>
                 </thead>
                 <tbody>
                 {% for ngo in object_list %}
-                <tr>
-                  <td><img src="{{ ngo.display_picture.url }}" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="{{ ngo.display_picture.name }}"></td>
-                  <td>{{ ngo.full_name }}</td>
-                  <td>{{ ngo.establishment_date|date }}</td>
-                  <td>{{ ngo.phone }}</td>
-                  <td>{{ ngo.account.email }}</td>
-                  <td>{{ ngo.address }}</td>
-                  <td>{{ ngo.account.date_joined|date }}</td>
-                  <td>{{ ngo.account.is_active }}</td>
-                  <td>{{ ngo.account.last_login }}</td>
-                    <td>{{ ngo.is_verified }}</td>
-                  <td class="d-flex">
-                      <a href="{% url 'read-ngo' ngo.id%}" class="px-1">
-                          <button type="submit" class="btn btn-primary"><i class="bi bi-eye-fill"></i> View</button>
-                      </a>
-                        <a href="{% url 'update-ngo' ngo.id%}" class="px-1">
-                            <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Update</button>
-                        </a>
-                      <form action="{% url 'delete-ngo' ngo.id %}" method="post" class="px-1">
-                          {% csrf_token %}
-                          <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"><i class="bi bi-x-circle-fill"></i> Delete</button>
-                      </form>
-                  </td>
-                </tr>
+                    <tr>
+                        <td data-label="Display Picture"><img src="{{ ngo.display_picture.url }}" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="{{ ngo.display_picture.name }}"></td>
+                        <td data-label="NGO Name">{{ ngo.full_name }}</td>
+                        <td data-label="Date Joined">{{ ngo.account.date_joined|date }}</td>
+                        <td data-label="Active">{{ ngo.account.is_active }}</td>
+                        <td data-label="Last Login">{{ ngo.account.last_login }}</td>
+                        <td data-label="Verified">{{ ngo.is_verified }}</td>
+                        <td data-label="Action">
+                            <div class="d-inline-flex">
+                                <a href="{% url 'read-ngo' ngo.id%}" class="px-1">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-eye-fill"></i> View</button>
+                                </a>
+                                <a href="{% url 'update-ngo' ngo.id%}" class="px-1">
+                                    <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Update</button>
+                                </a>
+                                <form action="{% url 'delete-ngo' ngo.id %}" method="post" class="px-1">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"><i class="bi bi-x-circle-fill"></i> Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
                 {% endfor %}
                 </tbody>
             </table>

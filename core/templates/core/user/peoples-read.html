@@ -1,7 +1,10 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}View Users{% endblock %}
-{% block linkscript %}{% endblock %}
+{% block linkscript %}
+    <link rel="stylesheet" type="text/css" href="{% static 'core/css/table.css' %}">
+{% endblock %}
 
 {% block body %}
 
@@ -30,54 +33,52 @@
                 </div>
             </div>
         </div>
-    <div class="table-responsive-xl">
-        <table class="table table-hover table-sm">
-            <thead>
+        <div class="table-responsive">
+            <table>
+                <thead>
                 <tr>
-                  <th scope="col">DP</th>
-                  <th scope="col">Full Name</th>
-                  <th scope="col">Gender</th>
-                  <th scope="col">DOB</th>
-                  <th scope="col">Phone</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Address</th>
-                  <th scope="col">Date Joined</th>
-                  <th scope="col">Active</th>
-                  <th scope="col">Last Login</th>
-                  <th scope="col">Verified</th>
-                  <th class="text-center" scope="col">Action</th>
+                    <th scope="col">DP</th>
+                    <th scope="col">User Name</th>
+                    <th scope="col">Date Joined</th>
+                    <th scope="col">Active</th>
+                    <th scope="col">Last Login</th>
+                    <th scope="col">Verified</th>
+                    <th scope="col" style="width: 25%">Action</th>
                 </tr>
-            </thead>
-            <tbody>
-            {% for people in object_list %}
-            <tr>
-              <td><img src="{{ people.display_picture.url }}" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="{{ people.display_picture.name }}"></td>
-              <td>{{ people.full_name }}</td>
-              <td>{{ people.gender }}</td>
-              <td>{{ people.date_of_birth|date }}</td>
-              <td>{{ people.phone }}</td>
-              <td>{{ people.account.email }}</td>
-              <td>{{ people.address }}</td>
-              <td>{{ people.account.date_joined|date }}</td>
-              <td>{{ people.account.is_active }}</td>
-              <td>{{ people.account.last_login }}</td>
-              <td>{{ people.verified }}</td>
-              <td class="d-flex">
-                    <a href="{% url 'read-people' people.id%}" class="px-1">
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-eye-fill"></i> View</button>
-                    </a>
-                    <a href="{% url 'update-people' people.id%}" class="px-1">
-                        <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Update</button>
-                    </a>
-                    <form action="{% url 'delete-people' people.id %}" method="post" class="mx-1">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"><i class="bi bi-x-circle-fill"></i> Delete</button>
-                    </form>
-              </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                {% for people in object_list %}
+                    <tr>
+                        <td data-label="Display Picture"><img src="{{ people.display_picture.url }}" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="{{ people.display_picture.name }}"></td>
+                        <td data-label="User Name">{{ people.account.username }}</td>
+                        <td data-label="Date Joined">{{ people.account.date_joined|date }}</td>
+                        <td data-label="Active">{{ people.account.is_active }}</td>
+                        <td data-label="Last Login">{{ people.account.last_login }}</td>
+                        <td data-label="Verified">{{ people.is_verified }}</td>
+                        <td data-label="Action">
+                            <div class="d-inline-flex">
+                                <div>
+                                    <a href="{% url 'read-people' people.id %}">
+                                        <button type="submit" class="btn btn-primary"><i class="bi bi-eye-fill"></i> View</button>
+                                    </a>
+                                </div>
+                                <div class="mx-2">
+                                    <a href="{% url 'update-people' people.id %}">
+                                        <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Update</button>
+                                    </a>
+                                </div>
+                                <div>
+                                    <form action="{% url 'delete-people' people.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"><i class="bi bi-x-circle-fill"></i> Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}

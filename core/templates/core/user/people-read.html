@@ -9,13 +9,17 @@
         <H1 class="text-center">View People</H1>
     </div>
     <div class="d-flex justify-content-center">
-        <div class="bg-gradient-primary">
+        <div style="min-width: 50%; max-width: 90%">
             <table class="table table-hover" style="max-width: 700px">
                 <style>
                     td {
                         text-align: right;
                     }
                 </style>
+                <tr style="border-top: hidden">
+                    <th>User Name</th>
+                    <td>{{ object.account.username }}</td>
+                </tr>
                 <tr style="border-top: hidden">
                     <th>Full Name</th>
                     <td>{{ object.full_name }}</td>
@@ -46,19 +50,19 @@
                 </tr>
                 <tr>
                     <th>Verified</th>
-                    <td>{{ object.verified }}</td>
+                    <td>{{ object.is_verified }}</td>
                 </tr>
-            {% if object.display_picture %}
-                <tr>
-                    <td colspan="2" class="text-center">Display Picture</td>
-                </tr>
-                <tr>
-                <td colspan="2" class="text-center">
-                    <a href="{{ object.display_picture.url }}">
-                        <img src="{{ object.display_picture.url }}" class="img-fluid" style="border-radius: 20px" alt="{{ object.display_picture.name }}"/>
-                    </a>
-                </td>
-                </tr>
+                {% if object.display_picture %}
+                    <tr>
+                        <td colspan="2" class="text-center">Display Picture</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="text-center">
+                            <a href="{{ object.display_picture.url }}">
+                                <img src="{{ object.display_picture.url }}" class="img-fluid" style="border-radius: 20px" alt="{{ object.display_picture.name }}"/>
+                            </a>
+                        </td>
+                    </tr>
                 {% endif %}
                 {% if object.citizenship_photo %}
                     <tr>

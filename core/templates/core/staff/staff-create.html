@@ -9,14 +9,14 @@
         <H1 class="text-center">Create Staff</H1>
     </div>
     <div class="d-flex justify-content-center">
-        <div class="bg-gradient-primary w-50">
-           <form method="post" class="form" enctype="multipart/form-data">
+        <div style="min-width: 50%; max-width: 90%">
+            <form method="post" class="form" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% bootstrap_form form1 %}
                 {% bootstrap_form form2 %}
                 {% buttons %}
                     <div>
-                     <button type="submit" class="btn btn-primary" style="width: 100%">Register</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%">Register</button>
                     </div>
                 {% endbuttons %}
             </form>
