@@ -13,7 +13,7 @@
         <div class="row">
             <section class="col-sm-7 px-4">
                 <div>
-                    <h1 class="d-block my-3 w-100">Review Post</h1>
+                    <h1 class="d-block mt-2 mb-4 w-100">Review Post</h1>
                     <div class="my-2"><i class="bi bi-person-lines-fill"></i> Posted by: {% if object.people_posted_post_rn.count != 0 %}
                             {{ object.people_posted_post_rn.first.account.username  }}
                         {% else %}
@@ -28,23 +28,23 @@
                     </div>
                 </div>
 {#                Actual Post---------------#}
-                <div class="card my-2" style="background-color: white; padding: 2vh; border-radius: 1.5vh">
+                <div class="card mt-4" style="background-color: white; padding: 2vh; border-radius: 1.5vh">
 {#                    Post related to----------------#}
                     <div class="mb-2">
-                        <div class="fw-bold" style="display: block;"> Post related to:</div>
+                        <div class="fw-bold mb-2" style="display: block;"> Post related to:</div>
                         {% for field in object.related_to %}
                             <div class="pills">{{ field }}</div>
                         {% endfor %}
                     </div>
 {#                    post description-------------#}
                     <div class="my-2" style="text-align: justify">
-                        <div class="fw-bold" style="display: block;"> Post Description:</div>
+                        <div class="fw-bold mb-2" style="display: block;"> Post Description:</div>
                         {{ object.post_content }}
                     </div>
 {#                post type body -----------------------#}
                     <div class="my-2">
                         {% if object.post_type == 'Normal' %}
-                            <div class="fw-bold" style="display: block;"> Post attached Photo:</div>
+                            <div class="fw-bold mb-2" style="display: block;"> Post attached Photo:</div>
                             <a href="{{ object.postnormal.post_image.url }}">
                                 <img class="img-fluid w-100" src="{{ object.postnormal.post_image.url }}" loading="lazy" style="border-radius: 2vh;" alt="First slide">
                             </a>
@@ -72,8 +72,8 @@
                         {% endif %}
                     </div>
 {#                    poked NGOs----------------------#}
-                    <div class="mt-2">
-                        <div class="fw-bold" style="display: block"> Poked to NGOs:</div>
+                    <div>
+                        <div class="fw-bold mb-2" style="display: block"> Poked to NGOs:</div>
                         {% for poke in post.poked_on_rn.all %}
                             <a class="btn btn-success" href="{% url 'read-ngo' poke.id %}">{{ poke }}</a>
                         {% endfor %}

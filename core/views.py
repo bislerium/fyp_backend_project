@@ -13,6 +13,10 @@ from .decorators import allowed_groups
 from .forms import *
 
 
+def division(x, y):
+    return x / y if y else 0
+
+
 def forbidden_page(request, exception):
     return render(request, 'core/extensions/403-page.html')
 
@@ -45,10 +49,6 @@ class admin_home(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        def division(x, y):
-            return x / y if y else 0
-
         today_date: date = date.today()
 
         total_people = PeopleUser.objects.count()
@@ -75,9 +75,7 @@ class admin_home(TemplateView):
         total_lgbtq_staff = Staff.objects.filter(gender='LGBTQ+').count()
 
         total_posts = Post.objects.all().count()
-        print(total_posts)
         total_normal_posts = PostNormal.objects.count()
-        print(total_normal_posts)
         total_poll_posts = PostPoll.objects.count()
         total_request_posts = PostRequest.objects.count()
         total_join_request_posts = PostRequest.objects.filter(request_type='Join').count()
@@ -87,6 +85,7 @@ class admin_home(TemplateView):
         total_post_normal_up_vote = 0
         total_post_normal_down_vote = 0
         total_reports = 0
+        total_reported_posts = 0
         total_post_poll_options = PollOption.objects.count()
         total_post_poll_options_polled = 0
         total_post_request_petition_signed = 0
@@ -94,13 +93,22 @@ class admin_home(TemplateView):
         for normal_post in PostNormal.objects.all():
             total_post_normal_up_vote += normal_post.up_vote.count()
             total_post_normal_down_vote += normal_post.down_vote.count()
-            total_reports += normal_post.reported_by.count()
+            report_count = normal_post.reported_by.count()
+            total_reports += report_count
+            if report_count != 0:
+                total_reported_posts += 1
         for poll_post in PostPoll.objects.all():
-            total_reports += poll_post.reported_by.count()
+            report_count = poll_post.reported_by.count()
+            total_reports += report_count
+            if report_count != 0:
+                total_reported_posts += 1
         for poll_option in PollOption.objects.all():
             total_post_poll_options_polled += poll_option.reacted_by.count()
         for request_post in PostRequest.objects.all():
-            total_reports += request_post.reported_by.count()
+            report_count = request_post.reported_by.count()
+            total_reports += report_count
+            if report_count != 0:
+                total_reported_posts += 1
             if request_post.request_type == 'Petition':
                 total_post_request_petition_signed += request_post.reacted_by.count()
             if request_post.request_type == 'Join':
@@ -121,9 +129,9 @@ class admin_home(TemplateView):
             'total_active_people_percentage': round(division(total_active_people, total_people) * 100, 2),
             'total_ngos': total_ngos,
             'total_verified_ngos': total_verified_ngos,
-            'total_verified_ngos_percentage': round(division(total_verified_ngos, total_people) * 100, 2),
+            'total_verified_ngos_percentage': round(division(total_verified_ngos, total_ngos) * 100, 2),
             'total_active_ngos': total_active_ngos,
-            'total_active_ngos_percentage': round(division(total_active_ngos, total_people) * 100, 2),
+            'total_active_ngos_percentage': round(division(total_active_ngos, total_ngos) * 100, 2),
             'ngos_per_field': ngos_per_field,
             'total_staffs': total_staffs,
             'total_married_staff': total_married_staff,
@@ -142,10 +150,12 @@ class admin_home(TemplateView):
             'total_request_posts': total_request_posts,
             'total_request_posts_percentage': round(division(total_request_posts, total_posts) * 100, 2),
             'total_join_request_posts': total_join_request_posts,
-            'total_join_request_posts_percentage': round(division(total_join_request_posts, total_request_posts) * 100, 2),
+            'total_join_request_posts_percentage': round(division(total_join_request_posts, total_request_posts) * 100,
+                                                         2),
             'total_petition_request_posts': total_petition_request_posts,
-            'total_petition_request_posts_percentage': round(division(total_petition_request_posts, total_request_posts) * 100,
-                                                             2),
+            'total_petition_request_posts_percentage': round(
+                division(total_petition_request_posts, total_request_posts) * 100,
+                2),
             'total_removed_post': total_removed_post,
             'total_removed_posts_percentage': round(division(total_removed_post, total_posts) * 100, 2),
             'total_anonymous_post': total_anonymous_post,
@@ -155,6 +165,8 @@ class admin_home(TemplateView):
             'total_post_normal_down_vote': total_post_normal_down_vote,
             'avg_pn_down_vote_np': round(division(total_post_normal_down_vote, total_normal_posts)),
             'total_reports': total_reports,
+            'total_reported_posts': total_reported_posts,
+            'total_reports_percentage': round(division(total_reported_posts, total_posts)*100, 2),
             'avg_reports_posts': round(division(total_reports, total_posts)),
             'total_post_poll_options': total_post_poll_options,
             'avg_pp_options_pp': round(division(total_post_poll_options, total_poll_posts)),
@@ -319,7 +331,7 @@ class read_report(DetailView):
                 total_reaction += option.reacted_by.count()
             for option in post.postpoll.option.all():
                 reaction = option.reacted_by.count()
-                percentage = (reaction / total_reaction) * 100
+                percentage = division(reaction, total_reaction) * 100
                 cont.append((option.option, reaction, round(percentage)))
             context['object'].poll_data = cont
             context['object'].poll_reactions = total_reaction
@@ -332,15 +344,15 @@ class read_report(DetailView):
                           'target': target,
                           'sign': sign,
                           'target_percentage': 100,
-                          'min_percentage': round((100 / target) * min_, 2),
-                          'sign_percentage': round((100 / target) * sign, 2),
+                          'min_percentage': round((division(100, target)) * min_, 2),
+                          'sign_percentage': round(division(100, target) * sign, 2),
                           }
             if max_ is not None:
                 cont['max_'] = max_
                 cont['max_percentage'] = 100
-                cont['target_percentage'] = round((100 / max_) * target, 2)
-                cont['min_percentage'] = round((100 / max_) * min_, 2)
-                cont['sign_percentage'] = round((100 / max_) * sign, 2)
+                cont['target_percentage'] = round(division(100, max_) * target, 2)
+                cont['min_percentage'] = round(division(100, max_) * min_, 2)
+                cont['sign_percentage'] = round(division(100, max_) * sign, 2)
             context['object'].request_data = cont
         context['object'].report_form = report_form
         return context
