@@ -11,7 +11,7 @@
     {% include 'core/extensions/navbar.html' with report='active' %}
     <div class="container-fluid px-4 my-2">
         <div class="row">
-            <section class="col-sm-7">
+            <section id="post-section" class="col-sm-7">
                 <div>
                     <div class="my-2"><i class="bi bi-person-lines-fill"></i> Posted by: {% if object.people_posted_post_rn.count != 0 %}
                         {{ object.people_posted_post_rn.first.account.username  }}
@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 {#                Actual Post---------------#}
-                <div class="container mt-4" style="background-color: white; padding: 2vh; border-radius: 1.5vh">
+                <div class="mt-4" style="background-color: white; padding: 2vh; border-radius: 1.5vh">
                     {#                    Post related to----------------#}
                     <div class="mb-4">
                         <div class="fw-bold mb-2" style="display: block;"> Post related to:</div>
@@ -83,7 +83,7 @@
             </section>
             <section id="report-post" class="col-sm-5">
                 <div class="mb-4">
-                    <H3>Let's Review!</H3>
+                    <H4>Let's Review!</H4>
                     <ul class="list-group mt-3" style="border-radius: 1.5vh">
                         {% if post.post_type == 'Normal' %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">Up-Votes
@@ -112,7 +112,11 @@
                     <form action="{% url 'review-report' object.report.id %}" method="post">
                         {% csrf_token %}
                         {% bootstrap_form object.report_form %}
-                        <button type="submit" class="btn btn-primary w-100">Take Action</button>
+                        {% if user.is_superuser %}
+                            <button type="submit" formaction="{% url 'read-staff' object.report_form.instance.report_reviewed_by.first.id %}" formmethod="get" class="btn btn-secondary w-100">Reviewed by: {{ object.report_form.instance.report_reviewed_by.first.full_name }}</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-primary w-100">Take Action</button>
+                        {% endif %}
                     </form>
                 </div>
             </section>

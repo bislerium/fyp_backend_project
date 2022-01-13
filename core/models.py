@@ -106,7 +106,7 @@ class Report(models.Model):
     ACTION = [
         ('Post Remove', 'Post Remove'),
         ('Account Ban', 'Account Ban'),
-        ('Account Delete', 'Account Delete'),
+        ('Ignore', 'Ignore'),
     ]
     action = models.CharField(max_length=20, choices=ACTION, blank=True)
     is_reviewed = models.BooleanField(blank=True, default=False)
@@ -115,7 +115,7 @@ class Report(models.Model):
 class Staff(UserCommons):
     is_verified = None
     is_married = models.BooleanField()
-    report_review = models.ManyToManyField(Report, blank=True)
+    report_review = models.ManyToManyField(Report, blank=True, related_name='report_reviewed_by')
 
     def __str__(self):
         return f'a{self.pk}-{self.account.username}'
