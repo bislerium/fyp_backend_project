@@ -4,21 +4,20 @@
 
 {% block title %}Review Report Post{% endblock %}
 {% block linkscript %}
-    <link rel="stylesheet" type="text/css" href="{% static 'core/css/staff-reported-post-review.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'core/css/reported-posts.css' %}">
 {% endblock %}
 
 {% block body %}
-    {% include 'core/extensions/navbar.html' with home='active' %}
-    <div class="container-fluid my-2">
+    {% include 'core/extensions/navbar.html' with report='active' %}
+    <div class="container-fluid px-4 my-2">
         <div class="row">
-            <section class="col-sm-7 px-4">
+            <section class="col-sm-7">
                 <div>
-                    <h1 class="d-block mt-2 mb-4 w-100">Review Post</h1>
                     <div class="my-2"><i class="bi bi-person-lines-fill"></i> Posted by: {% if object.people_posted_post_rn.count != 0 %}
-                            {{ object.people_posted_post_rn.first.account.username  }}
-                        {% else %}
-                            {{ object.ngo_posted_post_rn.first.account.username }}
-                        {% endif%} </div>
+                        {{ object.people_posted_post_rn.first.account.username  }}
+                    {% else %}
+                        {{ object.ngo_posted_post_rn.first.account.username }}
+                    {% endif%} </div>
                     <div class="my-2"><i class="bi bi-calendar2-week-fill"></i> Date Posted: {{ object.created_on.astimezone }}</div>
                     <div class="my-2"><i class="bi bi-signpost-2-fill"></i> Post Type:
                         <span class="badge bg-primary">{{ object.post_type }}</span>
@@ -27,22 +26,22 @@
                         {% endif %}
                     </div>
                 </div>
-{#                Actual Post---------------#}
-                <div class="card mt-4" style="background-color: white; padding: 2vh; border-radius: 1.5vh">
-{#                    Post related to----------------#}
-                    <div class="mb-2">
+                {#                Actual Post---------------#}
+                <div class="container mt-4" style="background-color: white; padding: 2vh; border-radius: 1.5vh">
+                    {#                    Post related to----------------#}
+                    <div class="mb-4">
                         <div class="fw-bold mb-2" style="display: block;"> Post related to:</div>
                         {% for field in object.related_to %}
                             <div class="pills">{{ field }}</div>
                         {% endfor %}
                     </div>
-{#                    post description-------------#}
-                    <div class="my-2" style="text-align: justify">
+                    {#                    post description-------------#}
+                    <div class="my-4" style="text-align: justify">
                         <div class="fw-bold mb-2" style="display: block;"> Post Description:</div>
                         {{ object.post_content }}
                     </div>
-{#                post type body -----------------------#}
-                    <div class="my-2">
+                    {#                post type body -----------------------#}
+                    <div class="my-4">
                         {% if object.post_type == 'Normal' %}
                             <div class="fw-bold mb-2" style="display: block;"> Post attached Photo:</div>
                             <a href="{{ object.postnormal.post_image.url }}">
@@ -71,18 +70,21 @@
                             </div>
                         {% endif %}
                     </div>
-{#                    poked NGOs----------------------#}
-                    <div>
+                    {#                    poked NGOs----------------------#}
+                    <div class="mt-4">
                         <div class="fw-bold mb-2" style="display: block"> Poked to NGOs:</div>
-                        {% for poke in post.poked_on_rn.all %}
-                            <a class="btn btn-success" href="{% url 'read-ngo' poke.id %}">{{ poke }}</a>
-                        {% endfor %}
+                        <div>
+                            {% for poke in post.poked_on_rn.all %}
+                                <a class="btn btn-success" href="{% url 'read-ngo' poke.id %}">{{ poke }}</a>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </section>
             <section id="report-post" class="col-sm-5">
                 <div class="mb-4">
-                <ul class="list-group mt-3" style="border-radius: 1.5vh">
+                    <H3>Let's Review!</H3>
+                    <ul class="list-group mt-3" style="border-radius: 1.5vh">
                         {% if post.post_type == 'Normal' %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">Up-Votes
                                 <span class="badge bg-primary">{{ object.postnormal.up_vote.count }}</span>
@@ -97,7 +99,7 @@
                         {% if post.post_type == 'Request' %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">Reports
                                 <span class="badge bg-danger">{{ object.postrequest.reported_by.count }}</span>
-                        </li>
+                            </li>
                         {% endif %}
                         {% if post.post_type == 'Poll' %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">Reports

@@ -30,7 +30,7 @@ urlpatterns = [
                   path('web/home/', home_page, name='home'),
 
                   path('web/admin/home', admin_home.as_view(), name='admin-home'),
-                  path('web/staff/', staff_index, name='staff-home'),
+                  path('web/staff/', staff_home, name='staff-home'),
                   path('web/403/<exception>', forbidden_page, name='forbid'),
                   path('web/404/<exception>', page_not_found, name='no_page'),
                   path('web/400/<exception>', bad_request, name='no_page'),

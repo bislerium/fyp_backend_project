@@ -3,21 +3,20 @@
 
 {% block title %}Review Report Post{% endblock %}
 {% block linkscript %}
-    <link rel="stylesheet" type="text/css" href="{% static 'core/css/staff-home-reported-post.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'core/css/reported-posts.css' %}">
 {% endblock %}
 
 {% block body %}
-    {% include 'core/extensions/navbar.html' with home='active' %}
+    {% include 'core/extensions/navbar.html' with report='active' %}
     <div class="album">
         <div class="container-fluid px-4">
-            <H1 class="my-3">Reported Posts</H1>
             <div class="row my-2">
-                <div class="col my-1">Total Report Posts: <span class="fw-bold">{{ object_list.count }}</span></div>
+                <div class="col my-1">Total Reported Posts: <span class="fw-bold">{{ total_reports }}</span></div>
                 <div class="col my-2" style="text-align: right">Total Reviewed Posts: <span class="fw-bold">{{ post_reviewed }}</span></div>
             </div>
             <div class="row">
             {% for post in object_list %}
-                <div class="col-sm mb-3 d-flex align-items-stretch">
+                <div class="col-sm mb-3 d-flex">
                     <div class="card w-100" style="border-radius: 2vh">
                         <a href="{% url 'read-report' post.id %}" class="text-decoration-none h-100">
                             <div class="card-body d-flex flex-column justify-content-between h-100">

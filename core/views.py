@@ -18,14 +18,17 @@ def division(x, y):
 
 
 def forbidden_page(request, exception):
+    print(exception)
     return render(request, 'core/extensions/403-page.html')
 
 
 def page_not_found(request, exception):
+    print(exception)
     return render(request, 'core/extensions/404-page.html')
 
 
 def bad_request(request, exception):
+    print(exception)
     return render(request, 'core/extensions/400-page.html')
 
 
@@ -36,7 +39,7 @@ def home_page(request):
         return redirect('admin-home')
     if user_.groups.filter(name='Staff').exists():
         print('wow')
-        return redirect('read-reports')
+        return redirect('staff-home')
     if user_.groups.filter(name__in=['People', 'NGO']).exists():
         print('Hello')
         raise PermissionDenied(f'{user_} is not identified, falls under {user_.groups.first()}!')
@@ -185,8 +188,8 @@ class admin_home(TemplateView):
 
 # Staff Crud
 
-def staff_index(request):
-    return render(request, 'core/staff/staff-reported-post-review.html')
+def staff_home(request):
+    return render(request, 'core/staff/staff-home.html')
 
 
 @login_required(login_url=reverse_lazy('login'))
@@ -318,7 +321,7 @@ class delete_ngo(DeleteView):
 
 class read_report(DetailView):
     model = Post
-    template_name = 'core/staff/staff-reported-post-review.html'
+    template_name = 'core/report/report-review-read.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -347,6 +350,7 @@ class read_report(DetailView):
                           'min_percentage': round((division(100, target)) * min_, 2),
                           'sign_percentage': round(division(100, target) * sign, 2),
                           }
+            print(cont)
             if max_ is not None:
                 cont['max_'] = max_
                 cont['max_percentage'] = 100
@@ -360,11 +364,22 @@ class read_report(DetailView):
 
 class read_reports(ListView):
     model = Post
-    template_name = 'core/staff/staff-home-reported-post.html'
+    template_name = 'core/report/reports-read.html'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context['post_reviewed'] = Report.objects.filter(is_reviewed=True).count()
+        if self.request.user.is_superuser:
+            reviewed_reports = Report.objects.filter(is_reviewed=True)
+            context['object_list'] = [report.post for report in reviewed_reports]
+            context['post_reviewed'] = reviewed_reports.count()
+            context['total_reports'] = Report.objects.count()
+        else:
+            staff: Staff = Staff.objects.get(account=self.request.user)
+            reviewed_reports = staff.report_review.filter(is_reviewed=False)
+            total_reports = staff.report_review.count()
+            context['object_list'] = [report.post for report in reviewed_reports]
+            context['post_reviewed'] = total_reports - reviewed_reports.count()
+            context['total_reports'] = total_reports
         return context
 
 
