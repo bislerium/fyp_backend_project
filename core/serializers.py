@@ -15,14 +15,14 @@ class NGOListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NGOUser
-        fields = ['url', 'address', 'display_picture', 'full_name', 'establishment_date', 'field_of_work', 'verified']
+        fields = ['url', 'address', 'display_picture', 'full_name', 'establishment_date', 'field_of_work', 'is_verified']
 
 
 class NGOSerializer(serializers.ModelSerializer):
     class Meta:
         model = NGOUser
         fields = ['id', 'account', 'phone', 'address', 'display_picture', 'full_name', 'establishment_date',
-                  'field_of_work', 'epay_account', 'bank', 'swc_affl_cert', 'pan_cert', 'verified']
+                  'field_of_work', 'epay_account', 'bank', 'swc_affl_cert', 'pan_cert', 'is_verified']
 
 
 class NormalPostSerializer(serializers.ModelSerializer):
@@ -76,7 +76,7 @@ class PostListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['url', 'related_to', 'text_body', 'anonymous', 'is_ngo_poked', 'post_type', 'created_on']
+        fields = ['url', 'related_to', 'post_content', 'is_anonymous', 'is_ngo_poked', 'post_type', 'created_on']
 
     def to_representation(self, instance: Post):
         data = super().to_representation(instance)
@@ -93,7 +93,7 @@ class PostListSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'related_to', 'text_body', 'created_on', 'modified_on', 'anonymous', 'post_type']
+        fields = ['id', 'related_to', 'post_content', 'created_on', 'modified_on', 'is_anonymous', 'post_type']
 
     def to_representation(self, instance: Post):
         data = super().to_representation(instance)

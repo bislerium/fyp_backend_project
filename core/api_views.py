@@ -33,6 +33,9 @@ class PostList(ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
 
+    def get_queryset(self):
+        return super().get_queryset().filter(is_removed=False)
+
 
 class PostDetail(RetrieveAPIView):
     queryset = Post.objects.all()
