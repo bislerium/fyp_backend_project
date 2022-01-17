@@ -40,3 +40,5 @@ class PostList(ListAPIView):
 class PostDetail(RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+

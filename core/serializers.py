@@ -15,27 +15,39 @@ class NGOListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NGOUser
-        fields = ['url', 'address', 'display_picture', 'full_name', 'establishment_date', 'field_of_work', 'is_verified']
+        fields = ['url', 'address', 'display_picture', 'full_name', 'establishment_date', 'field_of_work',
+                  'is_verified']
 
 
 class NGOSerializer(serializers.ModelSerializer):
+    poked_on = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='api-post-detail'
+    )
+
     class Meta:
         model = NGOUser
-        fields = ['id', 'account', 'phone', 'address', 'display_picture', 'full_name', 'establishment_date',
-                  'field_of_work', 'epay_account', 'bank', 'swc_affl_cert', 'pan_cert', 'is_verified']
+        fields = '__all__'
+
+    def to_representation(self, instance: NGOUser):
+        data = super().to_representation(instance)
+        if instance.bank is not None:
+            data['bank'] = BankSerializer(instance.bank).data
+        return data
 
 
 class NormalPostSerializer(serializers.ModelSerializer):
-    # up_vote = serializers.HyperlinkedRelatedField(view_name='api-people-detail', many=True, read_only=True)
+    up_vote = serializers.HyperlinkedRelatedField(view_name='api-people-detail', many=True, read_only=True)
     post_image = serializers.SerializerMethodField()
 
     class Meta:
         model = PostNormal
-        fields = '__all__'
+        exclude = ('reported_by',)
 
     def get_post_image(self, instance):
         request = self.context.get('request')
-        print('-----',self,'-----------')
+        print('-----', self, '-----------')
         img = instance.post_image
         if img and hasattr(img, 'url'):
             photo_url = img.url
@@ -46,28 +58,39 @@ class NormalPostSerializer(serializers.ModelSerializer):
 
 
 class PollOptionSerializer(serializers.ModelSerializer):
+    reacted_by = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='api-people-detail'
+    )
+
     class Meta:
         model = PollOption
         fields = '__all__'
 
 
 class PollPostSerializer(serializers.ModelSerializer):
-    options = serializers.SerializerMethodField()
-
     class Meta:
         model = PostPoll
-        fields = ['id', 'options', 'ends_on', 'reported_by']
+        exclude = ('reported_by', 'post',)
 
-    # noinspection PyMethodMayBeStatic
-    def get_options(self, instance: PostPoll):
-        options_ = instance.option.all()
-        return PollOptionSerializer(options_, many=True).data
+    def to_representation(self, instance: PostPoll):
+        data = super().to_representation(instance)
+        data['option'] = PollOptionSerializer(instance.option, many=True,
+                                              context={'request': self.context.get('request')}).data
+        return data
 
 
 class RequestPostSerializer(serializers.ModelSerializer):
+    reacted_by = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='api-people-detail'
+    )
+
     class Meta:
         model = PostRequest
-        fields = '__all__'
+        exclude = ('reported_by',)
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -98,15 +121,24 @@ class PostSerializer(serializers.ModelSerializer):
     def to_representation(self, instance: Post):
         data = super().to_representation(instance)
         if instance.post_type == 'Normal':
-            data['post_normal'] = NormalPostSerializer(instance.postnormal).data
+            data['post_normal'] = NormalPostSerializer(instance.postnormal,
+                                                       context={'request': self.context.get('request')}).data
         if instance.post_type == 'Poll':
-            data['post_poll'] = PollPostSerializer(instance.postpoll).data
+            data['post_poll'] = PollPostSerializer(instance.postpoll,
+                                                   context={'request': self.context.get('request')}).data
         if instance.post_type == 'Request':
-            data['post_request'] = RequestPostSerializer(instance.postrequest).data
+            data['post_request'] = RequestPostSerializer(instance.postrequest,
+                                                         context={'request': self.context.get('request')}).data
         return data
 
 
 class PeopleSerializer(serializers.ModelSerializer):
+    posted_post = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='api-post-detail'
+    )
+
     class Meta:
         model = PeopleUser
         fields = '__all__'

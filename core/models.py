@@ -45,6 +45,19 @@ FIELD_OF_WORK = [
 ]
 
 
+# Supports Decimal Degrees (DD) Coordinate format (i.e, Lat & long)
+class GeoLocation(models.Model):
+    latitude = models.DecimalField(max_digits=22, decimal_places=16)
+    longitude = models.DecimalField(max_digits=22, decimal_places=16)
+
+    @property
+    def get_gmap_location_url(self):
+        return f'https://maps.google.com/?q={self.latitude},{self.longitude}'
+
+    class Meta:
+        abstract = True
+
+
 class Bank(models.Model):
     bank_name = models.CharField(max_length=100)
     bank_branch = models.CharField(max_length=100)
@@ -90,6 +103,7 @@ class Post(models.Model):
     post_content = models.TextField(max_length=500)
     created_on = models.DateTimeField(auto_now=True)
     modified_on = models.DateTimeField(blank=True, null=True)
+    # is posted anonymmous rename
     is_anonymous = models.BooleanField(blank=True, default=False)
     is_removed = models.BooleanField(blank=True, default=False)
     POST_TYPE = [
@@ -128,7 +142,7 @@ class PeopleUser(UserCommons):
         return f'u{self.pk}-{self.account.username}'
 
 
-class NGOUser(UserCommons):
+class NGOUser(UserCommons, GeoLocation):
     gender = None
     date_of_birth = None
     citizenship_photo = None
@@ -151,6 +165,7 @@ class NGOUser(UserCommons):
         null=True,
         verbose_name="PAN Certificate"
     )
+    # rename to posts
     posted_post = models.ManyToManyField(Post, blank=True, related_name='ngo_posted_post_rn')
     poked_on = models.ManyToManyField(Post, blank=True, related_name='poked_on_rn')
 
@@ -195,6 +210,7 @@ class PollOption(models.Model):
 
 
 class PostPoll(PostAttachment):
+    # rename to options
     option = models.ManyToManyField(PollOption)
     ends_on = models.DateField()
     reported_by = models.ManyToManyField(PeopleUser, related_name='poll_reported_by_rn', blank=True)

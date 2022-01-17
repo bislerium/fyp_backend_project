@@ -45,6 +45,15 @@
                     <td>{{ object.address }}</td>
                 </tr>
                 <tr>
+                    <th>Location</th>
+                    <td>{{ object.latitude }}, {{ object.longitude }}
+                        <a href="{{ object.get_gmap_location_url }}">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </a>
+                    </td>
+
+                </tr>
+                <tr>
                     <th>Fields of Work</th>
                     <td>
                         {% for field in object.field_of_work %}
