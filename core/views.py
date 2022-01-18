@@ -5,9 +5,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DeleteView, UpdateView, DetailView, TemplateView
+from django.views.generic import ListView, DeleteView, UpdateView, DetailView, TemplateView, CreateView
 
 from .decorators import allowed_groups
 from .forms import *
@@ -169,7 +169,7 @@ class admin_home(TemplateView):
             'avg_pn_down_vote_np': round(division(total_post_normal_down_vote, total_normal_posts)),
             'total_reports': total_reports,
             'total_reported_posts': total_reported_posts,
-            'total_reports_percentage': round(division(total_reported_posts, total_posts)*100, 2),
+            'total_reports_percentage': round(division(total_reported_posts, total_posts) * 100, 2),
             'avg_reports_posts': round(division(total_reports, total_posts)),
             'total_post_poll_options': total_post_poll_options,
             'avg_pp_options_pp': round(division(total_post_poll_options, total_poll_posts)),
@@ -184,6 +184,40 @@ class admin_home(TemplateView):
         }
         print(context['home'])
         return context
+
+
+# Bank Crud
+
+class create_bank(CreateView):
+    model = Bank
+    form_class = BankCreationForm
+    template_name = 'core/bank/bank-create.html'
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        ngo = get_object_or_404(NGOUser, pk=self.kwargs.get('pk'))
+        ngo.bank = self.object
+        ngo.save()
+        return response
+
+    def get_success_url(self):
+        return reverse_lazy('read-ngo', kwargs={'pk': self.kwargs['pk']})
+
+
+class update_bank(UpdateView):
+    model = Bank
+    form_class = BankCreationForm
+    template_name = 'core/bank/bank-update.html'
+
+    def get_success_url(self):
+        return reverse_lazy('read-ngo', kwargs={'pk': self.object.ngouser.id})
+
+
+class delete_bank(DeleteView):
+    model = Bank
+
+    def get_success_url(self):
+        return reverse_lazy('read-ngo', kwargs={'pk': self.object.ngouser.id})
 
 
 # Staff Crud
@@ -205,11 +239,11 @@ def create_staff(request):
             user_account = User.objects.get(username=user_form.data['username'])
             user_account.groups.add(Group.objects.get(name='Staff'))
             user_account.save()
-            staff_form_ = staff_form.save(commit=False)
-            staff_form_.account = user_account
-            staff_form_.save()
+            staff = staff_form.save(commit=False)
+            staff.account = user_account
+            staff.save()
             messages.success(request, f'Account created for {staff_form.data["full_name"]}')
-            return redirect('read-staffs')
+            return redirect('read-staff', staff.id)
     context = {
         'form1': user_form,
         'form2': staff_form,
@@ -284,11 +318,11 @@ def create_ngo(request):
             user_account = User.objects.get(username=user_form.data['username'])
             user_account.groups.add(Group.objects.get(name='NGO'))
             user_account.save()
-            ngo_form_ = ngo_form.save(commit=False)
-            ngo_form_.account = user_account
-            ngo_form_.save()
+            ngo = ngo_form.save(commit=False)
+            ngo.account = user_account
+            ngo.save()
             messages.success(request, f'Account created for {ngo_form.data["full_name"]}')
-            return redirect('read-ngos')
+            return redirect('create-bank', ngo.id)
     context = {
         'form1': user_form,
         'form2': ngo_form,

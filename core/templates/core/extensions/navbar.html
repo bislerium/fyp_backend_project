@@ -4,7 +4,7 @@
         {% if user.is_superuser %}
             <a class="navbar-brand" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Back to Top">
         {% else %}
-            <a class="navbar-brand" href="{% url 'read-staff' user.staff.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View Profile">
+            <a class="navbar-brand fw-bold" href="{% url 'read-staff' user.staff.pk %}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="View Profile">
         {% endif %}
         Hi {{ user }}!
         </a>

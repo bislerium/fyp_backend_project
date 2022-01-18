@@ -1,22 +1,23 @@
 {% extends 'core/base.html' %}
 {% load bootstrap5 %}
 
-{% block title %}Create NGO{% endblock %}
+{% block title %}Add NGO{% endblock %}
 {% block linkscript %}{% endblock %}
 
 {% block body %}
+    {% include  'core/extensions/navbar.html' with ngo='active'%}
     <div class="mt-5 mb-5">
-        <H1 class="text-center">Create NGO</H1>
+        <H1 class="text-center">Add NGO</H1>
     </div>
     <div class="d-flex justify-content-center">
         <div style="min-width: 50%; max-width: 90%">
-           <form method="post" class="form" enctype="multipart/form-data">
+            <form method="post" class="form" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% bootstrap_form form1 %}
                 {% bootstrap_form form2 %}
                 {% buttons %}
                     <div>
-                     <button type="submit" class="btn btn-primary" style="width: 100%">Register</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%">Register</button>
                     </div>
                 {% endbuttons %}
             </form>

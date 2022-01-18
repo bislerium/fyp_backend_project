@@ -1,15 +1,13 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}View Users{% endblock %}
+{% block title %}List People{% endblock %}
 {% block linkscript %}
     <link rel="stylesheet" type="text/css" href="{% static 'core/css/table.css' %}">
 {% endblock %}
 
 {% block body %}
-
     {% include  'core/extensions/navbar.html' with people='active' %}
-
     <!--------- Actual Start ---------->
     <div class="container-fluid mt-2">
         <div class="d-flex flex-row justify-content-between mb-4">

@@ -1,23 +1,24 @@
 {% extends 'core/base.html' %}
 {% load bootstrap5 %}
 
-{% block title %}Add Staff{% endblock %}
+{% block title %}Edit Bank{% endblock %}
 {% block linkscript %}{% endblock %}
 
 {% block body %}
-    {% include  'core/extensions/navbar.html' with staff='active' %}
+    {% include  'core/extensions/navbar.html' with ngo='active'%}
     <div class="mt-5 mb-5">
-        <H1 class="text-center">Add Staff</H1>
+        <H1 class="text-center">
+            <i class="bi bi-bank2"></i> Edit Bank
+        </H1>
     </div>
     <div class="d-flex justify-content-center">
-        <div style="min-width: 50%; max-width: 90%">
+        <div style="min-width: 50%;">
             <form method="post" class="form" enctype="multipart/form-data">
                 {% csrf_token %}
-                {% bootstrap_form form1 %}
-                {% bootstrap_form form2 %}
+                {% bootstrap_form form %}
                 {% buttons %}
                     <div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%">Register</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%" onclick="return confirm('Confirm Update?');">Update</button>
                     </div>
                 {% endbuttons %}
             </form>

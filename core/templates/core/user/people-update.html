@@ -1,12 +1,13 @@
 {% extends 'core/base.html' %}
 {% load bootstrap5 %}
 
-{% block title %}Update people{% endblock %}
+{% block title %}Edit Person{% endblock %}
 {% block linkscript %}{% endblock %}
 
 {% block body %}
+    {% include  'core/extensions/navbar.html' with people='active' %}
     <div class="mt-5 mb-5">
-        <H1 class="text-center">Update People</H1>
+        <H1 class="text-center">Edit Person</H1>
     </div>
     <div class="d-flex justify-content-center">
         <div style="min-width: 50%;">

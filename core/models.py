@@ -152,7 +152,7 @@ class NGOUser(UserCommons, GeoLocation):
     epay_account = models.CharField(max_length=20, blank=True, help_text=(
         '- Default: Khalti as an Electronic Payment Gateway'
     ))
-    bank = models.OneToOneField(Bank, on_delete=models.CASCADE, blank=True, null=True, )
+    bank = models.OneToOneField(Bank, on_delete=models.SET_NULL, blank=True, null=True, )
     swc_affl_cert = models.ImageField(
         upload_to='ngo/swc',
         blank=True,

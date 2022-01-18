@@ -1,12 +1,13 @@
 {% extends 'core/base.html' %}
 {% load bootstrap5 %}
 
-{% block title %}Update NGO{% endblock %}
+{% block title %}Edit NGO{% endblock %}
 {% block linkscript %}{% endblock %}
 
 {% block body %}
+    {% include  'core/extensions/navbar.html' with ngo='active'%}
     <div class="mt-5 mb-5">
-        <H1 class="text-center">Update NGO</H1>
+        <H1 class="text-center">Edit NGO</H1>
     </div>
     <div class="d-flex justify-content-center">
         <div style="min-width: 50%;">
@@ -15,7 +16,7 @@
                 {% bootstrap_form form %}
                 {% buttons %}
                     <div>
-                     <button type="submit" class="btn btn-primary" style="width: 100%" onclick="return confirm('Confirm Update?');">Update</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%" onclick="return confirm('Confirm Update?');">Update</button>
                     </div>
                 {% endbuttons %}
             </form>

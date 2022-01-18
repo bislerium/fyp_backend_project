@@ -1,12 +1,13 @@
 {% extends 'core/base.html' %}
 {% load bootstrap5 %}
 
-{% block title %}View People{% endblock %}
+{% block title %}View Person{% endblock %}
 {% block linkscript %}{% endblock %}
 
 {% block body %}
+    {% include  'core/extensions/navbar.html' with people='active' %}
     <div class="mt-5 mb-5">
-        <H1 class="text-center">View People</H1>
+        <H1 class="text-center">View Person</H1>
     </div>
     <div class="d-flex justify-content-center">
         <div style="min-width: 50%; max-width: 90%">
@@ -93,14 +94,14 @@
                     <td>{{ object.account.is_active }}</td>
                 </tr>
             </table>
-            <div class="d-flex flex-row-reverse mb-3">
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{% url 'update-people' object.id%}" class="px-1">
+                    <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Update</button>
+                </a>
                 <form action="{% url 'delete-people' object.id %}" method="post" class="px-1">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"><i class="bi bi-x-circle-fill"></i> Delete</button>
                 </form>
-                <a href="{% url 'update-people' object.id%}" class="px-1">
-                    <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Update</button>
-                </a>
             </div>
         </div>
     </div>

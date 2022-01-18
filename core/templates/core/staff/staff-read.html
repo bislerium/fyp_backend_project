@@ -5,7 +5,7 @@
 {% block linkscript %}{% endblock %}
 
 {% block body %}
-    <div>
+    {% include  'core/extensions/navbar.html' with staff='active' %}
     <div class="mt-5 mb-5">
         <H1 class="text-center">View Staff</H1>
     </div>
@@ -102,15 +102,17 @@
                     <td>{{ object.reviewed_posts }}</td>
                 </tr>
             </table>
-            <div class="d-flex flex-row-reverse mb-3">
-                <form action="{% url 'delete-staff' object.id %}" method="post" class="px-1">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"><i class="bi bi-x-circle-fill"></i> Delete</button>
-                </form>
-                <a href="{% url 'update-staff' object.id%}" class="px-1">
-                    <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Update</button>
-                </a>
-            </div>
+            {% if user.is_superuser %}
+                <div class="d-flex justify-content-end mb-3">
+                    <a href="{% url 'update-staff' object.id%}" class="px-1">
+                        <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Update</button>
+                    </a>
+                    <form action="{% url 'delete-staff' object.id %}" method="post" class="px-1">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"><i class="bi bi-x-circle-fill"></i> Delete</button>
+                    </form>
+                </div>
+            {%  endif %}
         </div>
     </div>
 {% endblock %}

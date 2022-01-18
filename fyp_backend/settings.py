@@ -35,12 +35,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'core',
-    'phonenumber_field',
-    'widget_tweaks',
+
     'bootstrap5',
+    'core',
+    'dj_rest_auth',
     'multiselectfield',
+    'phonenumber_field',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -131,7 +134,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
-
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_HOST=True
@@ -144,5 +146,4 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_SSL_KEYFILE=
 # EMAIL_SSL_CERTFILE=
 
-PHONENUMBER_DEFAULT_REGION='NP'
-
+PHONENUMBER_DEFAULT_REGION = 'NP'
