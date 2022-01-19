@@ -12,12 +12,12 @@
     </div>
     <div class="d-flex justify-content-center">
         <div style="min-width: 50%;">
-            <form id="bank-form" method="post" class="form" enctype="multipart/form-data">
+            <form id="bank-form" method="post" class="form">
                 {% csrf_token %}
                 {% bootstrap_form form %}
             </form>
             <div class="d-flex justify-content-between">
-                <a href="{% url 'read-ngo' 2 %}"  style="width: 49%"><button class="btn btn-secondary" style="width: 100%">Skip</button></a>
+                <a href="{% url 'read-ngo' ngo_pk %}"  style="width: 49%"><button class="btn btn-secondary" style="width: 100%">Skip</button></a>
                 <button form="bank-form" type="submit" class="btn btn-primary" style="width: 49%">Link</button>
             </div>
         </div>

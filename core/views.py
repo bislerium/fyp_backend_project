@@ -203,6 +203,11 @@ class create_bank(CreateView):
     def get_success_url(self):
         return reverse_lazy('read-ngo', kwargs={'pk': self.kwargs['pk']})
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['ngo_pk'] = self.kwargs['pk']
+        return context
+
 
 class update_bank(UpdateView):
     model = Bank

@@ -13,11 +13,18 @@
         <div class="row">
             <section id="post-section" class="col-sm-7">
                 <div>
-                    <div class="my-2"><i class="bi bi-person-lines-fill"></i> Posted by: {% if object.people_posted_post_rn.count != 0 %}
-                        {{ object.people_posted_post_rn.first.account.username  }}
-                    {% else %}
-                        {{ object.ngo_posted_post_rn.first.account.username }}
-                    {% endif%} </div>
+                    <div class="my-2"><i class="bi bi-person-lines-fill"></i> Posted by:
+                        <span class="fw-bold">
+                        {% if object.people_posted_post_rn.exists %}
+                            <a href="{% url 'read-people' object.people_posted_post_rn.first.id %}" class="text-decoration-none">
+                            {{ object.people_posted_post_rn.first.account.username  }}
+                        {% else %}
+                            <a href="{% url 'read-ngo' object.ngo_posted_post_rn.first.id %}" class="text-decoration-none">
+                            {{ object.ngo_posted_post_rn.first.account.username }}
+                        {% endif %}
+                            </a>
+                        </span>
+                    </div>
                     <div class="my-2"><i class="bi bi-calendar2-week-fill"></i> Date Posted: {{ object.created_on.astimezone }}</div>
                     <div class="my-2"><i class="bi bi-signpost-2-fill"></i> Post Type:
                         <span class="badge bg-primary">{{ object.post_type }}</span>
@@ -37,7 +44,7 @@
                     </div>
                     {#                    post description-------------#}
                     <div class="my-4" style="text-align: justify">
-                        <div class="fw-bold mb-2" style="display: block;"> Post Description:</div>
+                        <div class="fw-bold mb-2" style="display: block;"> Post Content:</div>
                         {{ object.post_content }}
                     </div>
                     {#                post type body -----------------------#}

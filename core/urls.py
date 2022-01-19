@@ -37,8 +37,8 @@ urlpatterns = [
                   path('web/400/<exception>', bad_request, name='no_page'),
 
                   # Bank as Resource
-                  path('web/Banks/<int:pk>/add', create_bank.as_view(), name='create-bank'),
-                  path('web/Bank/<int:pk>/update', update_bank.as_view(), name='update-bank'),
+                  path('web/ngo/<int:pk>/bank/add', create_bank.as_view(), name='create-bank'),
+                  path('web/Bank/<int:pk>/edit', update_bank.as_view(), name='update-bank'),
                   path('web/bank/<int:pk>/remove/', delete_bank.as_view(), name='delete-bank'),
 
                   # Staff as Resource

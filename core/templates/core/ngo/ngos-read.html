@@ -59,11 +59,11 @@
                                     <button type="submit" class="btn btn-primary"><i class="bi bi-eye-fill"></i> View</button>
                                 </a>
                                 <a href="{% url 'update-ngo' ngo.id%}" class="px-1">
-                                    <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Update</button>
+                                    <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Edit</button>
                                 </a>
                                 <form action="{% url 'delete-ngo' ngo.id %}" method="post" class="px-1">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"><i class="bi bi-x-circle-fill"></i> Delete</button>
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to remove the NGO: {{ ngo.full_name }}?');"><i class="bi bi-x-circle-fill"></i> Remove</button>
                                 </form>
                             </div>
                         </td>

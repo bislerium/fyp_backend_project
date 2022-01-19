@@ -62,13 +62,13 @@
                                 </div>
                                 <div class="mx-2">
                                     <a href="{% url 'update-people' people.id %}">
-                                        <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Update</button>
+                                        <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill"></i> Edit</button>
                                     </a>
                                 </div>
                                 <div>
                                     <form action="{% url 'delete-people' people.id %}" method="post">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"><i class="bi bi-x-circle-fill"></i> Delete</button>
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to remove the People account: {{ people.account.username }}?');"><i class="bi bi-x-circle-fill"></i> Remove</button>
                                     </form>
                                 </div>
                             </div>
