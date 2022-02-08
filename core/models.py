@@ -146,6 +146,7 @@ class NGOUser(UserCommons, GeoLocation):
     gender = None
     date_of_birth = None
     citizenship_photo = None
+    # replare by org name
     full_name = models.CharField(max_length=150, verbose_name='Organization Name')
     establishment_date = models.DateField()
     field_of_work = MultiSelectField(choices=FIELD_OF_WORK)
@@ -153,12 +154,14 @@ class NGOUser(UserCommons, GeoLocation):
         '- Default: Khalti as an Electronic Payment Gateway'
     ))
     bank = models.OneToOneField(Bank, on_delete=models.SET_NULL, blank=True, null=True, )
+    # Social Welfare Council (SWC)
     swc_affl_cert = models.ImageField(
         upload_to='ngo/swc',
         blank=True,
         null=True,
         verbose_name="Social Welfare Council Affl Certificate"
     )
+    # Permanent Account Number Certificate
     pan_cert = models.ImageField(
         upload_to='ngo/pan',
         blank=True,

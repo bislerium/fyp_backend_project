@@ -20,20 +20,16 @@ class NGOListSerializer(serializers.ModelSerializer):
 
 
 class NGOSerializer(serializers.ModelSerializer):
-    poked_on = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='api-post-detail'
-    )
 
     class Meta:
         model = NGOUser
-        fields = '__all__'
+        exclude = ['poked_on']
 
     def to_representation(self, instance: NGOUser):
         data = super().to_representation(instance)
         if instance.bank is not None:
             data['bank'] = BankSerializer(instance.bank).data
+        data['email'] = instance.account.email
         return data
 
 
@@ -99,11 +95,13 @@ class PostListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['url', 'related_to', 'post_content', 'is_anonymous', 'is_ngo_poked', 'post_type', 'created_on']
+        fields = ['id', 'url', 'related_to', 'post_content', 'is_anonymous', 'is_ngo_poked', 'post_type', 'created_on']
 
     def to_representation(self, instance: Post):
         data = super().to_representation(instance)
         a = instance.people_posted_post_rn.first()
+        if instance.poked_on_rn.count() > 0:
+            data['is_ngo_poked'] = True
         if a is None:
             a = instance.ngo_posted_post_rn.first()
             view = 'api-ngo-detail'

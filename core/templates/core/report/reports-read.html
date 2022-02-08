@@ -23,7 +23,7 @@
                                 <div class="mb-3">
                                 <div class="d-flex flex-wrap mb-3">
                                 {% for field in post.related_to %}
-                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ field }}"><span class="badge bg-secondary">{{ field|slice:"0:2" }}</span></div>
+                                    <div class="m-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ field }}"><span class="badge bg-secondary">{{ field|slice:"0:2" }}</span></div>
                                 {% endfor %}
                                 </div>
                                 <p class="card-text text-dark">{{ post.post_content|truncatewords:25 }}</p>
