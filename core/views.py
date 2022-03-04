@@ -40,7 +40,7 @@ def home_page(request):
     if user_.groups.filter(name='Staff').exists():
         print('wow')
         return redirect('staff-home')
-    if user_.groups.filter(name__in=['People', 'NGO']).exists():
+    if user_.groups.filter(name__in=['General', 'NGO']).exists():
         print('Hello')
         raise PermissionDenied(f'{user_} is not identified, falls under {user_.groups.first()}!')
 
