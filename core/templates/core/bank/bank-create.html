@@ -16,10 +16,7 @@
                 {% csrf_token %}
                 {% bootstrap_form form %}
             </form>
-            <div class="d-flex justify-content-between">
-                <a href="{% url 'read-ngo' ngo_pk %}"  style="width: 49%"><button class="btn btn-secondary" style="width: 100%">Skip</button></a>
-                <button form="bank-form" type="submit" class="btn btn-primary" style="width: 49%">Link</button>
-            </div>
+            <button form="bank-form" type="submit" class="btn btn-primary" style="width: 100%">Link</button>
         </div>
     </div>
 {% endblock %}

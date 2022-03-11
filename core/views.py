@@ -327,6 +327,8 @@ def create_ngo(request):
             ngo.account = user_account
             ngo.save()
             messages.success(request, f'Account created for {ngo_form.data["full_name"]}')
+            if not ngo.is_verified:
+                return redirect('read-ngo', ngo.id)
             return redirect('create-bank', ngo.id)
     context = {
         'form1': user_form,

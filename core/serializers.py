@@ -11,19 +11,16 @@ class BankSerializer(serializers.ModelSerializer):
 
 
 class NGOListSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='api-ngo-detail')
-
     class Meta:
         model = NGOUser
-        fields = ['url', 'address', 'display_picture', 'full_name', 'establishment_date', 'field_of_work',
-                  'is_verified']
+        fields = ['id', 'address', 'display_picture', 'full_name', 'establishment_date', 'field_of_work',]
 
 
 class NGOSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NGOUser
-        exclude = ['poked_on']
+        exclude = ['poked_on', 'account']
 
     def to_representation(self, instance: NGOUser):
         data = super().to_representation(instance)
