@@ -55,6 +55,10 @@ REST_FRAMEWORK = {
     ]
 }
 
+REST_AUTH_SERIALIZERS = {
+    'TOKEN_SERIALIZER': 'core.serializers.CustomTokenSerializer',
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

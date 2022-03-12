@@ -1,9 +1,12 @@
+import dj_rest_auth
 from django.conf.urls.static import static
 from django.contrib.auth.views import *
 from django.urls import path, include
 
+from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
+    CustomLoginView
+
 from core.views import *
-from core.api_views import *
 
 urlpatterns = [
                   # Web Endpoints
@@ -67,6 +70,14 @@ urlpatterns = [
                   path('web/report/<int:pk>/review/', update_report.as_view(), name='review-report'),
 
                   # API Endpoints
+                  # URLs that do not require a session or valid token
+                  path('api/password/reset/', dj_rest_auth.views.PasswordResetView.as_view(), name='rest_password_reset'),
+                  path('api/password/reset/confirm/', dj_rest_auth.views.PasswordResetConfirmView.as_view(),
+                       name='rest_password_reset_confirm'),
+                  path('api/login/', CustomLoginView.as_view(), name='rest_login'),
+                  # URLs that require a user to be logged in with a valid session / token.
+                  path('api/logout/', dj_rest_auth.views.LogoutView.as_view(), name='rest_logout'),
+                  path('api/password/change/', dj_rest_auth.views.PasswordChangeView.as_view(), name='rest_password_change'),
                   path('api/', include('dj_rest_auth.urls')),
                   path('api/ngos/', NGOList.as_view(), name='api-ngo-list'),
                   path('api/ngo/<int:pk>/', NGODetail.as_view(), name='api-ngo-detail'),

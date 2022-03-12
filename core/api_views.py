@@ -1,7 +1,14 @@
+import django
+import rest_framework
+from dj_rest_auth.views import LoginView as LV
 from rest_framework.generics import *
-from rest_framework.viewsets import *
+from rest_framework.permissions import BasePermission, AllowAny
 
 from .serializers import *
+
+
+class CustomLoginView(LV):
+    serializer_class = CustomLoginSerializer
 
 
 class NGOList(ListAPIView):
@@ -40,5 +47,3 @@ class PostList(ListAPIView):
 class PostDetail(RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-
-

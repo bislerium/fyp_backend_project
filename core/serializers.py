@@ -1,7 +1,36 @@
-from rest_framework import serializers
+from abc import ABC, ABCMeta
+
+from dj_rest_auth.serializers import TokenSerializer, LoginSerializer
+from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse_lazy
+from rest_framework import serializers
 
 from .models import *
+
+
+class CustomLoginSerializer(LoginSerializer):
+
+    def _validate_username_email(self, username, email, password):
+        user: User = super()._validate_username_email(username, email, password)
+        if user:
+            if user.groups.exists() and user.groups.first().name in ['NGO', 'General']:
+                return user
+        return None
+
+
+class CustomTokenSerializer(TokenSerializer):
+
+    def to_representation(self, instance: Token):
+        data = super().to_representation(instance)
+        user: User = User.objects.get(username=instance.user)
+        group = user.groups.first().name
+        data['group'] = group
+        data['account_id'] = user.id
+        if group == 'General':
+            data['profile_id'] = user.peopleuser.id
+        if group == 'NGO':
+            data['profile_id'] = user.ngouser.id
+        return data
 
 
 class BankSerializer(serializers.ModelSerializer):
@@ -13,11 +42,10 @@ class BankSerializer(serializers.ModelSerializer):
 class NGOListSerializer(serializers.ModelSerializer):
     class Meta:
         model = NGOUser
-        fields = ['id', 'address', 'display_picture', 'full_name', 'establishment_date', 'field_of_work',]
+        fields = ['id', 'address', 'display_picture', 'full_name', 'establishment_date', 'field_of_work']
 
 
 class NGOSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = NGOUser
         exclude = ['poked_on', 'account']
@@ -136,10 +164,12 @@ class PeopleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PeopleUser
-        fields = '__all__'
+        exclude = ['account']
 
     def to_representation(self, instance: PeopleUser):
         data = super().to_representation(instance)
+        data['username'] = instance.account.username
         data['email'] = instance.account.email
+        data['group'] = instance.account.groups.first().name
         data['date_joined'] = instance.account.date_joined
         return data
