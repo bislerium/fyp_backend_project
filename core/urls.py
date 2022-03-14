@@ -4,7 +4,7 @@ from django.contrib.auth.views import *
 from django.urls import path, include
 
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
-    CustomLoginView
+    CustomLoginView, PeopleAdd
 
 from core.views import *
 
@@ -71,6 +71,7 @@ urlpatterns = [
 
                   # API Endpoints
                   # URLs that do not require a session or valid token
+                  # path('api/', include('dj_rest_auth.urls')),
                   path('api/password/reset/', dj_rest_auth.views.PasswordResetView.as_view(), name='rest_password_reset'),
                   path('api/password/reset/confirm/', dj_rest_auth.views.PasswordResetConfirmView.as_view(),
                        name='rest_password_reset_confirm'),
@@ -84,6 +85,7 @@ urlpatterns = [
                   path('api/posts/', PostList.as_view(), name='api-post-list'),
                   path('api/post/<int:pk>/', PostDetail.as_view(), name='api-post-detail'),
                   path('api/people/', PeopleList.as_view(), name='api-people-list'),
+                  path('api/people/add', PeopleAdd.as_view(), name='api-people-add'),
                   path('api/people/<int:pk>/', PeopleDetail.as_view(), name='api-people-detail'),
                   path('api/bank/<int:pk>/', BankDetail.as_view(), name='api-bank-detail'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -234,10 +234,10 @@ def staff_home(request):
 @login_required(login_url=reverse_lazy('login'))
 @allowed_groups('Staff', 'Admin')
 def create_staff(request):
-    user_form = UserCreationForm()
+    user_form = CustomUserCreationForm()
     staff_form = StaffCreationForm()
     if request.method == 'POST':
-        user_form = UserCreationForm(request.POST)
+        user_form = CustomUserCreationForm(request.POST)
         staff_form = StaffCreationForm(request.POST, request.FILES or None)
         if user_form.is_valid() and staff_form.is_valid():
             user_form.save()
@@ -313,10 +313,10 @@ class delete_people(DeleteView):
 # NGO Crud
 
 def create_ngo(request):
-    user_form = UserCreationForm()
+    user_form = CustomUserCreationForm()
     ngo_form = NGOCreationForm()
     if request.method == 'POST':
-        user_form = UserCreationForm(request.POST)
+        user_form = CustomUserCreationForm(request.POST)
         ngo_form = NGOCreationForm(request.POST, request.FILES or None)
         if user_form.is_valid() and ngo_form.is_valid():
             user_form.save()

@@ -54,7 +54,9 @@ class NGOSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         if instance.bank is not None:
             data['bank'] = BankSerializer(instance.bank).data
+        data['username'] = instance.account.username
         data['email'] = instance.account.email
+        data['date_joined'] = instance.account.date_joined
         return data
 
 
@@ -156,11 +158,16 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class PeopleSerializer(serializers.ModelSerializer):
+
     posted_post = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
         view_name='api-post-detail'
     )
+
+    username = serializers.CharField(required=False, allow_blank=False, allow_null=False,)
+    email = serializers.EmailField(required=False, allow_blank=False, allow_null=False,)
+    password = serializers.CharField(style={'input_type': 'password'}, allow_null=False,)
 
     class Meta:
         model = PeopleUser
@@ -170,6 +177,5 @@ class PeopleSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['username'] = instance.account.username
         data['email'] = instance.account.email
-        data['group'] = instance.account.groups.first().name
         data['date_joined'] = instance.account.date_joined
         return data

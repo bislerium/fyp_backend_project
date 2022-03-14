@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 
 from core.models import *
 
@@ -9,6 +10,11 @@ class StaffCreationForm(forms.ModelForm):
         fields = ['full_name', 'date_of_birth', 'gender', 'phone', 'address', 'display_picture', 'citizenship_photo',
                   'is_married']
         widgets = {'date_of_birth': forms.DateInput(attrs={'type': 'date'})}
+
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        fields = ("username", "email")
 
 
 class NGOCreationForm(forms.ModelForm):

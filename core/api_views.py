@@ -44,6 +44,12 @@ class PostList(ListAPIView):
         return super().get_queryset().filter(is_removed=False)
 
 
+class PeopleAdd(CreateAPIView):
+    permission_classes = [AllowAny]
+    queryset = User.objects.all()
+    serializer_class =
+
+
 class PostDetail(RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
