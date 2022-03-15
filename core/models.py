@@ -5,6 +5,7 @@ from multiselectfield import MultiSelectField
 from django.db import models
 
 # Create your models here.
+from fyp_backend import settings
 
 FIELD_OF_WORK = [
     ('Advocacy & Awareness', 'Advocacy & Awareness'),
@@ -75,14 +76,14 @@ class UserCommons(models.Model):
         ('Female', 'Female'),
         ('LGBTQ+', 'LGBTQ+'),
     ]
-    gender = models.CharField(max_length=6, choices=GENDER)
+    gender = models.CharField(max_length=6, choices=GENDER,)
     phone = PhoneNumberField(blank=True, unique=True, null=True)
     address = models.CharField(max_length=150)
     display_picture = models.ImageField(
         upload_to='display_picture',
         blank=True,
         null=True,
-        default='default/default_dp.png'
+        default=settings.DEFAULT_PEOPLE_DP
     )
     citizenship_photo = models.ImageField(
         upload_to='citizenship',
@@ -149,6 +150,12 @@ class NGOUser(UserCommons, GeoLocation):
     # replare by org name
     full_name = models.CharField(max_length=150, verbose_name='Organization Name')
     establishment_date = models.DateField()
+    display_picture = models.ImageField(
+        upload_to='display_picture',
+        blank=True,
+        null=True,
+        default=settings.DEFAULT_NGO_DP
+    )
     field_of_work = MultiSelectField(choices=FIELD_OF_WORK)
     epay_account = models.CharField(max_length=20, blank=True, help_text=(
         '- Default: Khalti as an Electronic Payment Gateway'

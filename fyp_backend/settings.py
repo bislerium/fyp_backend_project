@@ -138,6 +138,9 @@ STATIC_ROOT = 'static'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+DEFAULT_PEOPLE_DP = 'default/default_people_dp.png'
+DEFAULT_NGO_DP = 'default/default_ngo_dp.png'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 

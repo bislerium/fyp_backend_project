@@ -1,10 +1,13 @@
 from abc import ABC, ABCMeta
+from tkinter import Image
 
 from dj_rest_auth.serializers import TokenSerializer, LoginSerializer
+from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse_lazy
 from rest_framework import serializers
 
+from fyp_backend import settings
 from .models import *
 
 
@@ -157,21 +160,45 @@ class PostSerializer(serializers.ModelSerializer):
         return data
 
 
-class PeopleSerializer(serializers.ModelSerializer):
-
-    posted_post = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='api-post-detail'
-    )
-
-    username = serializers.CharField(required=False, allow_blank=False, allow_null=False,)
-    email = serializers.EmailField(required=False, allow_blank=False, allow_null=False,)
-    password = serializers.CharField(style={'input_type': 'password'}, allow_null=False,)
+class PeopleCreateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=True, allow_blank=False, write_only=True, allow_null=False, )
+    email = serializers.EmailField(required=True, allow_blank=False, allow_null=False, write_only=True )
+    password = serializers.CharField(style={'input_type': 'password'}, write_only=True, allow_blank=False,
+                                     required=True,
+                                     allow_null=False)
 
     class Meta:
         model = PeopleUser
+        exclude = ['account', 'posted_post', 'is_verified']
+        required = ('date_of_birth', 'gender', 'phone',)
+
+    def create(self, validated_data):
+        user = User.objects.create(username=validated_data['username'],
+                                   email=validated_data['email'],
+                                   )
+        user.set_password(validated_data['password'])
+        user.groups.add(Group.objects.get(name='General'))
+        user.save()
+        if validated_data['display_picture'] is None:
+            validated_data['display_picture'] = settings.DEFAULT_PEOPLE_DP
+        peopleUser = PeopleUser.objects.create(account=user,
+                                               full_name=validated_data['full_name'],
+                                               date_of_birth=validated_data['date_of_birth'],
+                                               gender=validated_data['gender'],
+                                               phone=validated_data['phone'],
+                                               address=validated_data['address'],
+                                               display_picture=validated_data['display_picture'],
+                                               citizenship_photo=validated_data['citizenship_photo'],
+                                               )
+        print(peopleUser)
+        return peopleUser
+
+
+class PeopleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PeopleUser
         exclude = ['account']
+        read_only_fields = ('posted_post',)
 
     def to_representation(self, instance: PeopleUser):
         data = super().to_representation(instance)
