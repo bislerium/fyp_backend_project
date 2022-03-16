@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.generics import *
 from rest_framework.permissions import BasePermission, AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .serializers import *
 
@@ -57,6 +58,43 @@ class PeopleAdd(CreateAPIView):
         print(response.headers.get()['status_code'])
         print(response)
 
+
+class NormalPostAdd(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = PostNormalSerializer
+
+    def post(self, request):
+        return post_a_post(self, request, post_type=EPostType.Normal)
+
+
+class PollPostAdd(CreateAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = PostPollSerializer
+
+    def post(self, request):
+        return post_a_post(self, request, post_type=EPostType.Poll)
+
+
+class RequestPostAdd(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = PostRequestSerializer
+
+    def post(self, request):
+        return post_a_post(self, request, post_type=EPostType.Request)
+
+
+def post_a_post(self, request, post_type: EPostType):
+    match post_type:
+        case EPostType.Normal:
+            post_serializer = PostNormalSerializer(data=request.data, context={'request': request})
+        case EPostType.Poll:
+            post_serializer = PostPollSerializer(data=request.data, context={'request': request})
+        case EPostType.Request:
+            post_serializer = PostRequestSerializer(data=request.data, context={'request': request})
+    if post_serializer.is_valid():
+        return post_serializer.save()
+    else:
+        return Response({"Fail": post_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PostDetail(RetrieveAPIView):

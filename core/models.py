@@ -184,7 +184,7 @@ class NGOUser(UserCommons, GeoLocation):
 
 
 class PostAttachment(models.Model):
-    post = models.OneToOneField(Post, on_delete=models.CASCADE)
+    post = models.OneToOneField(Post, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -201,7 +201,7 @@ class PostRequest(PostAttachment):
     min = models.IntegerField()
     max = models.IntegerField(null=True, blank=True)
     target = models.IntegerField()
-    ends_on = models.DateField()
+    ends_on = models.DateTimeField()
     REQUEST = [
         ('Petition', 'Petition'),
         ('Join', 'Join'),
@@ -222,5 +222,5 @@ class PollOption(models.Model):
 class PostPoll(PostAttachment):
     # rename to options
     option = models.ManyToManyField(PollOption)
-    ends_on = models.DateField()
+    ends_on = models.DateField(blank=True, null=True)
     reported_by = models.ManyToManyField(PeopleUser, related_name='poll_reported_by_rn', blank=True)

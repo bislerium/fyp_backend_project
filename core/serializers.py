@@ -1,14 +1,23 @@
-from abc import ABC, ABCMeta
-from tkinter import Image
-
+import enum
+from collections import OrderedDict
+from datetime import datetime, timedelta
 from dj_rest_auth.serializers import TokenSerializer, LoginSerializer
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
-from rest_framework import serializers
+from rest_framework import serializers, status
 
+import core.models
 from fyp_backend import settings
 from .models import *
+
+
+class EPostType(enum.Enum):
+    Normal = 0
+    Poll = 1
+    Request = 2
 
 
 class CustomLoginSerializer(LoginSerializer):
@@ -162,7 +171,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 class PeopleCreateSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=True, allow_blank=False, write_only=True, allow_null=False, )
-    email = serializers.EmailField(required=True, allow_blank=False, allow_null=False, write_only=True )
+    email = serializers.EmailField(required=True, allow_blank=False, allow_null=False, write_only=True)
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True, allow_blank=False,
                                      required=True,
                                      allow_null=False)
@@ -181,17 +190,164 @@ class PeopleCreateSerializer(serializers.ModelSerializer):
         user.save()
         if validated_data['display_picture'] is None:
             validated_data['display_picture'] = settings.DEFAULT_PEOPLE_DP
-        peopleUser = PeopleUser.objects.create(account=user,
-                                               full_name=validated_data['full_name'],
-                                               date_of_birth=validated_data['date_of_birth'],
-                                               gender=validated_data['gender'],
-                                               phone=validated_data['phone'],
-                                               address=validated_data['address'],
-                                               display_picture=validated_data['display_picture'],
-                                               citizenship_photo=validated_data['citizenship_photo'],
-                                               )
-        print(peopleUser)
-        return peopleUser
+        return PeopleUser.objects.create(account=user,
+                                         full_name=validated_data['full_name'],
+                                         date_of_birth=validated_data['date_of_birth'],
+                                         gender=validated_data['gender'],
+                                         phone=validated_data['phone'],
+                                         address=validated_data['address'],
+                                         display_picture=validated_data['display_picture'],
+                                         citizenship_photo=validated_data['citizenship_photo'],
+                                         )
+
+
+class NormalPostCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostNormal
+        exclude = ('post', 'up_vote', 'down_vote', 'reported_by')
+
+
+def adequate_poll_options(value: list):
+    if not value:
+        raise serializers.ValidationError('Must have at least two poll options.')
+
+
+class PollPostCreateSerializer(serializers.ModelSerializer):
+    option = serializers.ListSerializer(child=serializers.CharField(),
+                                        write_only=True, allow_empty=False, )
+
+    class Meta:
+        model = PostPoll
+        exclude = ('post', 'reported_by',)
+
+    def create(self, validated_data):
+        poll_post = PostPoll.objects.create(ends_on=validated_data['ends_on'], )
+        for i in [PollOption.objects.create(option=i) for i in validated_data['option']]:
+            poll_post.option.add(i)
+        return poll_post
+
+    def validate(self, attrs: OrderedDict):
+        if len(attrs.get('option')) < 2:
+            raise serializers.ValidationError('Must provide two poll options for type: poll post.')
+        if attrs.get('ends_on') <= datetime.now().date():
+            raise serializers.ValidationError('Poll post must end in future.')
+        return attrs
+
+
+class RequestPostCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostRequest
+        exclude = ('post', 'reported_by', 'reacted_by',)
+
+    #YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
+    def validate(self, attrs: OrderedDict):
+        if attrs.get('target') == 0:
+            raise serializers.ValidationError('Target participants cannot be 0.')
+        if attrs.get('min') != 0 and (attrs.get('target') < attrs.get('min')):
+            raise serializers.ValidationError('Target participants must be greater than or equal to non-zero minimum '
+                                              'participants.')
+        if attrs.get('max') and attrs.get('max') < attrs.get('target'):
+            raise serializers.ValidationError('Max participants must be equal or greater than the target participants.')
+        time_zone = attrs.get('ends_on').tzinfo
+        if attrs.get('ends_on') < datetime.now(time_zone) + timedelta(hours=1):
+            raise serializers.ValidationError('Request post must end in future.')
+        if attrs.get('request_type') == 'Petition' and attrs.get('max'):
+            raise serializers.ValidationError('Petition post is not bounded by maximum participants.')
+        return attrs
+
+
+class PostCreateSerializer(serializers.ModelSerializer):
+    related_to = serializers.MultipleChoiceField(choices=core.models.FIELD_OF_WORK, write_only=True,
+                                                 allow_empty=False, )
+
+    class Meta:
+        model = Post
+        exclude = ('modified_on', 'is_removed', 'post_type')
+
+    def create(self, validated_data):
+        return Post.objects.create(related_to=validated_data['related_to'],
+                                   post_content=validated_data['post_content'],
+                                   is_anonymous=validated_data['is_anonymous'],
+                                   )
+
+
+class PostNormalSerializer(serializers.Serializer):
+    normal_post = NormalPostCreateSerializer(write_only=True, )
+    post_head = PostCreateSerializer(write_only=True, )
+    poked_to = serializers.ListSerializer(child=serializers.IntegerField(),
+                                          write_only=True, allow_empty=True,
+                                          )
+
+    def create(self, validated_data):
+        return create_post(self.context['request'], validated_data=validated_data, post_type=EPostType.Normal)
+
+
+class PostPollSerializer(serializers.Serializer):
+    poll_post = PollPostCreateSerializer(write_only=True, )
+    post_head = PostCreateSerializer(write_only=True, )
+    poked_to = serializers.ListSerializer(child=serializers.IntegerField(),
+                                          write_only=True, allow_empty=True,
+                                          )
+
+    def create(self, validated_data):
+        return create_post(self.context['request'], validated_data=validated_data, post_type=EPostType.Poll)
+
+
+class PostRequestSerializer(serializers.Serializer):
+    request_post = RequestPostCreateSerializer(write_only=True, )
+    post_head = PostCreateSerializer(write_only=True)
+    poked_to = serializers.ListSerializer(child=serializers.IntegerField(), required=False,
+                                          write_only=True, allow_empty=True,
+                                          )
+
+    def create(self, validated_data):
+        return create_post(self.context['request'], validated_data=validated_data, post_type=EPostType.Request)
+
+
+def create_post(request: Request, validated_data, post_type: EPostType):
+    user: User = request.user
+    poked_ngo = set(validated_data['poked_to'])
+    serialized_post_head = PostCreateSerializer(data=validated_data['post_head'], )
+    try:
+        if user.groups.first().name not in ['NGO', 'General']:
+            raise ValueError('Only NGO and general people can post!')
+        if user.ngouser.id in poked_ngo:
+            raise ValueError(f'You cannot poke yourself!')
+        invalid_ngo_id = [i for i in poked_ngo if not User.objects.filter(pk=i).exists()]
+        if invalid_ngo_id:
+            raise ValueError(f'NGOs with IDs: {invalid_ngo_id} does not exist.')
+        if serialized_post_head.is_valid():
+            post = serialized_post_head.save()
+            match post_type:
+                case EPostType.Normal:
+                    post.post_type = post_type.name
+                    serialized_post_extension = NormalPostCreateSerializer(data=validated_data['normal_post'])
+                case EPostType.Poll:
+                    post.post_type = post_type.name
+                    serialized_post_extension = PollPostCreateSerializer(data=validated_data['poll_post'])
+                case EPostType.Request:
+                    post.post_type = post_type.name
+                    serialized_post_extension = RequestPostCreateSerializer(data=validated_data['request_post'])
+            post.save()
+            if serialized_post_extension.is_valid():
+                post_extension = serialized_post_extension.save()
+                post_extension.post = post
+                post_extension.save()
+                if user.groups.first().name == 'People':
+                    user.peopleuser.posted_post.add(post)
+                if user.groups.first().name == 'NGO':
+                    user.ngouser.posted_post.add(post)
+                for i in poked_ngo:
+                    NGOUser.objects.get(id=i).poked_on.add(post)
+            else:
+                post.delete()
+                raise ValueError(serialized_post_extension.errors)
+        else:
+            raise ValueError(serialized_post_head.errors)
+    except ValueError as e:
+        return Response({"Fail": e.args}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({"Success": f"{post_type.name} Post created successfully!"}, status=status.HTTP_201_CREATED)
 
 
 class PeopleSerializer(serializers.ModelSerializer):
@@ -199,6 +355,9 @@ class PeopleSerializer(serializers.ModelSerializer):
         model = PeopleUser
         exclude = ['account']
         read_only_fields = ('posted_post',)
+
+    def create(self, validated_data):
+        return super().create(validated_data)
 
     def to_representation(self, instance: PeopleUser):
         data = super().to_representation(instance)

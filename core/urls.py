@@ -4,7 +4,8 @@ from django.contrib.auth.views import *
 from django.urls import path, include
 
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
-    CustomLoginView, PeopleAdd
+    CustomLoginView, PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd
+from core.serializers import PostNormalSerializer, PostRequestSerializer, PostPollSerializer
 
 from core.views import *
 
@@ -82,10 +83,18 @@ urlpatterns = [
                   path('api/', include('dj_rest_auth.urls')),
                   path('api/ngos/', NGOList.as_view(), name='api-ngo-list'),
                   path('api/ngo/<int:pk>/', NGODetail.as_view(), name='api-ngo-detail'),
+
+                  path('api/post/normal', NormalPostAdd.as_view(), name='api-normal-post-add'),
+                  path('api/post/poll', PollPostAdd.as_view(), name='api-poll-post-add'),
+                  path('api/post/request', RequestPostAdd.as_view(), name='api-request-post-add'),
+                  path('api/post/poll', PollPostAdd.as_view(), name='api-poll-post-add'),
+                  path('api/post/request', RequestPostAdd.as_view(), name='api-request-post-add'),
                   path('api/posts/', PostList.as_view(), name='api-post-list'),
                   path('api/post/<int:pk>/', PostDetail.as_view(), name='api-post-detail'),
+
                   path('api/people/', PeopleList.as_view(), name='api-people-list'),
                   path('api/people/add/', PeopleAdd.as_view(), name='api-people-add'),
                   path('api/people/<int:pk>/', PeopleDetail.as_view(), name='api-people-detail'),
+
                   path('api/bank/<int:pk>/', BankDetail.as_view(), name='api-bank-detail'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

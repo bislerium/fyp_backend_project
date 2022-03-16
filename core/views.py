@@ -411,14 +411,14 @@ class read_reports(ListView):
         context = super().get_context_data(object_list=object_list, **kwargs)
         if self.request.user.is_superuser:
             reviewed_reports = Report.objects.filter(is_reviewed=True)
-            context['object_list'] = [report.post for report in reviewed_reports]
+            context['object_list'] = [report.post_head for report in reviewed_reports]
             context['post_reviewed'] = reviewed_reports.count()
             context['total_reports'] = Report.objects.count()
         else:
             staff: Staff = Staff.objects.get(account=self.request.user)
             reviewed_reports = staff.report_review.filter(is_reviewed=False)
             total_reports = staff.report_review.count()
-            context['object_list'] = [report.post for report in reviewed_reports]
+            context['object_list'] = [report.post_head for report in reviewed_reports]
             context['post_reviewed'] = total_reports - reviewed_reports.count()
             context['total_reports'] = total_reports
         return context
@@ -436,7 +436,7 @@ class update_report(UpdateView):
 
     def form_valid(self, form):
         action_option = form['action'].data
-        post = form.instance.post
+        post = form.instance.post_head
         form.instance.is_reviewed = True
         if action_option == Report.ACTION[0][0]:
             post.is_removed = True
