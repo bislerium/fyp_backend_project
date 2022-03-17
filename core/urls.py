@@ -4,7 +4,8 @@ from django.contrib.auth.views import *
 from django.urls import path, include
 
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
-    CustomLoginView, PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd
+    CustomLoginView, PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
+    PostReportView, RequestPostParticipateView
 from core.serializers import PostNormalSerializer, PostRequestSerializer, PostPollSerializer
 
 from core.views import *
@@ -90,7 +91,10 @@ urlpatterns = [
                   path('api/post/poll', PollPostAdd.as_view(), name='api-poll-post-add'),
                   path('api/post/request', RequestPostAdd.as_view(), name='api-request-post-add'),
                   path('api/posts/', PostList.as_view(), name='api-post-list'),
-                  path('api/post/<int:pk>/', PostDetail.as_view(), name='api-post-detail'),
+                  path('api/post/<int:post_id>/upvote', ToggleUpvoteView.as_view(), name='api-post-upvote'),
+                  path('api/post/<int:post_id>/downvote', ToggleDownvoteView.as_view(), name='api-post-downvote'),
+                  path('api/post/<int:post_id>/participate', RequestPostParticipateView.as_view(), name='api-post-report'),
+                  path('api/post/<int:post_id>/report', PostReportView.as_view(), name='api-post-report'),
 
                   path('api/people/', PeopleList.as_view(), name='api-people-list'),
                   path('api/people/add/', PeopleAdd.as_view(), name='api-people-add'),
