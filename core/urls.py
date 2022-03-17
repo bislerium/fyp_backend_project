@@ -5,7 +5,7 @@ from django.urls import path, include
 
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
     CustomLoginView, PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
-    PostReportView, RequestPostParticipateView
+    PostReportView, RequestPostParticipateView, PollPostPollView
 from core.serializers import PostNormalSerializer, PostRequestSerializer, PostPollSerializer
 
 from core.views import *
@@ -80,20 +80,23 @@ urlpatterns = [
                   path('api/login/', CustomLoginView.as_view(), name='rest_login'),
                   # URLs that require a user to be logged in with a valid session / token.
                   path('api/logout/', dj_rest_auth.views.LogoutView.as_view(), name='rest_logout'),
-                  path('api/password/change/', dj_rest_auth.views.PasswordChangeView.as_view(), name='rest_password_change'),
+                  path('api/password/change/', dj_rest_auth.views.PasswordChangeView.as_view(),
+                       name='rest_password_change'),
                   path('api/', include('dj_rest_auth.urls')),
                   path('api/ngos/', NGOList.as_view(), name='api-ngo-list'),
                   path('api/ngo/<int:pk>/', NGODetail.as_view(), name='api-ngo-detail'),
 
-                  path('api/post/normal', NormalPostAdd.as_view(), name='api-normal-post-add'),
-                  path('api/post/poll', PollPostAdd.as_view(), name='api-poll-post-add'),
-                  path('api/post/request', RequestPostAdd.as_view(), name='api-request-post-add'),
-                  path('api/post/poll', PollPostAdd.as_view(), name='api-poll-post-add'),
-                  path('api/post/request', RequestPostAdd.as_view(), name='api-request-post-add'),
+                  path('api/post/normal/', NormalPostAdd.as_view(), name='api-normal-post-add'),
+                  path('api/post/poll/', PollPostAdd.as_view(), name='api-poll-post-add'),
+                  path('api/post/request/', RequestPostAdd.as_view(), name='api-request-post-add'),
+                  path('api/post/poll/', PollPostAdd.as_view(), name='api-poll-post-add'),
+                  path('api/post/request/', RequestPostAdd.as_view(), name='api-request-post-add'),
                   path('api/posts/', PostList.as_view(), name='api-post-list'),
-                  path('api/post/<int:post_id>/upvote', ToggleUpvoteView.as_view(), name='api-post-upvote'),
-                  path('api/post/<int:post_id>/downvote', ToggleDownvoteView.as_view(), name='api-post-downvote'),
-                  path('api/post/<int:post_id>/participate', RequestPostParticipateView.as_view(), name='api-post-report'),
+                  path('api/post/<int:post_id>/upvote/', ToggleUpvoteView.as_view(), name='api-post-upvote'),
+                  path('api/post/<int:post_id>/downvote/', ToggleDownvoteView.as_view(), name='api-post-downvote'),
+                  path('api/post/<int:post_id>/poll/<int:option_id>/', PollPostPollView.as_view(), name='api-post-poll'),
+                  path('api/post/<int:post_id>/participate/', RequestPostParticipateView.as_view(),
+                       name='api-post-participate'),
                   path('api/post/<int:post_id>/report', PostReportView.as_view(), name='api-post-report'),
 
                   path('api/people/', PeopleList.as_view(), name='api-people-list'),

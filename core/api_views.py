@@ -1,11 +1,6 @@
-import django
-import rest_framework
 from dj_rest_auth.views import LoginView as LV
-from django.contrib.auth.models import Group
-from rest_framework import status
 from rest_framework.generics import *
-from rest_framework.permissions import BasePermission, AllowAny
-from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
 from .serializers import *
@@ -99,7 +94,7 @@ def post_a_post(self, request, post_type: EPostType):
     if post_serializer.is_valid():
         return post_serializer.save()
     else:
-        return Response({"Fail": post_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Fail': post_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PostDetail(RetrieveAPIView):
@@ -121,14 +116,14 @@ class ToggleDownvoteView(APIView):
 
 def react_post(user, post_id, reaction_type: EReactionType):
     if user.groups.first().name != 'General':
-        return Response({"Fail": f'Only general people can {reaction_type.name.lower()} the normal post!'},
+        return Response({'Fail': f'Only general people can {reaction_type.name.lower()} the normal post!'},
                         status=status.HTTP_403_FORBIDDEN)
     filtered_post = Post.objects.filter(id=post_id)
     if not filtered_post.exists():
-        return Response({"Fail": 'Normal post with given post id not found!'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Fail': 'Normal post with given post id not found!'}, status=status.HTTP_404_NOT_FOUND)
     post = filtered_post.first()
     if post.post_type != 'Normal':
-        return Response({"Fail": f'Can only {reaction_type.name.lower()} normal post!'},
+        return Response({'Fail': f'Can only {reaction_type.name.lower()} normal post!'},
                         status=status.HTTP_400_BAD_REQUEST)
     match reaction_type:
         case EReactionType.Upvote:
@@ -137,9 +132,11 @@ def react_post(user, post_id, reaction_type: EReactionType):
             reaction_queryset = post.postnormal.down_vote.all()
     if user.peopleuser in reaction_queryset:
         match reaction_type:
-            case EReactionType.Upvote: post.postnormal.up_vote.remove(user.peopleuser)
-            case EReactionType.Downvote: post.postnormal.down_vote.remove(user.peopleuser)
-        return Response({"Undone": f'Normal post {reaction_type.name.lower()} undone.'}, status=status.HTTP_200_OK)
+            case EReactionType.Upvote:
+                post.postnormal.up_vote.remove(user.peopleuser)
+            case EReactionType.Downvote:
+                post.postnormal.down_vote.remove(user.peopleuser)
+        return Response({'Undone': f'Normal post {reaction_type.name.lower()} undone.'}, status=status.HTTP_200_OK)
     else:
         match reaction_type:
             case EReactionType.Upvote:
@@ -148,12 +145,78 @@ def react_post(user, post_id, reaction_type: EReactionType):
             case EReactionType.Downvote:
                 post.postnormal.down_vote.add(user.peopleuser)
                 post.postnormal.up_vote.remove(user.peopleuser)
-        return Response({"Done": f'Normal post {reaction_type.name.lower()} done.'}, status=status.HTTP_200_OK)
+        return Response({'Done': f'Normal post {reaction_type.name.lower()} done.'}, status=status.HTTP_200_OK)
 
 
-class PostReportView(APIView):
-    pass
+class PollPostPollView(APIView):
+
+    def post(self, request, post_id, option_id):
+        user: User = request.user
+        a = validate_request_post_id(user, post_id)
+        if isinstance(a, Response):
+            return a
+        else:
+            post = a
+        if post.post_type != 'Poll':
+            return Response({'Fail': f'Can only poll in poll post!'}, status=status.HTTP_400_BAD_REQUEST)
+        poll_option = PollOption.objects.filter(id=option_id)
+        if not poll_option.exists() or not post.postpoll.option.filter(id=option_id).exists():
+            return Response({'Fail': 'Poll option with given option id not found!'}, status=status.HTTP_404_NOT_FOUND)
+        if post.postpoll.ends_on and datetime.now().date() > post.postpoll.ends_on:
+            return Response({'Success': f'Polling date expired.'}, status=status.HTTP_403_FORBIDDEN)
+        poll_reactions = poll_option.first().reacted_by
+        if user.peopleuser in poll_reactions.all():
+            return Response({'Success': f'Already polled {poll_option.first().option}.'}, status=status.HTTP_200_OK)
+        poll_reactions.add(user.peopleuser)
+        return Response({'Success': f'Polled {poll_option.first().option}.'}, status=status.HTTP_200_OK)
 
 
 class RequestPostParticipateView(APIView):
-    pass
+
+    def post(self, request, post_id):
+        user: User = request.user
+        _ = validate_request_post_id(user, post_id)
+        if isinstance(_, Response):
+            return _
+        else:
+            post = _
+        if post.post_type != 'Request':
+            return Response({'Fail': f'Can only participate in request post!'}, status=status.HTTP_400_BAD_REQUEST)
+        request_participants = post.postrequest.reacted_by
+        if user.peopleuser in request_participants.all():
+            return Response({'Success': f'Already participated.'}, status=status.HTTP_208_ALREADY_REPORTED)
+        if datetime.now(tz=post.postrequest.ends_on.tzinfo) > post.postrequest.ends_on:
+            return Response({'Success': f'Post request participation date expired.'}, status=status.HTTP_403_FORBIDDEN)
+        request_participants.add(user.peopleuser)
+        return Response({'Success': f'Participated'}, status=status.HTTP_200_OK)
+
+
+class PostReportView(APIView):
+
+    def post(self, request, post_id):
+        user: User = request.user
+        a = validate_request_post_id(user, post_id)
+        if isinstance(a, Response):
+            return a
+        else:
+            post = a
+        match post.post_type:
+            case 'Normal':
+                post.postnormal.reported_by.add(user.peopleuser)
+            case 'Poll':
+                post.postpoll.reported_by.add(user.peopleuser)
+            case 'Request':
+                post.postrequest.reported_by.add(user.peopleuser)
+        if not Report.objects.filter(post=post).exists():
+            Report.objects.create(post=post)
+        return Response({'Success': f'Post has been reported.'}, status=status.HTTP_200_OK)
+
+
+def validate_request_post_id(user, post_id):
+    if user.groups.first().name != 'General':
+        return Response({'Fail': f'Only general people can report the normal post!'},
+                        status=status.HTTP_403_FORBIDDEN)
+    filtered_post = Post.objects.filter(id=post_id)
+    if not filtered_post.exists():
+        return Response({'Fail': 'Post with given post id not found!'}, status=status.HTTP_404_NOT_FOUND)
+    return filtered_post.first()
