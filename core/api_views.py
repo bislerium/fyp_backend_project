@@ -1,4 +1,4 @@
-from dj_rest_auth.views import LoginView as LV
+from dj_rest_auth.views import LoginView as ILoginView
 from rest_framework.generics import *
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -11,7 +11,7 @@ class EReactionType(enum.Enum):
     Downvote = 1,
 
 
-class CustomLoginView(LV):
+class CustomLoginView(ILoginView):
     serializer_class = CustomLoginSerializer
 
 
@@ -53,10 +53,11 @@ class PeopleAdd(CreateAPIView):
     queryset = PeopleUser.objects.all()
     serializer_class = PeopleCreateSerializer
 
-    def post(self, request, *args, **kwargs):
-        response: Response = super().post(request, *args, **kwargs)
-        print(response.headers.get()['status_code'])
-        print(response)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response({'Success': 'User is Registered.'}, status=status.HTTP_201_CREATED,)
 
 
 class NormalPostAdd(APIView):
@@ -64,7 +65,7 @@ class NormalPostAdd(APIView):
     serializer_class = PostNormalSerializer
 
     def post(self, request):
-        return post_a_post(self, request, post_type=EPostType.Normal)
+        return post_a_post(request, post_type=EPostType.Normal)
 
 
 class PollPostAdd(CreateAPIView):
@@ -72,7 +73,7 @@ class PollPostAdd(CreateAPIView):
     serializer_class = PostPollSerializer
 
     def post(self, request):
-        return post_a_post(self, request, post_type=EPostType.Poll)
+        return post_a_post(request, post_type=EPostType.Poll)
 
 
 class RequestPostAdd(APIView):
@@ -80,10 +81,10 @@ class RequestPostAdd(APIView):
     serializer_class = PostRequestSerializer
 
     def post(self, request):
-        return post_a_post(self, request, post_type=EPostType.Request)
+        return post_a_post(request, post_type=EPostType.Request)
 
 
-def post_a_post(self, request, post_type: EPostType):
+def post_a_post(request, post_type: EPostType):
     match post_type:
         case EPostType.Normal:
             post_serializer = PostNormalSerializer(data=request.data, context={'request': request})
