@@ -5,7 +5,7 @@ from django.urls import path, include
 
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
     CustomLoginView, PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
-    PostReportView, RequestPostParticipateView, PollPostPollView
+    PostReportView, RequestPostParticipateView, PollPostPollView, RelatedOptionList
 from core.serializers import PostNormalSerializer, PostRequestSerializer, PostPollSerializer
 
 from core.views import *
@@ -86,6 +86,7 @@ urlpatterns = [
                   path('api/ngos/', NGOList.as_view(), name='api-ngo-list'),
                   path('api/ngo/<int:pk>/', NGODetail.as_view(), name='api-ngo-detail'),
 
+                  path('api/post/relatedto/', RelatedOptionList.as_view(), name='api-post-related-option-list'),
                   path('api/post/normal/', NormalPostAdd.as_view(), name='api-normal-post-add'),
                   path('api/post/poll/', PollPostAdd.as_view(), name='api-poll-post-add'),
                   path('api/post/request/', RequestPostAdd.as_view(), name='api-request-post-add'),

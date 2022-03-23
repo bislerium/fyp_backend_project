@@ -10,7 +10,6 @@ from rest_framework.reverse import reverse_lazy
 from rest_framework import serializers, status
 
 import core.models
-from fyp_backend import settings
 from .models import *
 
 

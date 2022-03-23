@@ -3,6 +3,7 @@ from rest_framework.generics import *
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
+import core.models
 from .serializers import *
 
 
@@ -57,7 +58,13 @@ class PeopleAdd(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return Response({'Success': 'User is Registered.'}, status=status.HTTP_201_CREATED,)
+        return Response({'Success': 'User is Registered.'}, status=status.HTTP_201_CREATED, )
+
+
+class RelatedOptionList(APIView):
+
+    def get(self, request):
+        return Response({'options': [v[0] for v in core.models.FIELD_OF_WORK]}, status=status.HTTP_200_OK, )
 
 
 class NormalPostAdd(APIView):
