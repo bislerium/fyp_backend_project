@@ -6,7 +6,6 @@ from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.reverse import reverse_lazy
 from rest_framework import serializers, status
 
 import core.models
@@ -51,12 +50,16 @@ class BankSerializer(serializers.ModelSerializer):
 
 
 class NGOListSerializer(serializers.ModelSerializer):
+    field_of_work = serializers.ListSerializer(child=serializers.CharField(),)
+
     class Meta:
         model = NGOUser
         fields = ['id', 'address', 'display_picture', 'full_name', 'establishment_date', 'field_of_work']
 
 
 class NGOSerializer(serializers.ModelSerializer):
+    field_of_work = serializers.ListSerializer(child=serializers.CharField(),)
+
     class Meta:
         model = NGOUser
         exclude = ['poked_on', 'account']
@@ -128,41 +131,47 @@ class RequestPostSerializer(serializers.ModelSerializer):
 
 
 class PostListSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='api-post-detail')
     is_ngo_poked = serializers.BooleanField(default=False)
+    related_to = serializers.ListSerializer(child=serializers.CharField(),)
 
     class Meta:
         model = Post
-        fields = ['id', 'url', 'related_to', 'post_content', 'is_anonymous', 'is_ngo_poked', 'post_type', 'created_on']
+        fields = ['id', 'related_to', 'post_content', 'is_anonymous', 'is_ngo_poked', 'post_type', 'created_on']
 
     def to_representation(self, instance: Post):
         data = super().to_representation(instance)
-        a = instance.people_posted_post_rn.first()
+        # print(f'{instance.id} -- {instance.post_type}')
+        # print(instance)
+        # match instance.post_type:
+        #     case EPostType.Normal.name: print('------',) if instance.postnormal else print('------none')
+        #     case EPostType.Poll.name: print('------', ) if instance.postpoll else print('------none')
+        #     case EPostType.Request.name: print('------', ) if instance.postrequest else print('------none')
+
+        if instance.post_type == EPostType.Request.name:
+            data['post_type'] = f'{instance.postrequest.request_type} {data["post_type"]}'
         if instance.poked_on_rn.count() > 0:
             data['is_ngo_poked'] = True
-        if a is None:
-            a = instance.ngo_posted_post_rn.first()
-            view = 'api-ngo-detail'
         else:
-            view = 'api-people-detail'
-        data['posted_by'] = self.context.get('request').build_absolute_uri(reverse_lazy(view, kwargs={'pk': a.id}))
+            data['is_ngo_poked'] = False
         return data
 
 
 class PostSerializer(serializers.ModelSerializer):
+    related_to = serializers.ListSerializer(child=serializers.CharField(),)
+
     class Meta:
         model = Post
         fields = ['id', 'related_to', 'post_content', 'created_on', 'modified_on', 'is_anonymous', 'post_type']
 
     def to_representation(self, instance: Post):
         data = super().to_representation(instance)
-        if instance.post_type == 'Normal':
+        if instance.post_type == EPostType.Normal.name:
             data['post_normal'] = NormalPostSerializer(instance.postnormal,
                                                        context={'request': self.context.get('request')}).data
-        if instance.post_type == 'Poll':
+        if instance.post_type == EPostType.Poll.name:
             data['post_poll'] = PollPostSerializer(instance.postpoll,
                                                    context={'request': self.context.get('request')}).data
-        if instance.post_type == 'Request':
+        if instance.post_type == EPostType.Request.name:
             data['post_request'] = RequestPostSerializer(instance.postrequest,
                                                          context={'request': self.context.get('request')}).data
         return data
@@ -238,7 +247,7 @@ class RequestPostCreateSerializer(serializers.ModelSerializer):
         model = PostRequest
         exclude = ('post', 'reported_by', 'reacted_by',)
 
-    #YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
+    # YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
     def validate(self, attrs: OrderedDict):
         if attrs.get('target') == 0:
             raise serializers.ValidationError('Target participants cannot be 0.')

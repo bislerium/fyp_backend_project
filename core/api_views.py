@@ -1,5 +1,6 @@
 from dj_rest_auth.views import LoginView as ILoginView
 from rest_framework.generics import *
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
@@ -41,12 +42,9 @@ class PeopleDetail(RetrieveAPIView):
     serializer_class = PeopleSerializer
 
 
-class PostList(ListAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostListSerializer
-
-    def get_queryset(self):
-        return super().get_queryset().filter(is_removed=False)
+class PaginationClass(PageNumberPagination):
+    page_size = 100
+    # page_size_query_param = 'page_size'
 
 
 class PeopleAdd(CreateAPIView):
@@ -59,12 +57,6 @@ class PeopleAdd(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response({'Success': 'User is Registered.'}, status=status.HTTP_201_CREATED, )
-
-
-class RelatedOptionList(APIView):
-
-    def get(self, request):
-        return Response({'options': [v[0] for v in core.models.FIELD_OF_WORK]}, status=status.HTTP_200_OK, )
 
 
 class NormalPostAdd(APIView):
@@ -107,6 +99,7 @@ def post_a_post(request, post_type: EPostType):
 
 class PostDetail(RetrieveAPIView):
     queryset = Post.objects.all()
+    permission_classes = [AllowAny]
     serializer_class = PostSerializer
 
 
@@ -228,3 +221,26 @@ def validate_request_post_id(user, post_id):
     if not filtered_post.exists():
         return Response({'Fail': 'Post with given post id not found!'}, status=status.HTTP_404_NOT_FOUND)
     return filtered_post.first()
+
+
+class TokenVerification(APIView):
+
+    def get(self, request: Request):
+        # if not Token.objects.filter(key__exact=request.auth).exists():
+        #     return Response ({'Fail': 'Token does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Success': 'Token verified.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class PostList(ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostListSerializer
+    pagination_class = PaginationClass
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_removed=False)
+
+
+class RelatedOptionList(APIView):
+
+    def get(self, request):
+        return Response({'options': [v[0] for v in core.models.FIELD_OF_WORK]}, status=status.HTTP_200_OK, )
