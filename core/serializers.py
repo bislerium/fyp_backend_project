@@ -50,7 +50,7 @@ class BankSerializer(serializers.ModelSerializer):
 
 
 class NGOListSerializer(serializers.ModelSerializer):
-    field_of_work = serializers.ListSerializer(child=serializers.CharField(),)
+    field_of_work = serializers.ListSerializer(child=serializers.CharField(), )
 
     class Meta:
         model = NGOUser
@@ -58,7 +58,7 @@ class NGOListSerializer(serializers.ModelSerializer):
 
 
 class NGOSerializer(serializers.ModelSerializer):
-    field_of_work = serializers.ListSerializer(child=serializers.CharField(),)
+    field_of_work = serializers.ListSerializer(child=serializers.CharField(), )
 
     class Meta:
         model = NGOUser
@@ -75,32 +75,25 @@ class NGOSerializer(serializers.ModelSerializer):
 
 
 class NormalPostSerializer(serializers.ModelSerializer):
-    up_vote = serializers.HyperlinkedRelatedField(view_name='api-people-detail', many=True, read_only=True)
-    post_image = serializers.SerializerMethodField()
 
     class Meta:
         model = PostNormal
-        exclude = ('reported_by',)
+        exclude = ('reported_by', 'post')
 
-    def get_post_image(self, instance):
-        request = self.context.get('request')
-        print('-----', self, '-----------')
-        img = instance.post_image
-        if img and hasattr(img, 'url'):
-            photo_url = img.url
-            print(photo_url)
-            return request.build_absolute_uri(photo_url)
-        else:
-            return None
+    def to_representation(self, instance: PostNormal):
+        data = super().to_representation(instance)
+        if instance.post.people_posted_post_rn.exists():
+            user = instance.post.people_posted_post_rn.first()
+        if instance.post.ngo_posted_post_rn.exists():
+            user = instance.post.ngo_posted_post_rn.first()
+        if user in instance.up_vote.all():
+            data['up_voted'] = True
+        if user in instance.down_vote.all():
+            data['down_voted'] = True
+        return data
 
 
 class PollOptionSerializer(serializers.ModelSerializer):
-    reacted_by = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='api-people-detail'
-    )
-
     class Meta:
         model = PollOption
         fields = '__all__'
@@ -109,30 +102,24 @@ class PollOptionSerializer(serializers.ModelSerializer):
 class PollPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostPoll
-        exclude = ('reported_by', 'post',)
+        exclude = ('reported_by', 'post', 'option')
 
     def to_representation(self, instance: PostPoll):
         data = super().to_representation(instance)
-        data['option'] = PollOptionSerializer(instance.option, many=True,
-                                              context={'request': self.context.get('request')}).data
+        data['options'] = PollOptionSerializer(instance.option, many=True,
+                                               context={'request': self.context.get('request')}).data
         return data
 
 
 class RequestPostSerializer(serializers.ModelSerializer):
-    reacted_by = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='api-people-detail'
-    )
-
     class Meta:
         model = PostRequest
-        exclude = ('reported_by',)
+        exclude = ('reported_by', 'post',)
 
 
 class PostListSerializer(serializers.ModelSerializer):
     is_ngo_poked = serializers.BooleanField(default=False)
-    related_to = serializers.ListSerializer(child=serializers.CharField(),)
+    related_to = serializers.ListSerializer(child=serializers.CharField(), )
 
     class Meta:
         model = Post
@@ -156,8 +143,14 @@ class PostListSerializer(serializers.ModelSerializer):
         return data
 
 
+class NGOOptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NGOUser
+        fields = ['id', 'full_name', 'display_picture']
+
+
 class PostSerializer(serializers.ModelSerializer):
-    related_to = serializers.ListSerializer(child=serializers.CharField(),)
+    related_to = serializers.ListSerializer(child=serializers.CharField(), )
 
     class Meta:
         model = Post
@@ -165,15 +158,22 @@ class PostSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance: Post):
         data = super().to_representation(instance)
+        data['poked_ngo'] = NGOOptionSerializer(instance.poked_on_rn.all(), many=True,
+                                                       context={'request': self.context.get('request')}).data
+        if not instance.is_anonymous:
+            if instance.people_posted_post_rn.exists():
+                data['author'] = instance.people_posted_post_rn.first().full_name
+                data['author_id'] = instance.people_posted_post_rn.first().id
+            if instance.ngo_posted_post_rn.exists():
+                data['author'] = instance.ngo_posted_post_rn.first().full_name
+                data['author_id'] = instance.ngo_posted_post_rn.first().id
         if instance.post_type == EPostType.Normal.name:
             data['post_normal'] = NormalPostSerializer(instance.postnormal,
                                                        context={'request': self.context.get('request')}).data
         if instance.post_type == EPostType.Poll.name:
-            data['post_poll'] = PollPostSerializer(instance.postpoll,
-                                                   context={'request': self.context.get('request')}).data
+            data['post_poll'] = PollPostSerializer(instance.postpoll, ).data
         if instance.post_type == EPostType.Request.name:
-            data['post_request'] = RequestPostSerializer(instance.postrequest,
-                                                         context={'request': self.context.get('request')}).data
+            data['post_request'] = RequestPostSerializer(instance.postrequest, ).data
         return data
 
 
