@@ -75,21 +75,18 @@ class NGOSerializer(serializers.ModelSerializer):
 
 
 class NormalPostSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = PostNormal
         exclude = ('reported_by', 'post')
 
     def to_representation(self, instance: PostNormal):
         data = super().to_representation(instance)
-        if instance.post.people_posted_post_rn.exists():
-            user = instance.post.people_posted_post_rn.first()
-        if instance.post.ngo_posted_post_rn.exists():
-            user = instance.post.ngo_posted_post_rn.first()
-        if user in instance.up_vote.all():
-            data['up_voted'] = True
-        if user in instance.down_vote.all():
-            data['down_voted'] = True
+        user: User = self.context.get('request').user
+        if user.groups.first().name == 'General':
+            if user.peopleuser in instance.up_vote.all():
+                data['up_voted'] = True
+            if user.peopleuser in instance.down_vote.all():
+                data['down_voted'] = True
         return data
 
 
@@ -106,6 +103,11 @@ class PollPostSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance: PostPoll):
         data = super().to_representation(instance)
+        user: User = self.context.get('request').user
+        if user.groups.first().name == 'General':
+            for option in instance.option.all():
+                if user.peopleuser in option.reacted_by.all():
+                    data['choice'] = option.id
         data['options'] = PollOptionSerializer(instance.option, many=True,
                                                context={'request': self.context.get('request')}).data
         return data
@@ -115,6 +117,13 @@ class RequestPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostRequest
         exclude = ('reported_by', 'post',)
+
+    def to_representation(self, instance: PostRequest):
+        data = super().to_representation(instance)
+        user: User = self.context.get('request').user
+        if user.groups.first().name == 'General' and user.peopleuser in instance.reacted_by.all():
+            data['is_participated'] = True
+        return data
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -159,7 +168,7 @@ class PostSerializer(serializers.ModelSerializer):
     def to_representation(self, instance: Post):
         data = super().to_representation(instance)
         data['poked_ngo'] = NGOOptionSerializer(instance.poked_on_rn.all(), many=True,
-                                                       context={'request': self.context.get('request')}).data
+                                                context={'request': self.context.get('request')}).data
         if not instance.is_anonymous:
             if instance.people_posted_post_rn.exists():
                 data['author'] = instance.people_posted_post_rn.first().full_name
@@ -171,9 +180,11 @@ class PostSerializer(serializers.ModelSerializer):
             data['post_normal'] = NormalPostSerializer(instance.postnormal,
                                                        context={'request': self.context.get('request')}).data
         if instance.post_type == EPostType.Poll.name:
-            data['post_poll'] = PollPostSerializer(instance.postpoll, ).data
+            data['post_poll'] = PollPostSerializer(instance.postpoll,
+                                                   context={'request': self.context.get('request')}).data
         if instance.post_type == EPostType.Request.name:
-            data['post_request'] = RequestPostSerializer(instance.postrequest, ).data
+            data['post_request'] = RequestPostSerializer(instance.postrequest,
+                                                         context={'request': self.context.get('request')}).data
         return data
 
 
@@ -237,7 +248,7 @@ class PollPostCreateSerializer(serializers.ModelSerializer):
     def validate(self, attrs: OrderedDict):
         if len(attrs.get('option')) < 2:
             raise serializers.ValidationError('Must provide two poll options for type: poll post.')
-        if attrs.get('ends_on') <= datetime.now().date():
+        if attrs.get('ends_on') and attrs.get('ends_on') <= datetime.now(tz=attrs.get('ends_on').tzinfo):
             raise serializers.ValidationError('Poll post must end in future.')
         return attrs
 
@@ -317,9 +328,10 @@ def create_post(request: Request, validated_data, post_type: EPostType):
     poked_ngo = set(validated_data['poked_to'])
     serialized_post_head = PostCreateSerializer(data=validated_data['post_head'], )
     try:
-        if user.groups.first().name not in ['NGO', 'General']:
+        group = user.groups.first().name
+        if group not in ['NGO', 'General']:
             raise ValueError('Only NGO and general people can post!')
-        if user.ngouser.id in poked_ngo:
+        if group == 'NGO' and user.ngouser.id in poked_ngo:
             raise ValueError(f'You cannot poke yourself!')
         invalid_ngo_id = [i for i in poked_ngo if not User.objects.filter(pk=i).exists()]
         if invalid_ngo_id:
@@ -341,9 +353,10 @@ def create_post(request: Request, validated_data, post_type: EPostType):
                 post_extension = serialized_post_extension.save()
                 post_extension.post = post
                 post_extension.save()
-                if user.groups.first().name == 'People':
+                if group == 'General':
+                    print('general')
                     user.peopleuser.posted_post.add(post)
-                if user.groups.first().name == 'NGO':
+                if group == 'NGO':
                     user.ngouser.posted_post.add(post)
                 for i in poked_ngo:
                     NGOUser.objects.get(id=i).poked_on.add(post)

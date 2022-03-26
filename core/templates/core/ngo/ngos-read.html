@@ -47,7 +47,11 @@
                 <tbody>
                 {% for ngo in object_list %}
                     <tr>
-                        <td data-label="Display Picture"><img src="{{ ngo.display_picture.url }}" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="{{ ngo.display_picture.name }}"></td>
+                        {% if ngo.display_picture %}
+                            <td data-label="Display Picture"><img src="{{ ngo.display_picture.url }}" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="{{ ngo.display_picture.name }}"></td>
+                        {% else %}
+                            <td data-label="Display Picture"><img src="/media/default/default_ngo_dp.png" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="default_ngo_dp"></td>
+                        {% endif %}
                         <td data-label="NGO Name">{{ ngo.full_name }}</td>
                         <td data-label="Date Joined">{{ ngo.account.date_joined|date }}</td>
                         <td data-label="Active">{{ ngo.account.is_active }}</td>

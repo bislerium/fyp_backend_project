@@ -222,5 +222,5 @@ class PollOption(models.Model):
 class PostPoll(PostAttachment):
     # rename to options
     option = models.ManyToManyField(PollOption)
-    ends_on = models.DateField(blank=True, null=True)
+    ends_on = models.DateTimeField(blank=True, null=True)
     reported_by = models.ManyToManyField(PeopleUser, related_name='poll_reported_by_rn', blank=True)

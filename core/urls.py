@@ -98,7 +98,7 @@ urlpatterns = [
                        name='api-post-poll'),
                   path('api/post/<int:post_id>/participate/', RequestPostParticipateView.as_view(),
                        name='api-post-participate'),
-                  path('api/post/<int:post_id>/report', PostReportView.as_view(), name='api-post-report'),
+                  path('api/post/<int:post_id>/report/', PostReportView.as_view(), name='api-post-report'),
                   path('api/post/relatedto/', RelatedOptionList.as_view(), name='api-post-related-option-list'),
 
                   path('api/people/', PeopleList.as_view(), name='api-people-list'),

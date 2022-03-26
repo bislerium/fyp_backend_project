@@ -67,8 +67,8 @@ class NormalPostAdd(APIView):
         return post_a_post(request, post_type=EPostType.Normal)
 
 
-class PollPostAdd(CreateAPIView):
-    permission_classes = [AllowAny]
+class PollPostAdd(APIView):
+    # permission_classes = [AllowAny]
     serializer_class = PostPollSerializer
 
     def post(self, request):
@@ -163,7 +163,7 @@ class PollPostPollView(APIView):
         poll_option = PollOption.objects.filter(id=option_id)
         if not poll_option.exists() or not post.postpoll.option.filter(id=option_id).exists():
             return Response({'Fail': 'Poll option with given option id not found!'}, status=status.HTTP_404_NOT_FOUND)
-        if post.postpoll.ends_on and datetime.now().date() > post.postpoll.ends_on:
+        if post.postpoll.ends_on and datetime.now(tz=post.postpoll.ends_on.tzinfo) > post.postpoll.ends_on:
             return Response({'Success': f'Polling date expired.'}, status=status.HTTP_403_FORBIDDEN)
         poll_reactions = poll_option.first().reacted_by
         if user.peopleuser in poll_reactions.all():
