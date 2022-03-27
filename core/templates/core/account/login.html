@@ -28,8 +28,8 @@
         <main class="form-signin">
             <form class="text-center" method="post" action="{% url 'login' %}">
                 {% csrf_token %}
-                <img class="mb-4" src="{% static 'core/img/supersonic.svg' %}" alt="" width="72">
-                <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+                <img class="mb-4" src="{% static 'core/img/website-logo.png' %}" alt="" width="100">
+                <h1 class="h3 mb-3 fw-normal">Please Login</h1>
                 <p>'Only for Staff and Admin'</p>
 
                 <div class="form-floating">
@@ -47,7 +47,7 @@
                 <div class="mb-3" style="text-align: right">
                     <a href="{% url 'password_reset'%}" class="text-decoration-none">Forgot password?</a>
                 </div>
-                <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
             </form>
         </main>
     </div>
