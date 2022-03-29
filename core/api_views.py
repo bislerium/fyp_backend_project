@@ -60,10 +60,11 @@ class PeopleAdd(CreateAPIView):
 
 
 class NormalPostAdd(APIView):
-    # permission_classes = [AllowAny]
+    permission_classes = [AllowAny]
     serializer_class = PostNormalSerializer
 
     def post(self, request):
+        print(request.data)
         return post_a_post(request, post_type=EPostType.Normal)
 
 
@@ -72,6 +73,7 @@ class PollPostAdd(APIView):
     serializer_class = PostPollSerializer
 
     def post(self, request):
+        print(request.data)
         return post_a_post(request, post_type=EPostType.Poll)
 
 
@@ -244,3 +246,8 @@ class RelatedOptionList(APIView):
 
     def get(self, request):
         return Response({'options': [v[0] for v in core.models.FIELD_OF_WORK]}, status=status.HTTP_200_OK, )
+
+
+class NGOOptionList(ListAPIView):
+    queryset = NGOUser.objects.all()
+    serializer_class = NGOOptionSerializer
