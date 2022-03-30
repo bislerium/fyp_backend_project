@@ -191,7 +191,7 @@ class PostAttachment(models.Model):
 
 
 class PostNormal(PostAttachment):
-    post_image = models.ImageField(upload_to='post_image_rn', blank=True, null=True)
+    post_image = models.ImageField(upload_to='post_image', blank=True, null=True)
     up_vote = models.ManyToManyField(PeopleUser, related_name='up_vote_rn', blank=True)
     down_vote = models.ManyToManyField(PeopleUser, related_name='down_vote_rn', blank=True)
     reported_by = models.ManyToManyField(PeopleUser, related_name='normal_reported_by_rn', blank=True)

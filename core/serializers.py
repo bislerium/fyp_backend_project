@@ -136,13 +136,6 @@ class PostListSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance: Post):
         data = super().to_representation(instance)
-        # print(f'{instance.id} -- {instance.post_type}')
-        # print(instance)
-        # match instance.post_type:
-        #     case EPostType.Normal.name: print('------',) if instance.postnormal else print('------none')
-        #     case EPostType.Poll.name: print('------', ) if instance.postpoll else print('------none')
-        #     case EPostType.Request.name: print('------', ) if instance.postrequest else print('------none')
-
         if instance.post_type == EPostType.Request.name:
             data['post_type'] = f'{instance.postrequest.request_type} {data["post_type"]}'
         if instance.poked_on_rn.count() > 0:
@@ -226,11 +219,6 @@ class NormalPostCreateSerializer(serializers.ModelSerializer):
         exclude = ('post', 'up_vote', 'down_vote', 'reported_by')
 
 
-def adequate_poll_options(value: list):
-    if not value:
-        raise serializers.ValidationError('Must have at least two poll options.')
-
-
 class PollPostCreateSerializer(serializers.ModelSerializer):
     option = serializers.ListSerializer(child=serializers.CharField(),
                                         write_only=True, allow_empty=False, )
@@ -248,7 +236,8 @@ class PollPostCreateSerializer(serializers.ModelSerializer):
     def validate(self, attrs: OrderedDict):
         if len(attrs.get('option')) < 2:
             raise serializers.ValidationError('Must provide two poll options for type: poll post.')
-        if attrs.get('ends_on') and attrs.get('ends_on') <= datetime.now(tz=attrs.get('ends_on').tzinfo) + timedelta(minutes=50):
+        if attrs.get('ends_on') and attrs.get('ends_on') <= datetime.now(tz=attrs.get('ends_on').tzinfo) \
+                + timedelta(minutes=50):
             raise serializers.ValidationError('Poll post must end in future.')
         return attrs
 
@@ -290,11 +279,11 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
 
 class PostNormalSerializer(serializers.Serializer):
-    normal_post = NormalPostCreateSerializer(write_only=True, )
-    post_head = PostCreateSerializer(write_only=True, )
+    post_head = PostCreateSerializer(write_only=True,)
     poked_to = serializers.ListSerializer(child=serializers.IntegerField(),
                                           write_only=True, allow_empty=True,
                                           )
+    post_image = serializers.ImageField(default=None,)
 
     def create(self, validated_data):
         return create_post(self.context['request'], validated_data=validated_data, post_type=EPostType.Normal)
@@ -323,6 +312,7 @@ class PostRequestSerializer(serializers.Serializer):
 
 
 def create_post(request: Request, validated_data, post_type: EPostType):
+    print(validated_data)
     user: User = request.user
     poked_ngo = set(validated_data['poked_to'])
     serialized_post_head = PostCreateSerializer(data=validated_data['post_head'], )
@@ -340,7 +330,8 @@ def create_post(request: Request, validated_data, post_type: EPostType):
             match post_type:
                 case EPostType.Normal:
                     post.post_type = post_type.name
-                    serialized_post_extension = NormalPostCreateSerializer(data=validated_data['normal_post'])
+                    serialized_post_extension = NormalPostCreateSerializer(
+                        data={'post_image': validated_data['post_image']})
                 case EPostType.Poll:
                     post.post_type = post_type.name
                     serialized_post_extension = PollPostCreateSerializer(data=validated_data['poll_post'])

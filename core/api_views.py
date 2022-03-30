@@ -1,7 +1,13 @@
+import random
+
 from dj_rest_auth.views import LoginView as ILoginView
+from django.http import QueryDict
+from rest_framework import parsers
 from rest_framework.generics import *
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.parsers import FileUploadParser, FormParser
 from rest_framework.permissions import AllowAny
+from rest_framework.utils import json
 from rest_framework.views import APIView
 
 import core.models
@@ -48,9 +54,9 @@ class PaginationClass(PageNumberPagination):
 
 
 class PeopleAdd(CreateAPIView):
-    permission_classes = [AllowAny]
     queryset = PeopleUser.objects.all()
     serializer_class = PeopleCreateSerializer
+    permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -59,26 +65,47 @@ class PeopleAdd(CreateAPIView):
         return Response({'Success': 'User is Registered.'}, status=status.HTTP_201_CREATED, )
 
 
+class CustomMultipartJsonParser(parsers.MultiPartParser):
+
+    def parse(self, stream, media_type=None, parser_context=None):
+        result = super().parse(
+            stream,
+            media_type=media_type,
+            parser_context=parser_context
+        )
+        data = {}
+        for key, value in result.data.items():
+            if '{' in value or "[" in value:
+                try:
+                    data[key] = json.loads(value)
+                except ValueError:
+                    print('raised')
+            else:
+                data[key] = value
+        file = {}
+        for key, value in result.files.items():
+            file[key] = value
+
+        return parsers.DataAndFiles(data, file)
+
+
 class NormalPostAdd(APIView):
     permission_classes = [AllowAny]
+    parser_classes = (CustomMultipartJsonParser,)
     serializer_class = PostNormalSerializer
 
     def post(self, request):
-        print(request.data)
         return post_a_post(request, post_type=EPostType.Normal)
 
 
 class PollPostAdd(APIView):
-    # permission_classes = [AllowAny]
     serializer_class = PostPollSerializer
 
     def post(self, request):
-        print(request.data)
         return post_a_post(request, post_type=EPostType.Poll)
 
 
 class RequestPostAdd(APIView):
-    permission_classes = [AllowAny]
     serializer_class = PostRequestSerializer
 
     def post(self, request):
@@ -239,7 +266,8 @@ class PostList(ListAPIView):
     pagination_class = PaginationClass
 
     def get_queryset(self):
-        return super().get_queryset().filter(is_removed=False)
+        queryset = super().get_queryset().filter(is_removed=False)
+        return sorted(queryset, key=lambda x: random.random())
 
 
 class RelatedOptionList(APIView):
