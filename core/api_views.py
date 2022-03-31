@@ -1,11 +1,9 @@
 import random
 
 from dj_rest_auth.views import LoginView as ILoginView
-from django.http import QueryDict
 from rest_framework import parsers
 from rest_framework.generics import *
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.parsers import FileUploadParser, FormParser
 from rest_framework.permissions import AllowAny
 from rest_framework.utils import json
 from rest_framework.views import APIView
@@ -50,7 +48,6 @@ class PeopleDetail(RetrieveAPIView):
 
 class PaginationClass(PageNumberPagination):
     page_size = 100
-    # page_size_query_param = 'page_size'
 
 
 class PeopleAdd(CreateAPIView):
@@ -63,6 +60,20 @@ class PeopleAdd(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response({'Success': 'User is Registered.'}, status=status.HTTP_201_CREATED, )
+
+
+class PeopleDelete(DestroyAPIView):
+    queryset = User.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        user: User = self.request.user
+        self.perform_destroy(user)
+        Token.objects.get(user=user).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance: User):
+        instance.is_active = False
+        instance.save()
 
 
 class CustomMultipartJsonParser(parsers.MultiPartParser):
@@ -113,6 +124,9 @@ class RequestPostAdd(APIView):
 
 
 def post_a_post(request, post_type: EPostType):
+    if not request.user.groups.exists() or request.user.groups.first().name not in ['General', 'NGO']:
+        return Response({'Fail': f'Only general people and NGO can post.'},
+                        status=status.HTTP_403_FORBIDDEN)
     match post_type:
         case EPostType.Normal:
             post_serializer = PostNormalSerializer(data=request.data, context={'request': request})
@@ -128,7 +142,6 @@ def post_a_post(request, post_type: EPostType):
 
 class PostDetail(RetrieveAPIView):
     queryset = Post.objects.all()
-    permission_classes = [AllowAny]
     serializer_class = PostSerializer
 
 
@@ -243,8 +256,8 @@ class PostReportView(APIView):
 
 
 def validate_request_post_id(user, post_id):
-    if user.groups.first().name != 'General':
-        return Response({'Fail': f'Only general people can report the normal post!'},
+    if not user.groups.exists() or user.groups.first().name != 'General':
+        return Response({'Fail': f'Only general people can perform this action!'},
                         status=status.HTTP_403_FORBIDDEN)
     filtered_post = Post.objects.filter(id=post_id)
     if not filtered_post.exists():
@@ -255,9 +268,7 @@ def validate_request_post_id(user, post_id):
 class TokenVerification(APIView):
 
     def get(self, request: Request):
-        # if not Token.objects.filter(key__exact=request.auth).exists():
-        #     return Response ({'Fail': 'Token does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'Success': 'Token verified.'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'Success': 'Token verified.'}, status=status.HTTP_200_OK)
 
 
 class PostList(ListAPIView):
@@ -266,8 +277,26 @@ class PostList(ListAPIView):
     pagination_class = PaginationClass
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(is_removed=False)
+        _ = super().get_queryset()
+        __ = _.filter(people_posted_post_rn__account__is_active=True) | _.filter(ngo_posted_post_rn__account__is_active=True)
+        queryset = __.filter(is_removed=False)
         return sorted(queryset, key=lambda x: random.random())
+
+
+class UserPostList(ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostListSerializer
+    pagination_class = PaginationClass
+
+    def get_queryset(self):
+        _ = super().get_queryset()
+        user: User = self.request.user
+        group = user.groups.first().name
+        match group:
+            case 'General': queryset = _.filter(people_posted_post_rn__account=user)
+            case 'NGO': queryset = _.filter(ngo_posted_post_rn__account=user)
+            case _: _.none()
+        return queryset.filter(is_removed=False)
 
 
 class RelatedOptionList(APIView):
@@ -279,3 +308,25 @@ class RelatedOptionList(APIView):
 class NGOOptionList(ListAPIView):
     queryset = NGOUser.objects.all()
     serializer_class = NGOOptionSerializer
+
+
+class PostDelete(DestroyAPIView):
+    queryset = Post.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        instance: Post = self.get_object()
+        user: User = self.request.user
+        if instance.people_posted_post_rn.exists():
+            user_who_posted: PeopleUser = instance.people_posted_post_rn.first().account
+        if instance.ngo_posted_post_rn.exists():
+            user_who_posted: NGOUser = instance.ngo_posted_post_rn.first().account
+        if user != user_who_posted:
+            return Response({'Fail': 'Post does not belong to the user who requested.'},
+                            status=status.HTTP_403_FORBIDDEN)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance: Post):
+        instance.is_removed = True
+        instance.save()
+

@@ -5,7 +5,8 @@ from django.urls import path, include
 
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
     CustomLoginView, PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
-    PostReportView, RequestPostParticipateView, PollPostPollView, RelatedOptionList, TokenVerification, NGOOptionList
+    PostReportView, RequestPostParticipateView, PollPostPollView, RelatedOptionList, TokenVerification, NGOOptionList, \
+    PostDelete, UserPostList, PeopleDelete
 from core.serializers import PostNormalSerializer, PostRequestSerializer, PostPollSerializer
 
 from core.views import *
@@ -82,7 +83,7 @@ urlpatterns = [
                   path('api/logout/', dj_rest_auth.views.LogoutView.as_view(), name='rest_logout'),
                   path('api/password/change/', dj_rest_auth.views.PasswordChangeView.as_view(),
                        name='rest_password_change'),
-                  path('api/token/verify/',  TokenVerification.as_view(), name='token-verify'),
+                  path('api/user/verify/', TokenVerification.as_view(), name='token-verify'),
                   path('api/ngos/', NGOList.as_view(), name='api-ngo-list'),
                   path('api/ngo/<int:pk>/', NGODetail.as_view(), name='api-ngo-detail'),
 
@@ -90,7 +91,9 @@ urlpatterns = [
                   path('api/post/poll/', PollPostAdd.as_view(), name='api-poll-post-add'),
                   path('api/post/request/', RequestPostAdd.as_view(), name='api-request-post-add'),
                   path('api/posts/', PostList.as_view(), name='api-post-list'),
+                  path('api/user/posts/', UserPostList.as_view(), name='api-user-post-list'),
                   path('api/post/<int:pk>/', PostDetail.as_view(), name='api-post-detail'),
+                  path('api/post/<int:pk>/delete/', PostDelete.as_view(), name='api-post-delete'),
                   path('api/post/<int:post_id>/upvote/', ToggleUpvoteView.as_view(), name='api-post-upvote'),
                   path('api/post/<int:post_id>/downvote/', ToggleDownvoteView.as_view(), name='api-post-downvote'),
                   path('api/post/<int:post_id>/poll/<int:option_id>/', PollPostPollView.as_view(),
@@ -103,6 +106,7 @@ urlpatterns = [
 
                   path('api/people/', PeopleList.as_view(), name='api-people-list'),
                   path('api/people/add/', PeopleAdd.as_view(), name='api-people-add'),
+                  path('api/people/delete/', PeopleDelete.as_view(), name='api-people-delete'),
                   path('api/people/<int:pk>/', PeopleDetail.as_view(), name='api-people-detail'),
 
                   path('api/bank/<int:pk>/', BankDetail.as_view(), name='api-bank-detail'),
