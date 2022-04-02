@@ -1,7 +1,7 @@
 import dj_rest_auth
 from django.conf.urls.static import static
 from django.contrib.auth.views import *
-from django.urls import path, include
+from django.urls import path, include, re_path
 
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
     CustomLoginView, PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
@@ -84,6 +84,8 @@ urlpatterns = [
                   path('api/password/change/', dj_rest_auth.views.PasswordChangeView.as_view(),
                        name='rest_password_change'),
                   path('api/user/verify/', TokenVerification.as_view(), name='token-verify'),
+                  re_path(r'^api/(?P<user_type>(ngo|people))/(?P<user_id>\d+)/posts/$', UserPostList.as_view(),
+                          name='api-user-post-list'),
                   path('api/ngos/', NGOList.as_view(), name='api-ngo-list'),
                   path('api/ngo/<int:pk>/', NGODetail.as_view(), name='api-ngo-detail'),
 
@@ -91,7 +93,6 @@ urlpatterns = [
                   path('api/post/poll/', PollPostAdd.as_view(), name='api-poll-post-add'),
                   path('api/post/request/', RequestPostAdd.as_view(), name='api-request-post-add'),
                   path('api/posts/', PostList.as_view(), name='api-post-list'),
-                  path('api/user/posts/', UserPostList.as_view(), name='api-user-post-list'),
                   path('api/post/<int:pk>/', PostDetail.as_view(), name='api-post-detail'),
                   path('api/post/<int:pk>/delete/', PostDelete.as_view(), name='api-post-delete'),
                   path('api/post/<int:post_id>/upvote/', ToggleUpvoteView.as_view(), name='api-post-upvote'),

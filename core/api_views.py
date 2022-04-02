@@ -290,12 +290,14 @@ class UserPostList(ListAPIView):
 
     def get_queryset(self):
         _ = super().get_queryset()
-        user: User = self.request.user
-        group = user.groups.first().name
-        match group:
-            case 'General': queryset = _.filter(people_posted_post_rn__account=user)
-            case 'NGO': queryset = _.filter(ngo_posted_post_rn__account=user)
-            case _: _.none()
+        match self.kwargs['user_type']:
+            case 'people':
+                people: PeopleUser = get_object_or_404(PeopleUser, pk=self.kwargs['user_id'])
+                queryset = _.filter(people_posted_post_rn=people)
+            case 'ngo':
+                ngo: NGOUser = get_object_or_404(NGOUser, pk=self.kwargs['user_id'])
+                queryset = _.filter(ngo_posted_post_rn=ngo)
+            case _: queryset = _.none()
         return queryset.filter(is_removed=False)
 
 
