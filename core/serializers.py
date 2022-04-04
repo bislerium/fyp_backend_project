@@ -1,9 +1,11 @@
 import enum
 from collections import OrderedDict
 from datetime import datetime, timedelta
+
 from dj_rest_auth.serializers import TokenSerializer, LoginSerializer
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -187,20 +189,24 @@ class PeopleCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True, allow_blank=False,
                                      required=True,
                                      allow_null=False)
+    display_picture = serializers.ImageField(default=None, )
+    citizenship_photo = serializers.ImageField(default=None, )
 
     class Meta:
         model = PeopleUser
-        exclude = ['account', 'posted_post', 'is_verified']
+        exclude = ['id', 'account', 'posted_post', 'is_verified']
         required = ('date_of_birth', 'gender', 'phone',)
 
     def create(self, validated_data):
+        if validated_data['username'] in User.objects.values_list('username', flat=True):
+            raise ParseError()
         user = User.objects.create(username=validated_data['username'],
                                    email=validated_data['email'],
                                    )
         user.set_password(validated_data['password'])
         user.groups.add(Group.objects.get(name='General'))
         user.save()
-        if validated_data['display_picture'] is None:
+        if not validated_data['display_picture']:
             validated_data['display_picture'] = settings.DEFAULT_PEOPLE_DP
         return PeopleUser.objects.create(account=user,
                                          full_name=validated_data['full_name'],
@@ -211,6 +217,29 @@ class PeopleCreateSerializer(serializers.ModelSerializer):
                                          display_picture=validated_data['display_picture'],
                                          citizenship_photo=validated_data['citizenship_photo'],
                                          )
+
+
+class PeopleRUDSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=False, write_only=True)
+    display_picture = serializers.ImageField(default=None, )
+    citizenship_photo = serializers.ImageField(default=None, )
+
+    class Meta:
+        model = PeopleUser
+        exclude = ['id', 'account', 'posted_post', 'is_verified']
+
+    def update(self, instance, validated_data):
+        user: User = instance.account
+        user.email = validated_data.get('email', user.email)
+        user.save()
+        if not validated_data['display_picture']:
+            validated_data['display_picture'] = settings.DEFAULT_PEOPLE_DP
+        return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['email'] = instance.account.email
+        return data
 
 
 class NormalPostCreateSerializer(serializers.ModelSerializer):
@@ -279,11 +308,11 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
 
 class PostNormalSerializer(serializers.Serializer):
-    post_head = PostCreateSerializer(write_only=True,)
+    post_head = PostCreateSerializer(write_only=True, )
     poked_to = serializers.ListSerializer(child=serializers.IntegerField(),
                                           write_only=True, allow_empty=True,
                                           )
-    post_image = serializers.ImageField(default=None,)
+    post_image = serializers.ImageField(default=None, )
 
     def create(self, validated_data):
         return create_post(self.context['request'], validated_data=validated_data, post_type=EPostType.Normal)
@@ -312,7 +341,6 @@ class PostRequestSerializer(serializers.Serializer):
 
 
 def create_post(request: Request, validated_data, post_type: EPostType):
-    print(validated_data)
     user: User = request.user
     poked_ngo = set(validated_data['poked_to'])
     serialized_post_head = PostCreateSerializer(data=validated_data['post_head'], )
@@ -326,7 +354,7 @@ def create_post(request: Request, validated_data, post_type: EPostType):
         if invalid_ngo_id:
             raise ValueError(f'NGOs with IDs: {invalid_ngo_id} does not exist.')
         if serialized_post_head.is_valid():
-            post = serialized_post_head.save()
+            post: Post = serialized_post_head.save()
             match post_type:
                 case EPostType.Normal:
                     post.post_type = post_type.name
@@ -344,7 +372,6 @@ def create_post(request: Request, validated_data, post_type: EPostType):
                 post_extension.post = post
                 post_extension.save()
                 if group == 'General':
-                    print('general')
                     user.peopleuser.posted_post.add(post)
                 if group == 'NGO':
                     user.ngouser.posted_post.add(post)
@@ -358,7 +385,8 @@ def create_post(request: Request, validated_data, post_type: EPostType):
     except ValueError as e:
         return Response({"Fail": e.args}, status=status.HTTP_400_BAD_REQUEST)
     else:
-        return Response({"Success": f"{post_type.name} Post created successfully!"}, status=status.HTTP_201_CREATED)
+        return Response({"Success": f"{post_type.name} Post created successfully!",
+                         "post_data": PostListSerializer(post, ).data}, status=status.HTTP_201_CREATED)
 
 
 class PeopleSerializer(serializers.ModelSerializer):

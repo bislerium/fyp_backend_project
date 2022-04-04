@@ -6,7 +6,7 @@ from django.urls import path, include, re_path
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
     CustomLoginView, PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
     PostReportView, RequestPostParticipateView, PollPostPollView, RelatedOptionList, TokenVerification, NGOOptionList, \
-    PostDelete, UserPostList, PeopleDelete
+    PostDelete, UserPostList, PeopleRUD
 from core.serializers import PostNormalSerializer, PostRequestSerializer, PostPollSerializer
 
 from core.views import *
@@ -107,7 +107,9 @@ urlpatterns = [
 
                   path('api/people/', PeopleList.as_view(), name='api-people-list'),
                   path('api/people/add/', PeopleAdd.as_view(), name='api-people-add'),
-                  path('api/people/delete/', PeopleDelete.as_view(), name='api-people-delete'),
+                  path('api/people/detail/', PeopleRUD.as_view(), name='api-people-detail'),
+                  path('api/people/update/', PeopleRUD.as_view(), name='api-people-update'),
+                  path('api/people/delete/', PeopleRUD.as_view(), name='api-people-delete'),
                   path('api/people/<int:pk>/', PeopleDetail.as_view(), name='api-people-detail'),
 
                   path('api/bank/<int:pk>/', BankDetail.as_view(), name='api-bank-detail'),
