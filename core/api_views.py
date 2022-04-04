@@ -314,7 +314,7 @@ class UserPostList(ListAPIView):
                 ngo: NGOUser = get_object_or_404(NGOUser, pk=self.kwargs['user_id'])
                 queryset = _.filter(ngo_posted_post_rn=ngo)
             case _: queryset = _.none()
-        return queryset.filter(is_removed=False)
+        return queryset.filter(is_removed=False).order_by('-created_on')
 
 
 class RelatedOptionList(APIView):
