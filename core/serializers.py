@@ -223,17 +223,21 @@ class PeopleRUDSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=False, write_only=True)
     display_picture = serializers.ImageField(default=None, )
     citizenship_photo = serializers.ImageField(default=None, )
+    is_verified = serializers.BooleanField(read_only=True, )
 
     class Meta:
         model = PeopleUser
-        exclude = ['id', 'account', 'posted_post', 'is_verified']
+        exclude = ['id', 'account', 'posted_post', ]
 
     def update(self, instance, validated_data):
         user: User = instance.account
         user.email = validated_data.get('email', user.email)
         user.save()
+        print(validated_data['citizenship_photo'])
         if not validated_data['display_picture']:
             validated_data['display_picture'] = settings.DEFAULT_PEOPLE_DP
+        if instance.is_verified:
+            validated_data['citizenship_photo'] = instance.citizenship_photo
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
