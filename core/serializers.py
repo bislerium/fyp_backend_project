@@ -233,7 +233,6 @@ class PeopleRUDSerializer(serializers.ModelSerializer):
         user: User = instance.account
         user.email = validated_data.get('email', user.email)
         user.save()
-        print(validated_data['citizenship_photo'])
         if not validated_data['display_picture']:
             validated_data['display_picture'] = settings.DEFAULT_PEOPLE_DP
         if instance.is_verified:
@@ -310,6 +309,12 @@ class PostCreateSerializer(serializers.ModelSerializer):
                                    is_anonymous=validated_data['is_anonymous'],
                                    )
 
+    def update(self, instance, validated_data):
+        print(instance)
+        _ = super().update(instance, validated_data)
+        print(_)
+        return _
+
 
 class PostNormalSerializer(serializers.Serializer):
     post_head = PostCreateSerializer(write_only=True, )
@@ -321,6 +326,18 @@ class PostNormalSerializer(serializers.Serializer):
     def create(self, validated_data):
         return create_post(self.context['request'], validated_data=validated_data, post_type=EPostType.Normal)
 
+    def update(self, instance: Post, validated_data):
+        poked_to_data = validated_data.pop['poked_to']
+        post_image_data = validated_data.pop['post_image']
+        post_normal: PostNormal = instance.postnormal
+        for i in instance.poked_on_rn.all():
+            i.poked_on.remove(instance)
+        for i in poked_to_data:
+            NGOUser.objects.get(id=i).poked_on.add(instance)
+        post_normal.post_image = post_image_data
+        post_normal.save()
+        return PostCreateSerializer.update(instance=instance, validated_data=validated_data)
+
 
 class PostPollSerializer(serializers.Serializer):
     poll_post = PollPostCreateSerializer(write_only=True, )
@@ -331,6 +348,7 @@ class PostPollSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         return create_post(self.context['request'], validated_data=validated_data, post_type=EPostType.Poll)
+
 
 
 class PostRequestSerializer(serializers.Serializer):

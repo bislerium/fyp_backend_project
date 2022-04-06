@@ -156,9 +156,27 @@ def post_a_post(request, post_type: EPostType):
         return Response({'Fail': post_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class PostDetail(RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        instance: Post = self.get_object()
+        if not validate_post(instance):
+            return Response({'Fail': 'Post does not exist!'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+
+def validate_post(instance: Post):
+    if instance.ngo_posted_post_rn.exists():
+        user: PeopleUser = instance.ngo_posted_post_rn.first()
+    if instance.people_posted_post_rn.exists():
+        user: NGOUser = instance.people_posted_post_rn.first()
+    if not user.account.is_active or instance.is_removed:
+        return False
+    return True
 
 
 class ToggleUpvoteView(APIView):
@@ -181,6 +199,8 @@ def react_post(user, post_id, reaction_type: EReactionType):
     if not filtered_post.exists():
         return Response({'Fail': 'Normal post with given post id not found!'}, status=status.HTTP_404_NOT_FOUND)
     post = filtered_post.first()
+    if not validate_post(post):
+        return Response({'Fail': 'Can\'t react to a non-existing normal post!'}, status=status.HTTP_404_NOT_FOUND)
     if post.post_type != 'Normal':
         return Response({'Fail': f'Can only {reaction_type.name.lower()} normal post!'},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -216,6 +236,8 @@ class PollPostPollView(APIView):
             return a
         else:
             post = a
+        if not validate_post(post):
+            return Response({'Fail': 'Can\'t poll to a non-existing poll-post!'}, status=status.HTTP_404_NOT_FOUND)
         if post.post_type != 'Poll':
             return Response({'Fail': f'Can only poll in poll post!'}, status=status.HTTP_400_BAD_REQUEST)
         poll_option = PollOption.objects.filter(id=option_id)
@@ -239,6 +261,9 @@ class RequestPostParticipateView(APIView):
             return _
         else:
             post = _
+        if not validate_post(post):
+            return Response({'Fail': 'Can\'t participate to a non-existing request-post!'},
+                            status=status.HTTP_404_NOT_FOUND)
         if post.post_type != 'Request':
             return Response({'Fail': f'Can only participate in request post!'}, status=status.HTTP_400_BAD_REQUEST)
         request_participants = post.postrequest.reacted_by
@@ -294,7 +319,8 @@ class PostList(ListAPIView):
 
     def get_queryset(self):
         _ = super().get_queryset()
-        __ = _.filter(people_posted_post_rn__account__is_active=True) | _.filter(ngo_posted_post_rn__account__is_active=True)
+        __ = _.filter(people_posted_post_rn__account__is_active=True) | _.filter(
+            ngo_posted_post_rn__account__is_active=True)
         queryset = __.filter(is_removed=False)
         return sorted(queryset, key=lambda x: random.random())
 
@@ -313,7 +339,8 @@ class UserPostList(ListAPIView):
             case 'ngo':
                 ngo: NGOUser = get_object_or_404(NGOUser, pk=self.kwargs['user_id'])
                 queryset = _.filter(ngo_posted_post_rn=ngo)
-            case _: queryset = _.none()
+            case _:
+                queryset = _.none()
         return queryset.filter(is_removed=False).order_by('-created_on')
 
 
@@ -341,12 +368,8 @@ class PostDelete(DestroyAPIView):
         if user != user_who_posted:
             return Response({'Fail': 'Post does not belong to the user who requested.'},
                             status=status.HTTP_403_FORBIDDEN)
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def perform_destroy(self, instance: Post):
+        if not validate_post(instance):
+            return Response({'Fail': 'Can\'t delete to a non-existing post!'}, status=status.HTTP_404_NOT_FOUND)
         instance.is_removed = True
         instance.save()
-
-
-
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -55,6 +55,8 @@ REST_FRAMEWORK = {
     ]
 }
 
+OLD_PASSWORD_FIELD_ENABLED = True
+
 REST_AUTH_SERIALIZERS = {
     'TOKEN_SERIALIZER': 'core.serializers.CustomTokenSerializer',
 }
