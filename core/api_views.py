@@ -2,7 +2,6 @@ import random
 
 from dj_rest_auth.views import LoginView as ILoginView
 from django.core.exceptions import PermissionDenied
-from django.http.response import HttpResponseServerError
 from rest_framework import parsers
 from rest_framework.generics import *
 from rest_framework.pagination import PageNumberPagination
@@ -74,16 +73,16 @@ class PeopleRUD(RetrieveUpdateDestroyAPIView):
             raise PermissionDenied
         return user
 
+    def retrieve(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_obj().peopleuser)
+        return Response(serializer.data)
+
     def update(self, request, *args, **kwargs):
         instance = self.get_obj().peopleuser
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response({'Success': 'Your profile has been updated!'}, status=status.HTTP_200_OK)
-
-    def retrieve(self, request, *args, **kwargs):
-        serializer = self.get_serializer(self.get_obj().peopleuser)
-        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_obj()
@@ -157,7 +156,7 @@ def post_a_post(request, post_type: EPostType):
         return Response({'Fail': post_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PostUpdate(APIView):
+class PostRetrieveUpdateDelete(APIView):
     # parser_classes = (CustomMultipartJsonParser,)
 
     def get_obj(self):
@@ -175,6 +174,10 @@ class PostUpdate(APIView):
             raise PermissionDenied
         return post
 
+    def retrieve(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_obj().peopleuser)
+        return Response(serializer.data)
+
     def put(self, request, *args, **kwargs):
         post: Post = self.get_obj()
         match post.post_type:
@@ -190,14 +193,9 @@ class PostUpdate(APIView):
         serialized_post.update(instance=post, validated_data=serialized_post.validated_data)
         return Response({'Success': 'Your post has been updated!'}, status=status.HTTP_200_OK)
 
-    def retrieve(self, request, *args, **kwargs):
-        serializer = self.get_serializer(self.get_obj().peopleuser)
-        return Response(serializer.data)
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_obj()
-        Token.objects.get(user=instance).delete()
-        instance.is_active = False
+    def delete(self, request, *args, **kwargs):
+        instance: Post = self.get_obj()
+        instance.is_removed = True
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -288,11 +286,11 @@ class PollPostPollView(APIView):
         poll_option = PollOption.objects.filter(id=option_id)
         if not poll_option.exists() or not post.postpoll.option.filter(id=option_id).exists():
             return Response({'Fail': 'Poll option with given option id not found!'}, status=status.HTTP_404_NOT_FOUND)
-        if post.postpoll.ends_on and datetime.now(tz=post.postpoll.ends_on.tzinfo) > post.postpoll.ends_on:
-            return Response({'Success': f'Polling date expired.'}, status=status.HTTP_403_FORBIDDEN)
+        if post.postpoll.ends_on and timezone.now() > post.postpoll.ends_on:
+            return Response({'Fail': f'Polling date expired.'}, status=status.HTTP_403_FORBIDDEN)
         poll_reactions = poll_option.first().reacted_by
         if user.peopleuser in poll_reactions.all():
-            return Response({'Success': f'Already polled {poll_option.first().option}.'}, status=status.HTTP_200_OK)
+            return Response({'Fail': f'Already polled {poll_option.first().option}.'}, status=status.HTTP_200_OK)
         poll_reactions.add(user.peopleuser)
         return Response({'Success': f'Polled {poll_option.first().option}.'}, status=status.HTTP_200_OK)
 
@@ -313,9 +311,9 @@ class RequestPostParticipateView(APIView):
             return Response({'Fail': f'Can only participate in request post!'}, status=status.HTTP_400_BAD_REQUEST)
         request_participants = post.postrequest.reacted_by
         if user.peopleuser in request_participants.all():
-            return Response({'Success': f'Already participated.'}, status=status.HTTP_208_ALREADY_REPORTED)
-        if datetime.now(tz=post.postrequest.ends_on.tzinfo) > post.postrequest.ends_on:
-            return Response({'Success': f'Post request participation date expired.'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'Fail': f'Already participated.'}, status=status.HTTP_208_ALREADY_REPORTED)
+        if timezone.now() > post.postrequest.ends_on:
+            return Response({'Fail': f'Post request participation date expired.'}, status=status.HTTP_403_FORBIDDEN)
         request_participants.add(user.peopleuser)
         return Response({'Success': f'Participated'}, status=status.HTTP_200_OK)
 
@@ -398,23 +396,3 @@ class RelatedOptionList(APIView):
 class NGOOptionList(ListAPIView):
     queryset = NGOUser.objects.all()
     serializer_class = NGOOptionSerializer
-
-
-class PostDelete(DestroyAPIView):
-    queryset = Post.objects.all()
-
-    def destroy(self, request, *args, **kwargs):
-        instance: Post = self.get_object()
-        user: User = self.request.user
-        if instance.people_posted_post_rn.exists():
-            user_who_posted: PeopleUser = instance.people_posted_post_rn.first().account
-        if instance.ngo_posted_post_rn.exists():
-            user_who_posted: NGOUser = instance.ngo_posted_post_rn.first().account
-        if user != user_who_posted:
-            return Response({'Fail': 'Post does not belong to the user who requested.'},
-                            status=status.HTTP_403_FORBIDDEN)
-        if not validate_post(instance):
-            return Response({'Fail': 'Can\'t delete to a non-existing post!'}, status=status.HTTP_404_NOT_FOUND)
-        instance.is_removed = True
-        instance.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)

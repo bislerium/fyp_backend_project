@@ -271,8 +271,7 @@ class PollPostCreateSerializer(serializers.ModelSerializer):
     def validate(self, attrs: OrderedDict):
         if len(attrs.get('option')) < 2:
             raise serializers.ValidationError('Must provide minimum of two poll options for type: poll post.')
-        if attrs.get('ends_on') and attrs.get('ends_on') <= datetime.now(tz=attrs.get('ends_on').tzinfo) \
-                + timedelta(minutes=50):
+        if attrs.get('ends_on') and attrs.get('ends_on') <= timezone.now() + timedelta(minutes=50):
             raise serializers.ValidationError('Poll post must end in future.')
         return attrs
 
@@ -303,7 +302,7 @@ class RequestPostCreateSerializer(serializers.ModelSerializer):
                                               'participants.')
         if attrs.get('max') and attrs.get('max') < attrs.get('target'):
             raise serializers.ValidationError('Max participants must be equal or greater than the target participants.')
-        if attrs.get('ends_on') < datetime.now(attrs.get('ends_on').tzinfo) + timedelta(minutes=50):
+        if attrs.get('ends_on') < timezone.now() + timedelta(minutes=50):
             raise serializers.ValidationError('Request post must end in future.')
         if attrs.get('request_type') == 'Petition' and attrs.get('max'):
             raise serializers.ValidationError('Petition post is not bounded by maximum participants.')
@@ -329,6 +328,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
     def update(self, instance: Post, validated_data):
         _ = super().update(instance, validated_data)
+
         _.modified_on = timezone.now()
         return _.save()
 

@@ -102,7 +102,7 @@ class UserCommons(models.Model):
 class Post(models.Model):
     related_to = MultiSelectField(choices=FIELD_OF_WORK)
     post_content = models.TextField(max_length=500)
-    created_on = models.DateTimeField(auto_now=True)
+    created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(blank=True, null=True)
     # is posted anonymmous rename
     is_anonymous = models.BooleanField(blank=True, default=False)

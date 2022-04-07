@@ -6,7 +6,7 @@ from django.urls import path, include, re_path
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
     CustomLoginView, PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
     PostReportView, RequestPostParticipateView, PollPostPollView, RelatedOptionList, TokenVerification, NGOOptionList, \
-    PostDelete, UserPostList, PeopleRUD, PostUpdate
+    UserPostList, PeopleRUD, PostRetrieveUpdateDelete
 from core.serializers import PostNormalSerializer, PostRequestSerializer, PostPollSerializer
 
 from core.views import *
@@ -94,8 +94,8 @@ urlpatterns = [
                   path('api/post/request/', RequestPostAdd.as_view(), name='api-request-post-add'),
                   path('api/posts/', PostList.as_view(), name='api-post-list'),
                   path('api/post/<int:pk>/', PostDetail.as_view(), name='api-post-detail'),
-                  path('api/post/<int:post_id>/update/', PostUpdate.as_view(), name='api-post-update'),
-                  path('api/post/<int:pk>/delete/', PostDelete.as_view(), name='api-post-delete'),
+                  path('api/post/<int:post_id>/update/', PostRetrieveUpdateDelete.as_view(), name='api-post-update'),
+                  path('api/post/<int:post_id>/delete/', PostRetrieveUpdateDelete.as_view(), name='api-post-delete'),
                   path('api/post/<int:post_id>/upvote/', ToggleUpvoteView.as_view(), name='api-post-upvote'),
                   path('api/post/<int:post_id>/downvote/', ToggleDownvoteView.as_view(), name='api-post-downvote'),
                   path('api/post/<int:post_id>/poll/<int:option_id>/', PollPostPollView.as_view(),
