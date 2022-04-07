@@ -248,6 +248,34 @@ class PeopleRUDSerializer(serializers.ModelSerializer):
         return data
 
 
+class PostRetrieveToUpdateSerializer(serializers.ModelSerializer):
+    related_to = serializers.ListSerializer(child=serializers.CharField(), )
+
+    class Meta:
+        model = Post
+        fields = ['id', 'related_to', 'post_content', 'is_anonymous']
+
+    def to_representation(self, instance: Post):
+        data = super().to_representation(instance)
+        data['poked_ngo'] = [i.id for i in instance.poked_on_rn.all()]
+        data['post_type'] = instance.post_type
+        match instance.post_type:
+            case 'Normal':
+                data['post_image'] = instance.postnormal.post_image or None
+            case 'Poll':
+                post: PostPoll = instance.postpoll
+                data['option'] = [i.option for i in post.option.all()]
+                data['ends_on'] = post.ends_on
+            case 'Request':
+                post: PostRequest = instance.postrequest
+                data['min'] = post.min
+                data['max'] = post.max
+                data['target'] = post.target
+                data['ends_on'] = post.ends_on
+                data['request_type'] = post.request_type
+        return data
+
+
 class NormalPostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostNormal
@@ -328,7 +356,6 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
     def update(self, instance: Post, validated_data):
         _ = super().update(instance, validated_data)
-
         _.modified_on = timezone.now()
         return _.save()
 

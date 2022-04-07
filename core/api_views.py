@@ -165,7 +165,7 @@ class PostRetrieveUpdateDelete(APIView):
             raise PermissionDenied
         post: Post = get_object_or_404(Post, pk=self.kwargs['post_id'])
         if not user.is_active or post.is_removed:
-            raise Http404
+            raise CustomAPIException(p_status_code=404, p_default_detail='Post does not exist.')
         if post.people_posted_post_rn.exists():
             _: PeopleUser = post.people_posted_post_rn.first()
         if post.ngo_posted_post_rn.exists():
@@ -174,8 +174,8 @@ class PostRetrieveUpdateDelete(APIView):
             raise PermissionDenied
         return post
 
-    def retrieve(self, request, *args, **kwargs):
-        serializer = self.get_serializer(self.get_obj().peopleuser)
+    def get(self, request, *args, **kwargs):
+        serializer = PostRetrieveToUpdateSerializer(self.get_obj())
         return Response(serializer.data)
 
     def put(self, request, *args, **kwargs):

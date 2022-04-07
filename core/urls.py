@@ -94,6 +94,8 @@ urlpatterns = [
                   path('api/post/request/', RequestPostAdd.as_view(), name='api-request-post-add'),
                   path('api/posts/', PostList.as_view(), name='api-post-list'),
                   path('api/post/<int:pk>/', PostDetail.as_view(), name='api-post-detail'),
+                  path('api/post/<int:post_id>/detail/', PostRetrieveUpdateDelete.as_view(),
+                       name='api-post-update-detail'),
                   path('api/post/<int:post_id>/update/', PostRetrieveUpdateDelete.as_view(), name='api-post-update'),
                   path('api/post/<int:post_id>/delete/', PostRetrieveUpdateDelete.as_view(), name='api-post-delete'),
                   path('api/post/<int:post_id>/upvote/', ToggleUpvoteView.as_view(), name='api-post-upvote'),
