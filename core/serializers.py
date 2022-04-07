@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 
 from dj_rest_auth.serializers import TokenSerializer, LoginSerializer
 from django.contrib.auth.models import Group
+from django.http.response import HttpResponseServerError
+from django.utils import timezone
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
@@ -11,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 
 import core.models
+from .exception import CustomAPIException
 from .models import *
 
 
@@ -267,11 +270,23 @@ class PollPostCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs: OrderedDict):
         if len(attrs.get('option')) < 2:
-            raise serializers.ValidationError('Must provide two poll options for type: poll post.')
+            raise serializers.ValidationError('Must provide minimum of two poll options for type: poll post.')
         if attrs.get('ends_on') and attrs.get('ends_on') <= datetime.now(tz=attrs.get('ends_on').tzinfo) \
                 + timedelta(minutes=50):
             raise serializers.ValidationError('Poll post must end in future.')
         return attrs
+
+    def update(self, instance: PostPoll, validated_data):
+        instance.ends_on = validated_data['ends_on']
+        option_data = validated_data['option']
+        instance_options = instance.option.filter(option__in=option_data)
+        to_remove = instance.option.exclude(option__in=option_data)
+        for i in to_remove:
+            instance.option.remove(i)
+        to_add = set(option_data).difference([i.option for i in instance_options])
+        for i in [PollOption.objects.create(option=i) for i in to_add]:
+            instance.option.add(i)
+        return instance.save()
 
 
 class RequestPostCreateSerializer(serializers.ModelSerializer):
@@ -294,6 +309,9 @@ class RequestPostCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Petition post is not bounded by maximum participants.')
         return attrs
 
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
+
 
 class PostCreateSerializer(serializers.ModelSerializer):
     related_to = serializers.MultipleChoiceField(choices=core.models.FIELD_OF_WORK, write_only=True,
@@ -309,11 +327,10 @@ class PostCreateSerializer(serializers.ModelSerializer):
                                    is_anonymous=validated_data['is_anonymous'],
                                    )
 
-    def update(self, instance, validated_data):
-        print(instance)
+    def update(self, instance: Post, validated_data):
         _ = super().update(instance, validated_data)
-        print(_)
-        return _
+        _.modified_on = timezone.now()
+        return _.save()
 
 
 class PostNormalSerializer(serializers.Serializer):
@@ -327,16 +344,16 @@ class PostNormalSerializer(serializers.Serializer):
         return create_post(self.context['request'], validated_data=validated_data, post_type=EPostType.Normal)
 
     def update(self, instance: Post, validated_data):
-        poked_to_data = validated_data.pop['poked_to']
-        post_image_data = validated_data.pop['post_image']
+        poked_to_data = validated_data.pop('poked_to')
+        post_image_data = validated_data.pop('post_image')
+
+        check_ngo(poked_to_data)
+        update_post(instance, validated_data)
+
+        update_post_poked_ngo(instance, poked_to_data)
         post_normal: PostNormal = instance.postnormal
-        for i in instance.poked_on_rn.all():
-            i.poked_on.remove(instance)
-        for i in poked_to_data:
-            NGOUser.objects.get(id=i).poked_on.add(instance)
         post_normal.post_image = post_image_data
-        post_normal.save()
-        return PostCreateSerializer.update(instance=instance, validated_data=validated_data)
+        return post_normal.save()
 
 
 class PostPollSerializer(serializers.Serializer):
@@ -349,17 +366,66 @@ class PostPollSerializer(serializers.Serializer):
     def create(self, validated_data):
         return create_post(self.context['request'], validated_data=validated_data, post_type=EPostType.Poll)
 
+    def update(self, instance, validated_data):
+        poked_to_data = validated_data.pop('poked_to')
+        poll_post_data = validated_data.pop('poll_post')
+        serialized_poll_post = PollPostCreateSerializer(data=poll_post_data)
+
+        check_ngo(poked_to_data)
+        serialized_poll_post.is_valid(raise_exception=True)
+        update_post(instance, validated_data)
+
+        update_post_poked_ngo(instance, poked_to_data)
+        return serialized_poll_post.update(instance=instance.postpoll,
+                                           validated_data=serialized_poll_post.validated_data)
 
 
 class PostRequestSerializer(serializers.Serializer):
     request_post = RequestPostCreateSerializer(write_only=True, )
     post_head = PostCreateSerializer(write_only=True)
     poked_to = serializers.ListSerializer(child=serializers.IntegerField(), required=False,
-                                          write_only=True, allow_empty=True,
-                                          )
+                                          write_only=True, allow_empty=True, )
 
     def create(self, validated_data):
         return create_post(self.context['request'], validated_data=validated_data, post_type=EPostType.Request)
+
+    def update(self, instance, validated_data):
+        poked_to_data = validated_data.pop('poked_to')
+        request_post_data = validated_data.pop('request_post')
+        serialized_request_post = RequestPostCreateSerializer(data=request_post_data)
+
+        check_ngo(poked_to_data)
+        serialized_request_post.is_valid(raise_exception=True)
+        update_post(instance, validated_data)
+
+        update_post_poked_ngo(instance, poked_to_data)
+        return serialized_request_post.update(instance=instance.postrequest,
+                                              validated_data=serialized_request_post.validated_data)
+
+
+def check_ngo(poked_to: list[int]):
+    invalid_ngo_id = [i for i in poked_to if not User.objects.filter(pk=i).exists()]
+    if invalid_ngo_id:
+        raise CustomAPIException(p_status_code=404,
+                                 p_default_detail=f'NGOs with IDs: {invalid_ngo_id} does not exist.',)
+
+
+def update_post_poked_ngo(instance: Post, new_poked_to):
+    old_poked_to = [i.id for i in instance.poked_on_rn.all()]
+    old_set = set(old_poked_to)
+    new_set = set(new_poked_to)
+    to_remove = old_set.difference(new_set)
+    to_add = new_set.difference(old_set)
+    for i in to_remove:
+        NGOUser.objects.get(id=i).poked_on.remove(instance)
+    for i in to_add:
+        NGOUser.objects.get(id=i).poked_on.add(instance)
+
+
+def update_post(instance: Post, validated_data):
+    serialized_post = PostCreateSerializer(data=validated_data['post_head'])
+    serialized_post.is_valid(raise_exception=True)
+    return serialized_post.update(instance=instance, validated_data=serialized_post.validated_data)
 
 
 def create_post(request: Request, validated_data, post_type: EPostType):
@@ -388,6 +454,8 @@ def create_post(request: Request, validated_data, post_type: EPostType):
                 case EPostType.Request:
                     post.post_type = post_type.name
                     serialized_post_extension = RequestPostCreateSerializer(data=validated_data['request_post'])
+                case _:
+                    raise HttpResponseServerError
             post.save()
             if serialized_post_extension.is_valid():
                 post_extension = serialized_post_extension.save()

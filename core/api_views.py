@@ -2,6 +2,7 @@ import random
 
 from dj_rest_auth.views import LoginView as ILoginView
 from django.core.exceptions import PermissionDenied
+from django.http.response import HttpResponseServerError
 from rest_framework import parsers
 from rest_framework.generics import *
 from rest_framework.pagination import PageNumberPagination
@@ -155,6 +156,50 @@ def post_a_post(request, post_type: EPostType):
     else:
         return Response({'Fail': post_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class PostUpdate(APIView):
+    # parser_classes = (CustomMultipartJsonParser,)
+
+    def get_obj(self):
+        user: User = self.request.user
+        if not user.groups.exists() or user.groups.first().name not in ['General', 'NGO']:
+            raise PermissionDenied
+        post: Post = get_object_or_404(Post, pk=self.kwargs['post_id'])
+        if not user.is_active or post.is_removed:
+            raise Http404
+        if post.people_posted_post_rn.exists():
+            _: PeopleUser = post.people_posted_post_rn.first()
+        if post.ngo_posted_post_rn.exists():
+            _: NGOUser = post.ngo_posted_post_rn.first()
+        if user != _.account:
+            raise PermissionDenied
+        return post
+
+    def put(self, request, *args, **kwargs):
+        post: Post = self.get_obj()
+        match post.post_type:
+            case 'Normal':
+                serialized_post = PostNormalSerializer(data=request.data)
+            case 'Poll':
+                serialized_post = PostPollSerializer(data=request.data)
+            case 'Request':
+                serialized_post = PostRequestSerializer(data=request.data)
+            case _:
+                raise HttpResponseServerError
+        serialized_post.is_valid(raise_exception=True)
+        serialized_post.update(instance=post, validated_data=serialized_post.validated_data)
+        return Response({'Success': 'Your post has been updated!'}, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_obj().peopleuser)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_obj()
+        Token.objects.get(user=instance).delete()
+        instance.is_active = False
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PostDetail(RetrieveAPIView):
