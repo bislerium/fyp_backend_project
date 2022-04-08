@@ -261,7 +261,11 @@ class PostRetrieveToUpdateSerializer(serializers.ModelSerializer):
         data['post_type'] = instance.post_type
         match instance.post_type:
             case 'Normal':
-                data['post_image'] = instance.postnormal.post_image or None
+                post: PostNormal = instance.postnormal
+                if post.post_image:
+                    data['post_image'] = self.context.get("request").build_absolute_uri(post.post_image.url)
+                else:
+                    data['post_image'] = None
             case 'Poll':
                 post: PostPoll = instance.postpoll
                 data['option'] = [i.option for i in post.option.all()]

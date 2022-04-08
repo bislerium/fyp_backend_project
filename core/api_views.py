@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from rest_framework import parsers
 from rest_framework.generics import *
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.parsers import JSONParser
 from rest_framework.permissions import AllowAny
 from rest_framework.utils import json
 from rest_framework.views import APIView
@@ -157,7 +158,7 @@ def post_a_post(request, post_type: EPostType):
 
 
 class PostRetrieveUpdateDelete(APIView):
-    # parser_classes = (CustomMultipartJsonParser,)
+    parser_classes = (CustomMultipartJsonParser, JSONParser)
 
     def get_obj(self):
         user: User = self.request.user
@@ -175,7 +176,7 @@ class PostRetrieveUpdateDelete(APIView):
         return post
 
     def get(self, request, *args, **kwargs):
-        serializer = PostRetrieveToUpdateSerializer(self.get_obj())
+        serializer = PostRetrieveToUpdateSerializer(self.get_obj(),  context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, *args, **kwargs):
