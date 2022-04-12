@@ -7,7 +7,6 @@ from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDe
     CustomLoginView, PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
     PostReportView, RequestPostParticipateView, PollPostPollView, RelatedOptionList, TokenVerification, NGOOptionList, \
     UserPostList, PeopleRUD, PostRetrieveUpdateDelete
-from core.serializers import PostNormalSerializer, PostRequestSerializer, PostPollSerializer
 
 from core.views import *
 

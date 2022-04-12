@@ -51,9 +51,11 @@
                     <div class="my-4">
                         {% if object.post_type == 'Normal' %}
                             <div class="fw-bold mb-2" style="display: block;"> Post attached Photo:</div>
+                            {% if object.postnormal.post_image %}
                             <a href="{{ object.postnormal.post_image.url }}">
                                 <img class="img-fluid w-100" src="{{ object.postnormal.post_image.url }}" loading="lazy" style="border-radius: 2vh;" alt="First slide">
                             </a>
+                            {% endif %}
                         {% endif %}
                         {% if object.post_type == 'Poll' %}
                             <div class="d-block" style="text-align: right"><span class="badge bg-secondary">Total Reactions: {{ object.poll_reactions }}</span> | Poll ends on: <span class="fw-bold">{{ object.postpoll.ends_on }}</span></div>

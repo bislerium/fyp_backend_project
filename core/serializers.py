@@ -1,6 +1,5 @@
-import enum
 from collections import OrderedDict
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from dj_rest_auth.serializers import TokenSerializer, LoginSerializer
 from django.contrib.auth.models import Group
@@ -13,14 +12,10 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 
 import core.models
+from .enums import EPostType
 from .exception import CustomAPIException
+from .fcm_notification import ENotificationChannel, send_notification
 from .models import *
-
-
-class EPostType(enum.Enum):
-    Normal = 0
-    Poll = 1
-    Request = 2
 
 
 class CustomLoginSerializer(LoginSerializer):
@@ -506,6 +501,13 @@ def create_post(request: Request, validated_data, post_type: EPostType):
     except ValueError as e:
         return Response({"Fail": e.args}, status=status.HTTP_400_BAD_REQUEST)
     else:
+        for i in poked_ngo:
+            send_notification(title=f'Poked on {post_type.name} Post',
+                              body=f'{user.peopleuser.full_name.title()} has poked you in a post.',
+                              notification_for=i,
+                              channel=ENotificationChannel['poke'],
+                              post_type=post_type, post_id=post.id)
+
         return Response({"Success": f"{post_type.name} Post created successfully!",
                          "post_data": PostListSerializer(post, ).data}, status=status.HTTP_201_CREATED)
 

@@ -1,4 +1,5 @@
 import random
+from collections import deque
 
 from dj_rest_auth.views import LoginView as ILoginView
 from django.core.exceptions import PermissionDenied
@@ -11,12 +12,8 @@ from rest_framework.utils import json
 from rest_framework.views import APIView
 
 import core.models
+from .enums import EReactionType
 from .serializers import *
-
-
-class EReactionType(enum.Enum):
-    Upvote = 0,
-    Downvote = 1,
 
 
 class CustomLoginView(ILoginView):
@@ -176,7 +173,7 @@ class PostRetrieveUpdateDelete(APIView):
         return post
 
     def get(self, request, *args, **kwargs):
-        serializer = PostRetrieveToUpdateSerializer(self.get_obj(),  context={'request': request})
+        serializer = PostRetrieveToUpdateSerializer(self.get_obj(), context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, *args, **kwargs):
@@ -268,6 +265,13 @@ def react_post(user, post_id, reaction_type: EReactionType):
             case EReactionType.Downvote:
                 post.postnormal.down_vote.add(user.peopleuser)
                 post.postnormal.up_vote.remove(user.peopleuser)
+
+        send_notification(title=f'Normal Request Post',
+                          body=f'{user.peopleuser.full_name.title()} has reacted in your post.',
+                          notification_for=user.id,
+                          channel=ENotificationChannel['reaction'],
+                          post_type=EPostType['Normal'], post_id=post_id)
+
         return Response({'Done': f'Normal post {reaction_type.name.lower()} done.'}, status=status.HTTP_200_OK)
 
 
@@ -293,6 +297,13 @@ class PollPostPollView(APIView):
         if user.peopleuser in poll_reactions.all():
             return Response({'Fail': f'Already polled {poll_option.first().option}.'}, status=status.HTTP_200_OK)
         poll_reactions.add(user.peopleuser)
+
+        send_notification(title=f'Poll Request Post',
+                          body=f'{user.peopleuser.full_name.title()} has polled an option in your post.',
+                          notification_for=user.id,
+                          channel=ENotificationChannel['poll'],
+                          post_type=EPostType['Poll'], post_id=post_id)
+
         return Response({'Success': f'Polled {poll_option.first().option}.'}, status=status.HTTP_200_OK)
 
 
@@ -316,7 +327,41 @@ class RequestPostParticipateView(APIView):
         if timezone.now() > post.postrequest.ends_on:
             return Response({'Fail': f'Post request participation date expired.'}, status=status.HTTP_403_FORBIDDEN)
         request_participants.add(user.peopleuser)
+
+        match post.postrequest.request_type:
+            case 'Petition':
+                phrase = 'signed'
+            case 'Join':
+                phrase = 'participated'
+
+        send_notification(title=f'{post.postrequest.request_type} Request Post',
+                          body=f'{user.peopleuser.full_name.title()} has {phrase} in your post.',
+                          notification_for=user.id,
+                          channel=ENotificationChannel[post.postrequest.request_type.lower()],
+                          post_type=EPostType[post.post_type], post_id=post_id)
+
         return Response({'Success': f'Participated'}, status=status.HTTP_200_OK)
+
+
+staffs_deque = []
+
+
+def initialize_staffs_deque():
+    global staffs_deque
+    staffs = Staff.objects.all()
+    staffs_deque = deque(staffs)
+
+
+initialize_staffs_deque()
+
+print(staffs_deque)
+
+
+def get_staff() -> Staff:
+    _ = staffs_deque.popleft()
+    staffs_deque.append(_)
+    print(_)
+    return _
 
 
 class PostReportView(APIView):
@@ -336,7 +381,8 @@ class PostReportView(APIView):
             case 'Request':
                 post.postrequest.reported_by.add(user.peopleuser)
         if not Report.objects.filter(post=post).exists():
-            Report.objects.create(post=post)
+            _ = Report.objects.create(post=post)
+            get_staff().report_review.add(_)
         return Response({'Success': f'Post has been reported.'}, status=status.HTTP_200_OK)
 
 

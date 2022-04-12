@@ -8,7 +8,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, UpdateView, DetailView, TemplateView, CreateView
 
+from . import api_views
+from .api_views import staffs_deque
 from .decorators import allowed_groups
+from .fcm_notification import send_notification, ENotificationChannel
 from .forms import *
 
 
@@ -246,6 +249,7 @@ def create_staff(request):
             staff = staff_form.save(commit=False)
             staff.account = user_account
             staff.save()
+            api_views.staffs_deque.append(staff)
             messages.success(request, f'Account created for {staff_form.data["full_name"]}')
             return redirect('read-staff', staff.id)
     context = {
@@ -303,6 +307,14 @@ class update_people(UpdateView):
     template_name = 'core/user/people-update.html'
     success_url = reverse_lazy('read-peoples')
 
+    def form_valid(self, form):
+        new = form.instance.is_verified
+        old = PeopleUser.objects.get(pk=self.object.pk).is_verified
+        if new and new != old:
+            print('new')
+            send_verify_notification(self.object.account.id)
+        return super().form_valid(form)
+
 
 class delete_people(DeleteView):
     model = PeopleUser
@@ -352,6 +364,22 @@ class update_ngo(UpdateView):
     form_class = NGOCreationForm
     template_name = 'core/ngo/ngo-update.html'
     success_url = reverse_lazy('read-ngos')
+
+    def form_valid(self, form):
+        new = form.instance.is_verified
+        old = NGOUser.objects.get(pk=self.object.pk).is_verified
+        if new and new != old:
+            send_verify_notification(self.object.account.id)
+        return super().form_valid(form)
+
+
+def send_verify_notification(account_id: int):
+    send_notification(title=f'Account Verification',
+                      body=f'Your account has been verified.\nPlease support the community and'
+                           f' follow the guidelines.\nKeep Sasae a better place for everyone. ❤',
+                      notification_for=account_id,
+                      channel=ENotificationChannel['verify'],
+                      post_type=None, post_id=None)
 
 
 class delete_ngo(DeleteView):
@@ -410,14 +438,14 @@ class read_reports(ListView):
         context = super().get_context_data(object_list=object_list, **kwargs)
         if self.request.user.is_superuser:
             reviewed_reports = Report.objects.filter(is_reviewed=True)
-            context['object_list'] = [report.post_head for report in reviewed_reports]
+            context['object_list'] = [report.post for report in reviewed_reports]
             context['post_reviewed'] = reviewed_reports.count()
             context['total_reports'] = Report.objects.count()
         else:
             staff: Staff = Staff.objects.get(account=self.request.user)
             reviewed_reports = staff.report_review.filter(is_reviewed=False)
             total_reports = staff.report_review.count()
-            context['object_list'] = [report.post_head for report in reviewed_reports]
+            context['object_list'] = [report.post for report in reviewed_reports]
             context['post_reviewed'] = total_reports - reviewed_reports.count()
             context['total_reports'] = total_reports
         return context
@@ -435,14 +463,26 @@ class update_report(UpdateView):
 
     def form_valid(self, form):
         action_option = form['action'].data
-        post = form.instance.post_head
+        post = form.instance.post
         form.instance.is_reviewed = True
+        reason = form.data['reason']
+
+        people: PeopleUser = post.people_posted_post_rn.first()
+        ngo: NGOUser = post.ngo_posted_post_rn.first()
+
         if action_option == Report.ACTION[0][0]:
             post.is_removed = True
             post.save()
+
+            send_notification(title=f'{post.post_type} Post Removed',
+                              body=f'Your Post has been removed. The action was made upon close '
+                                   f'inspection of your post content after getting multiple user reports.\n\n[REASON]'
+                                   f'\n{reason}',
+                              notification_for=(people or ngo).account.id,
+                              channel=ENotificationChannel['remove'],
+                              post_type=None, post_id=None)
+
         if action_option == Report.ACTION[1][0]:
-            people: PeopleUser = post.people_posted_post_rn.first()
-            ngo: NGOUser = post.ngo_posted_post_rn.first()
             if people is not None:
                 account = people.account
                 account.is_active = False
