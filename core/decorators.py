@@ -16,3 +16,4 @@ def allowed_groups(*groups: str):
             return redirect('forbid')
         return wrapper
     return inner
+

@@ -37,5 +37,5 @@ def send_notification(title: str, body: str, notification_for: id, channel: ENot
         },
     })
 
-    response = requests.request("POST", URL, headers=headers, data=payload)
+    response = requests.request("POST", URL, headers=headers, data=payload, timeout=5)
     print(response.status_code)

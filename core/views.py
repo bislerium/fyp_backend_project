@@ -184,7 +184,6 @@ class admin_home(TemplateView):
             'avg_pr_join_signed_rp': round(
                 division(total_post_request_join_signed, total_join_request_posts)),
         }
-        print(context['home'])
         return context
 
 

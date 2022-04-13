@@ -343,24 +343,13 @@ class RequestPostParticipateView(APIView):
         return Response({'Success': f'Participated'}, status=status.HTTP_200_OK)
 
 
-staffs_deque = []
-
-
-def initialize_staffs_deque():
-    global staffs_deque
-    staffs = Staff.objects.all()
-    staffs_deque = deque(staffs)
-
-
-initialize_staffs_deque()
-
-print(staffs_deque)
+staffs_deque = deque(Staff.objects.all())
 
 
 def get_staff() -> Staff:
     _ = staffs_deque.popleft()
     staffs_deque.append(_)
-    print(_)
+    print('turn of ->', _)
     return _
 
 
