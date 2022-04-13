@@ -232,6 +232,13 @@ class ToggleDownvoteView(APIView):
         return react_post(request.user, post_id, EReactionType.Downvote)
 
 
+def get_id_from_post(post):
+    if post.ngo_posted_post_rn.exists():
+        return post.ngo_posted_post_rn.first().account.id
+    if post.people_posted_post_rn.exists():
+        return post.people_posted_post_rn.first().account.id
+
+
 def react_post(user, post_id, reaction_type: EReactionType):
     if user.groups.first().name != 'General':
         return Response({'Fail': f'Only general people can {reaction_type.name.lower()} the normal post!'},
@@ -266,9 +273,9 @@ def react_post(user, post_id, reaction_type: EReactionType):
                 post.postnormal.down_vote.add(user.peopleuser)
                 post.postnormal.up_vote.remove(user.peopleuser)
 
-        send_notification(title=f'Normal Request Post',
+        send_notification(title=f'Normal Post',
                           body=f'{user.peopleuser.full_name.title()} has reacted in your post.',
-                          notification_for=user.id,
+                          notification_for=get_id_from_post(post),
                           channel=ENotificationChannel['reaction'],
                           post_type=EPostType['Normal'], post_id=post_id)
 
@@ -298,9 +305,9 @@ class PollPostPollView(APIView):
             return Response({'Fail': f'Already polled {poll_option.first().option}.'}, status=status.HTTP_200_OK)
         poll_reactions.add(user.peopleuser)
 
-        send_notification(title=f'Poll Request Post',
+        send_notification(title=f'Poll Post',
                           body=f'{user.peopleuser.full_name.title()} has polled an option in your post.',
-                          notification_for=user.id,
+                          notification_for=get_id_from_post(post),
                           channel=ENotificationChannel['poll'],
                           post_type=EPostType['Poll'], post_id=post_id)
 
@@ -336,7 +343,7 @@ class RequestPostParticipateView(APIView):
 
         send_notification(title=f'{post.postrequest.request_type} Request Post',
                           body=f'{user.peopleuser.full_name.title()} has {phrase} in your post.',
-                          notification_for=user.id,
+                          notification_for=get_id_from_post(post),
                           channel=ENotificationChannel[post.postrequest.request_type.lower()],
                           post_type=EPostType[post.post_type], post_id=post_id)
 
