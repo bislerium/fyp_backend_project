@@ -21,8 +21,10 @@ class CustomLoginView(ILoginView):
 
 
 class NGOList(ListAPIView):
-    queryset = NGOUser.objects.all()
     serializer_class = NGOListSerializer
+
+    def get_queryset(self):
+        return get_ngo_querylist(self)
 
 
 class NGODetail(RetrieveAPIView):
@@ -272,12 +274,13 @@ def react_post(user, post_id, reaction_type: EReactionType):
             case EReactionType.Downvote:
                 post.postnormal.down_vote.add(user.peopleuser)
                 post.postnormal.up_vote.remove(user.peopleuser)
-
-        send_notification(title=f'Normal Post',
-                          body=f'{user.peopleuser.full_name.title()} has reacted in your post.',
-                          notification_for=get_id_from_post(post),
-                          channel=ENotificationChannel['reaction'],
-                          post_type=EPostType['Normal'], post_id=post_id)
+        who_posted = get_id_from_post(post)
+        if user.id != who_posted:
+            send_notification(title=f'Normal Post',
+                              body=f'{user.peopleuser.full_name.title()} has reacted in your post.',
+                              notification_for=who_posted,
+                              channel=ENotificationChannel['reaction'],
+                              post_type=EPostType['Normal'], post_id=post_id)
 
         return Response({'Done': f'Normal post {reaction_type.name.lower()} done.'}, status=status.HTTP_200_OK)
 
@@ -305,11 +308,13 @@ class PollPostPollView(APIView):
             return Response({'Fail': f'Already polled {poll_option.first().option}.'}, status=status.HTTP_200_OK)
         poll_reactions.add(user.peopleuser)
 
-        send_notification(title=f'Poll Post',
-                          body=f'{user.peopleuser.full_name.title()} has polled an option in your post.',
-                          notification_for=get_id_from_post(post),
-                          channel=ENotificationChannel['poll'],
-                          post_type=EPostType['Poll'], post_id=post_id)
+        who_posted = get_id_from_post(post)
+        if user.id != who_posted:
+            send_notification(title=f'Poll Post',
+                              body=f'{user.peopleuser.full_name.title()} has polled an option in your post.',
+                              notification_for=who_posted,
+                              channel=ENotificationChannel['poll'],
+                              post_type=EPostType['Poll'], post_id=post_id)
 
         return Response({'Success': f'Polled {poll_option.first().option}.'}, status=status.HTTP_200_OK)
 
@@ -341,11 +346,13 @@ class RequestPostParticipateView(APIView):
             case 'Join':
                 phrase = 'participated'
 
-        send_notification(title=f'{post.postrequest.request_type} Request Post',
-                          body=f'{user.peopleuser.full_name.title()} has {phrase} in your post.',
-                          notification_for=get_id_from_post(post),
-                          channel=ENotificationChannel[post.postrequest.request_type.lower()],
-                          post_type=EPostType[post.post_type], post_id=post_id)
+        who_posted = get_id_from_post(post)
+        if user.id != who_posted:
+            send_notification(title=f'{post.postrequest.request_type} Request Post',
+                              body=f'{user.peopleuser.full_name.title()} has {phrase} in your post.',
+                              notification_for=who_posted,
+                              channel=ENotificationChannel[post.postrequest.request_type.lower()],
+                              post_type=EPostType[post.post_type], post_id=post_id)
 
         return Response({'Success': f'Participated'}, status=status.HTTP_200_OK)
 
@@ -356,7 +363,7 @@ staffs_deque = deque(Staff.objects.all())
 def get_staff() -> Staff:
     _ = staffs_deque.popleft()
     staffs_deque.append(_)
-    print('turn of ->', _)
+    print('Reported to ->', _)
     return _
 
 
@@ -437,5 +444,17 @@ class RelatedOptionList(APIView):
 
 
 class NGOOptionList(ListAPIView):
-    queryset = NGOUser.objects.all()
     serializer_class = NGOOptionSerializer
+
+    def get_queryset(self):
+        return get_ngo_querylist(self)
+
+
+def get_ngo_querylist(self):
+    _ = NGOUser.objects.all()
+    user: User = self.request.user
+    if user.groups.first().name == 'NGO':
+        _ = _.exclude(pk=user.ngouser.id)
+    return _
+
+

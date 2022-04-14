@@ -20,3 +20,4 @@ class EPostType(enum.Enum):
 class EReactionType(enum.Enum):
     Upvote = 0
     Downvote = 1
+

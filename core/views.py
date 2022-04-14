@@ -1,15 +1,15 @@
 from datetime import date, datetime
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import Group
+from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DeleteView, UpdateView, DetailView, TemplateView, CreateView
 
 from . import api_views
-from .api_views import staffs_deque
 from .decorators import allowed_groups
 from .fcm_notification import send_notification, ENotificationChannel
 from .forms import *
@@ -34,23 +34,35 @@ def bad_request(request, exception):
     return render(request, 'core/extensions/400-page.html')
 
 
-def home_page(request):
+class CustomLoginView(LoginView):
+
+    def form_valid(self, form):
+        user = form.get_user()
+        if not user.is_superuser and user.groups.first().name in ['General', 'NGO']:
+            raise PermissionDenied
+        return super().form_valid(form)
+
+
+@allowed_groups(admin=True, staff=True)
+def home(request):
+    return redirect('home-page-router')
+
+
+@allowed_groups(admin=True, staff=True)
+def home_page_router(request):
     user_: User = request.user
     if user_.is_staff and user_.is_superuser:
-        print('admin')
         return redirect('admin-home')
     if user_.groups.filter(name='Staff').exists():
-        print('wow')
         return redirect('staff-home')
-    if user_.groups.filter(name__in=['General', 'NGO']).exists():
-        print('Hello')
-        raise PermissionDenied(f'{user_} is not identified, falls under {user_.groups.first()}!')
 
 
-# Create your views here.
-
-class admin_home(TemplateView):
+class AdminHome(TemplateView):
     template_name = 'core/admin/admin-home.html'
+
+    @method_decorator(allowed_groups(admin=True, staff=False))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -189,10 +201,18 @@ class admin_home(TemplateView):
 
 # Bank Crud
 
-class create_bank(CreateView):
+class BankCreate(CreateView):
     model = Bank
     form_class = BankCreationForm
     template_name = 'core/bank/bank-create.html'
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -210,17 +230,29 @@ class create_bank(CreateView):
         return context
 
 
-class update_bank(UpdateView):
+class BankUpdate(UpdateView):
     model = Bank
     form_class = BankCreationForm
     template_name = 'core/bank/bank-update.html'
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse_lazy('read-ngo', kwargs={'pk': self.object.ngouser.id})
 
 
-class delete_bank(DeleteView):
+class BankDelete(DeleteView):
     model = Bank
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse_lazy('read-ngo', kwargs={'pk': self.object.ngouser.id})
@@ -228,12 +260,12 @@ class delete_bank(DeleteView):
 
 # Staff Crud
 
+@allowed_groups(admin=False, staff=True)
 def staff_home(request):
     return render(request, 'core/staff/staff-home.html')
 
 
-@login_required(login_url=reverse_lazy('login'))
-@allowed_groups('Staff', 'Admin')
+@allowed_groups(admin=True,)
 def create_staff(request):
     user_form = CustomUserCreationForm()
     staff_form = StaffCreationForm()
@@ -258,16 +290,28 @@ def create_staff(request):
     return render(request, 'core/staff/staff-create.html', context)
 
 
-class read_staffs(PermissionRequiredMixin, ListView):
-    permission_required = 'core.view_staff'
+class StaffsRead(ListView):
     model = Staff
     # paginate_by = 20
     template_name = 'core/staff/staffs-read.html'
 
+    @method_decorator(allowed_groups(admin=True, staff=False))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-class read_staff(DetailView):
+
+class StaffRead(DetailView):
     model = Staff
     template_name = 'core/staff/staff-read.html'
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        staff: Staff = self.get_object()
+        user: User = self.request.user
+        if user.is_superuser or user == staff.account:
+            return super().get(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -275,53 +319,84 @@ class read_staff(DetailView):
         return context
 
 
-class update_staff(UpdateView):
+class StaffUpdate(UpdateView):
     model = Staff
     form_class = StaffCreationForm
     template_name = 'core/staff/staff-update.html'
     success_url = reverse_lazy('read-staffs')
 
+    @method_decorator(allowed_groups(admin=True, staff=False))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-class delete_staff(DeleteView):
+    @method_decorator(allowed_groups(admin=True, staff=False))
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class StaffDelete(DeleteView):
     model = Staff
     success_url = reverse_lazy('read-staffs')
+
+    @method_decorator(allowed_groups(admin=True, staff=False))
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
 
 
 # People CRUD
 
-class read_peoples(ListView):
+class PeoplesRead(ListView):
     model = PeopleUser
     # paginate_by = 20
     template_name = 'core/user/peoples-read.html'
 
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-class read_people(DetailView):
+
+class PeopleRead(DetailView):
     model = PeopleUser
     template_name = 'core/user/people-read.html'
 
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-class update_people(UpdateView):
+
+class PeopleUpdate(UpdateView):
     model = PeopleUser
     form_class = PeopleCreationForm
     template_name = 'core/user/people-update.html'
     success_url = reverse_lazy('read-peoples')
 
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
     def form_valid(self, form):
         new = form.instance.is_verified
         old = PeopleUser.objects.get(pk=self.object.pk).is_verified
         if new and new != old:
-            print('new')
             send_verify_notification(self.object.account.id)
         return super().form_valid(form)
 
 
-class delete_people(DeleteView):
+class PeopleDelete(DeleteView):
     model = PeopleUser
     success_url = reverse_lazy('read-peoples')
 
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
+
 
 # NGO Crud
-
+@allowed_groups(admin=True, staff=True)
 def create_ngo(request):
     user_form = CustomUserCreationForm()
     ngo_form = NGOCreationForm()
@@ -347,22 +422,38 @@ def create_ngo(request):
     return render(request, 'core/ngo/ngo-create.html', context)
 
 
-class read_ngos(ListView):
+class NGOsRead(ListView):
     model = NGOUser
     # paginate_by = 20
     template_name = 'core/ngo/ngos-read.html'
 
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-class read_ngo(DetailView):
+
+class NGORead(DetailView):
     model = NGOUser
     template_name = 'core/ngo/ngo-read.html'
 
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-class update_ngo(UpdateView):
+
+class NGOUpdate(UpdateView):
     model = NGOUser
     form_class = NGOCreationForm
     template_name = 'core/ngo/ngo-update.html'
     success_url = reverse_lazy('read-ngos')
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         new = form.instance.is_verified
@@ -375,20 +466,28 @@ class update_ngo(UpdateView):
 def send_verify_notification(account_id: int):
     send_notification(title=f'Account Verification',
                       body=f'Your account has been verified.\nPlease support the community and'
-                           f' follow the guidelines.\nKeep Sasae a better place for everyone. ❤',
+                           f' follow the guidelines.\nKeep Sasae a better place for enthusiasts. ❤',
                       notification_for=account_id,
                       channel=ENotificationChannel['verify'],
                       post_type=None, post_id=None)
 
 
-class delete_ngo(DeleteView):
+class NGODelete(DeleteView):
     model = NGOUser
     success_url = reverse_lazy('read-ngos')
 
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
 
-class read_report(DetailView):
+
+class ReportRead(DetailView):
     model = Post
     template_name = 'core/report/report-review-read.html'
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -429,9 +528,13 @@ class read_report(DetailView):
         return context
 
 
-class read_reports(ListView):
+class ReportsRead(ListView):
     model = Post
     template_name = 'core/report/reports-read.html'
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
@@ -450,10 +553,14 @@ class read_reports(ListView):
         return context
 
 
-class update_report(UpdateView):
+class ReportUpdate(UpdateView):
     model = Report
     form_class = ReportForm
     success_url = reverse_lazy('read-reports')
+
+    @method_decorator(allowed_groups(admin=False, staff=True))
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
     def dispatch(self, request, *args, **kwargs):
         if request.method.lower() == 'get':

@@ -1,19 +1,20 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
-from django.shortcuts import redirect
+from django.urls import reverse_lazy
 
 
-def allowed_groups(*groups: str):
+def allowed_groups(admin: bool = False, staff: bool = False):
     def inner(func):
+        @login_required(login_url=reverse_lazy('login'))
         def wrapper(request: HttpRequest, *args, **kwargs):
-            user_ = request.user
-            if 'Admin' in groups and user_.is_staff and user_.is_superuser:
+            user: User = request.user
+            if (admin and user.is_superuser) or \
+                    (user.groups.exists() and (staff and user.groups.first().name == 'Staff')):
                 return func(request, *args, **kwargs)
-            user_group = user_.groups
-            if user_group.exists():
-                group = request.user.groups.first().name
-                if group in groups:
-                    return func(request, *args, **kwargs)
-            return redirect('forbid')
+            else:
+                raise PermissionDenied
         return wrapper
-    return inner
 
+    return inner
