@@ -13,25 +13,22 @@
         <div class="d-flex flex-row justify-content-between mb-4">
             <a class="btn btn-secondary" href="{% url 'create-staff' %}" role="button">Create Staff</a>
             <div class="d-flex flex-row">
-                <form class="mx-2" action="" method="get">
+                <form class="mx-2" action="{% url 'read-staffs' %}" method="get">
                     <div class="input-group">
-                        <input type="search" class="form-control" placeholder="search..." aria-label="Search">
-                        <button class="btn btn-secondary" type="button" id="button-addon2"> <i class="bi bi-search"></i></button>
+                        <input type="search" class="form-control" placeholder="search..." required aria-label="Search" name="name">
+                        <select class="form-select" aria-label="Default select example" required name="filter_by">
+                            <option value="" selected>Filter by</option>
+                            <option value="username">Username</option>
+                            <option value="fullname">Fullname</option>
+                        </select>
+                        <button class="btn btn-secondary" type="submit" id="button-addon2"> <i class="bi bi-search"></i></button>
                     </div>
                 </form>
-                <div class="dropdown">
-                    <button class="btn btn-secondary" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-filter"></i>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
-                </div>
+                <a class="btn btn-secondary" href="{% url 'read-staffs' %}" role="button">Reset</a>
             </div>
         </div>
-        <div class="table-responsive">
+        {% if page_obj %}
+            <div class="table-responsive">
             <table>
                 <thead>
                 <tr>
@@ -44,7 +41,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for staff in object_list %}
+                {% for staff in page_obj %}
                     <tr>
                         {% if staff.display_picture %}
                             <td data-label="Display Picture"><img src="{{ staff.display_picture.url }}" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="{{ staff.display_picture.name }}"></td>
@@ -73,6 +70,30 @@
                 {% endfor %}
                 </tbody>
             </table>
+            <div class="mt-3 d-flex justify-content-end">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"> <a class="page-link" href="?page=1">&laquo; first</a></li>
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a></li>
+                        {% endif %}
+                        <li class="page-item page-link">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </li>
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a></li>
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% else %}
+            <div class="d-flex justify-content-center align-items-center" style="height: 72vh;">
+                <div class="text-center" style="font-size: 1.5em; font-weight: bold; color: #5c636a">
+                    Nothing Here...
+                </div>
+            </div>
+        {% endif %}
         </div>
     </div>
 {% endblock %}

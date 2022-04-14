@@ -34,7 +34,7 @@ def bad_request(request, exception):
     return render(request, 'core/extensions/400-page.html')
 
 
-class CustomLoginView(LoginView):
+class CustomWebLoginView(LoginView):
 
     def form_valid(self, form):
         user = form.get_user()
@@ -262,7 +262,13 @@ class BankDelete(DeleteView):
 
 @allowed_groups(admin=False, staff=True)
 def staff_home(request):
-    return render(request, 'core/staff/staff-home.html')
+    staff = request.user.staff
+    context = {
+        'staff_name': staff.full_name,
+        'pending_reports':  staff.report_review.filter(is_reviewed=False).count(),
+        'reviewed_reports': staff.report_review.filter(is_reviewed=True).count(),
+    }
+    return render(request, 'core/staff/staff-home.html', context=context)
 
 
 @allowed_groups(admin=True,)
@@ -291,13 +297,16 @@ def create_staff(request):
 
 
 class StaffsRead(ListView):
-    model = Staff
-    # paginate_by = 20
+    paginate_by = 8
     template_name = 'core/staff/staffs-read.html'
 
     @method_decorator(allowed_groups(admin=True, staff=False))
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = Staff.objects.order_by('id')
+        return get_filtered_queryset(self, queryset)
 
 
 class StaffRead(DetailView):
@@ -346,13 +355,16 @@ class StaffDelete(DeleteView):
 # People CRUD
 
 class PeoplesRead(ListView):
-    model = PeopleUser
-    # paginate_by = 20
+    paginate_by = 8
     template_name = 'core/user/peoples-read.html'
 
     @method_decorator(allowed_groups(admin=True, staff=True))
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = PeopleUser.objects.order_by('id')
+        return get_filtered_queryset(self, queryset)
 
 
 class PeopleRead(DetailView):
@@ -423,13 +435,26 @@ def create_ngo(request):
 
 
 class NGOsRead(ListView):
-    model = NGOUser
-    # paginate_by = 20
+    paginate_by = 8
     template_name = 'core/ngo/ngos-read.html'
 
     @method_decorator(allowed_groups(admin=True, staff=True))
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = NGOUser.objects.order_by('id')
+        return get_filtered_queryset(self, queryset)
+
+
+def get_filtered_queryset(self, queryset):
+    query_params = self.request.GET
+    if query_params and 'name' in query_params.keys() and 'filter_by' in query_params.keys():
+        if query_params['filter_by'] == 'username':
+            queryset = queryset.filter(account__username__icontains=query_params['name'])
+        if query_params['filter_by'] == 'fullname':
+            queryset = queryset.filter(full_name__icontains=query_params['name'])
+    return queryset
 
 
 class NGORead(DetailView):

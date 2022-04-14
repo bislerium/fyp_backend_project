@@ -16,7 +16,7 @@ from .enums import EReactionType
 from .serializers import *
 
 
-class CustomLoginView(ILoginView):
+class CustomAPILoginView(ILoginView):
     serializer_class = CustomLoginSerializer
 
 

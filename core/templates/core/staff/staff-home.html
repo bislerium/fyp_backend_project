@@ -8,4 +8,39 @@
 
 {% block body %}
     {% include 'core/extensions/navbar.html' with home='active' %}
+    <div class="m-5">
+        <H1 style="font-weight: bolder; font-size: 10vw; color: #212121">Welcome</H1>
+        <H2 style="font-weight: bold; font-size: 6vw; color: #8670a4">{{ staff_name }},</H2>
+        <br/><br/>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="col-md-12 mb-3">
+                        <div class="p-3 rounded-3" id="box-9" style="background-color: #f2ccb7">
+                            <div style="text-align: center">
+                                <h5 style="font-weight: bold; font-size: 8rem; color: #a80000">
+                                    {{ pending_reports }}
+                                </h5>
+                            </div>
+                            <div class="pt-1" style="border-top: 1px solid">
+                                Total Pending Reports
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="p-3 rounded-3" id="box-9" style="background-color:#f2cb6c;">
+                        <div style="text-align: center">
+                            <h5 style="font-weight: bold; font-size: 8rem; color: #3b755f">
+                                {{ reviewed_reports }}
+                            </h5>
+                        </div>
+                        <div class="pt-1" style="border-top: 1px solid">
+                            Total Reviewed Reports
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

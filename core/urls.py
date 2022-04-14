@@ -4,21 +4,21 @@ from django.contrib.auth.views import *
 from django.urls import path, include, re_path
 
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
-    CustomLoginView, PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
+    PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
     PostReportView, RequestPostParticipateView, PollPostPollView, RelatedOptionList, TokenVerification, NGOOptionList, \
-    UserPostList, PeopleRUD, PostRetrieveUpdateDelete
+    UserPostList, PeopleRUD, PostRetrieveUpdateDelete, CustomAPILoginView
 
 from core.views import *
 
 urlpatterns = [
-                  # Web Endpoints
+                  # Web Endpoints---------------------------------------------------------------------------------------
                   # URI scheme is /resource/unique-identifier/action (Credit to: https://stackoverflow.com/a/56017740)
                   # Scheme Convention:
                   #     action => (D)AREL (display*, add, remove, edit, list*) for CRUD-ing
                   #     resource => plural noun for a collection and singular noun for an item
                   path('', home, name='default'),
 
-                  path('web/account/login/', CustomLoginView.as_view(
+                  path('web/account/login/', CustomWebLoginView.as_view(
                       template_name='core/account/login.html'), name='login'),
                   path('web/account/logout/', LogoutView.as_view(
                       template_name='core/account/logged_out.html'), name='logout'),
@@ -73,13 +73,14 @@ urlpatterns = [
                   path('web/report/<int:pk>/', ReportRead.as_view(), name='read-report'),
                   path('web/report/<int:pk>/review/', ReportUpdate.as_view(), name='review-report'),
 
-                  # API Endpoints
+                  # API Endpoints --------------------------------------------------------------------------------------
                   # URLs that do not require a session or valid token
                   # path('api/', include('dj_rest_auth.urls')),
-                  path('api/password/reset/', dj_rest_auth.views.PasswordResetView.as_view(), name='rest_password_reset'),
+                  path('api/password/reset/', dj_rest_auth.views.PasswordResetView.as_view(),
+                       name='rest_password_reset'),
                   path('api/password/reset/confirm/', dj_rest_auth.views.PasswordResetConfirmView.as_view(),
                        name='rest_password_reset_confirm'),
-                  path('api/login/', CustomLoginView.as_view(), name='rest_login'),
+                  path('api/login/', CustomAPILoginView.as_view(), name='rest_login'),
                   # URLs that require a user to be logged in with a valid session / token.
                   path('api/logout/', dj_rest_auth.views.LogoutView.as_view(), name='rest_logout'),
                   path('api/password/change/', dj_rest_auth.views.PasswordChangeView.as_view(),
