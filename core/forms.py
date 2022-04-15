@@ -49,7 +49,5 @@ class ReportForm(forms.ModelForm):
 
     class Meta:
         model = Report
-
-        fields = ['post', 'reason', 'action', 'is_reviewed']
-        widgets = {'reason': forms.Textarea(attrs={'rows': '12'}),
-                   'post': forms.HiddenInput(), 'is_reviewed': forms.HiddenInput()}
+        fields = ['reason', 'action']
+        widgets = {'reason': forms.Textarea(attrs={'rows': '12'}), }

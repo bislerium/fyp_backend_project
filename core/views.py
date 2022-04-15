@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
-from django.http.response import HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -593,10 +593,15 @@ class ReportUpdate(UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        action_option = form['action'].data
-        post = form.instance.post
-        form.instance.is_reviewed = True
+        report = self.get_object()
+        post = report.post
+
+        action_option = form.data['action']
         reason = form.data['reason']
+        report.is_reviewed = True
+        report.action = action_option
+        report.reason = reason
+        report.save()
 
         people: PeopleUser = post.people_posted_post_rn.first()
         ngo: NGOUser = post.ngo_posted_post_rn.first()
@@ -622,4 +627,4 @@ class ReportUpdate(UpdateView):
                 account = ngo.account
                 account.is_active = False
                 account.save()
-        return super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())

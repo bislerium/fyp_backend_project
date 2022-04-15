@@ -21,3 +21,8 @@ class EReactionType(enum.Enum):
     Upvote = 0
     Downvote = 1
 
+
+class DBOperation(enum.Enum):
+    read = 0,
+    update = 1,
+    delete = 2,

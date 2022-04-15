@@ -129,7 +129,7 @@ class Report(models.Model):
 
 class Staff(UserCommons):
     is_verified = None
-    is_married = models.BooleanField()
+    is_married = models.BooleanField(default=False)
     report_review = models.ManyToManyField(Report, blank=True, related_name='report_reviewed_by')
 
     def __str__(self):

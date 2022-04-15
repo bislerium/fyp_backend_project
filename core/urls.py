@@ -1,7 +1,7 @@
 import dj_rest_auth
 from django.conf.urls.static import static
 from django.contrib.auth.views import *
-from django.urls import path, include, re_path
+from django.urls import path, re_path
 
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
     PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
@@ -51,6 +51,7 @@ urlpatterns = [
                   # Staff as Resource
                   path('web/staffs/', StaffsRead.as_view(), name='read-staffs'),
                   path('web/staffs/add/', create_staff, name='create-staff'),
+                  path('web/staff/<int:pk>/', StaffRead.as_view(), name='read-staff'),
                   path('web/staff/<int:pk>/', StaffRead.as_view(), name='read-staff'),
                   path('web/staff/<int:pk>/edit/', StaffUpdate.as_view(), name='update-staff'),
                   path('web/staff/<int:pk>/remove/', StaffDelete.as_view(), name='delete-staff'),
