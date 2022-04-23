@@ -197,7 +197,8 @@ class PeopleCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         if validated_data['username'] in User.objects.values_list('username', flat=True):
-            raise ParseError()
+            raise CustomAPIException(p_status_code=400,
+                                     p_default_detail=f"Username: {validated_data['username']} already exists!")
         user = User.objects.create(username=validated_data['username'],
                                    email=validated_data['email'],
                                    )

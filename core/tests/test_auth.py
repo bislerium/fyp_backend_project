@@ -58,7 +58,7 @@ class AuthTest(BaseTest):
         response = self.client.post(self.login_url, self.ngo_user, follow=True)
         self.assertFalse(response.context['user'].is_active)
 
-    def test_un_authorize_login(self):
+    def test_can_un_authorize_login(self):
         response = self.client.post(self.login_url, self.wrong_user, follow=True)
         self.assertFalse(response.context['user'].is_active)
 

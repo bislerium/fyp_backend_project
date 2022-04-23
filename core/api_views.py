@@ -1,7 +1,7 @@
 import random
 from collections import deque
 
-from dj_rest_auth.views import LoginView as ILoginView
+from dj_rest_auth.views import LoginView as RestLoginView
 from django.core.exceptions import PermissionDenied
 from rest_framework import parsers
 from rest_framework.generics import *
@@ -16,7 +16,7 @@ from .enums import EReactionType
 from .serializers import *
 
 
-class CustomAPILoginView(ILoginView):
+class CustomAPILoginView(RestLoginView):
     serializer_class = CustomLoginSerializer
 
 
@@ -58,9 +58,9 @@ class PeopleAdd(CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            _ = self.perform_create(serializer)
+            _ = serializer.save()
             if not _:
-                return Response({'Success': 'User is Registered.'}, status=status.HTTP_400_BAD_REQUEST, )
+                return Response({'Success': serializer.errors}, status=status.HTTP_400_BAD_REQUEST, )
             return Response({'Success': 'User is Registered.'}, status=status.HTTP_201_CREATED, )
 
 

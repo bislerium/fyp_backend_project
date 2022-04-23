@@ -1,4 +1,4 @@
-import dj_rest_auth
+import dj_rest_auth.views as rest_view
 from django.conf.urls.static import static
 from django.contrib.auth.views import *
 from django.urls import path, re_path
@@ -77,16 +77,17 @@ urlpatterns = [
                   # API Endpoints --------------------------------------------------------------------------------------
                   # URLs that do not require a session or valid token
                   # path('api/', include('dj_rest_auth.urls')),
-                  path('api/password/reset/', dj_rest_auth.views.PasswordResetView.as_view(),
+                  path('api/password/reset/', rest_view.PasswordResetView.as_view(),
                        name='rest_password_reset'),
-                  path('api/password/reset/confirm/', dj_rest_auth.views.PasswordResetConfirmView.as_view(),
+                  path('api/password/reset/confirm/', rest_view.PasswordResetConfirmView.as_view(),
                        name='rest_password_reset_confirm'),
                   path('api/login/', CustomAPILoginView.as_view(), name='rest_login'),
                   # URLs that require a user to be logged in with a valid session / token.
-                  path('api/logout/', dj_rest_auth.views.LogoutView.as_view(), name='rest_logout'),
-                  path('api/password/change/', dj_rest_auth.views.PasswordChangeView.as_view(),
+                  path('api/logout/', rest_view.LogoutView.as_view(), name='rest_logout'),
+                  path('api/password/change/', rest_view.PasswordChangeView.as_view(),
                        name='rest_password_change'),
                   path('api/user/verify/', TokenVerification.as_view(), name='token-verify'),
+
                   re_path(r'^api/(?P<user_type>(ngo|people))/(?P<user_id>\d+)/posts/$', UserPostList.as_view(),
                           name='api-user-post-list'),
                   path('api/ngos/', NGOList.as_view(), name='api-ngo-list'),
