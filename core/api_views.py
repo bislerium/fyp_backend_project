@@ -361,7 +361,9 @@ staffs_deque = deque(Staff.objects.all())
 
 
 def get_staff() -> Staff:
-    _ = staffs_deque.popleft()
+    _: Staff = staffs_deque.popleft()
+    # while _:
+    #     _ = staffs_deque.popleft()
     staffs_deque.append(_)
     print('Reported to ->', _)
     return _

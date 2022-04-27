@@ -6,7 +6,6 @@ from django.contrib.auth.models import Group
 from django.http.response import HttpResponseServerError
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
-from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -19,6 +18,12 @@ from .models import *
 
 
 class CustomLoginSerializer(LoginSerializer):
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
 
     def _validate_username_email(self, username, email, password):
         user: User = super()._validate_username_email(username, email, password)
@@ -507,7 +512,7 @@ def create_post(request: Request, validated_data, post_type: EPostType):
                               body=f'{user.peopleuser.full_name.title()} has poked you in a post.',
                               notification_for=i,
                               channel=ENotificationChannel['poke'],
-                              post_type=post_type, post_id=post.id)
+                              post_type=post_type, post_id=str(post.id))
 
         return Response({"Success": f"{post_type.name} Post created successfully!",
                          "post_data": PostListSerializer(post, ).data}, status=status.HTTP_201_CREATED)
