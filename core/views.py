@@ -57,6 +57,17 @@ def home_page_router(request):
         return redirect('staff-home')
 
 
+@allowed_groups(admin=False, staff=True)
+def staff_home(request):
+    staff = request.user.staff
+    context = {
+        'staff_name': staff.full_name,
+        'pending_reports':  staff.report_review.filter(is_reviewed=False).count(),
+        'reviewed_reports': staff.report_review.filter(is_reviewed=True).count(),
+    }
+    return render(request, 'core/staff/staff-home.html', context=context)
+
+
 class AdminHome(TemplateView):
     template_name = 'core/admin/admin-home.html'
 
@@ -259,17 +270,6 @@ class BankDelete(DeleteView):
 
 
 # Staff Crud
-
-@allowed_groups(admin=False, staff=True)
-def staff_home(request):
-    staff = request.user.staff
-    context = {
-        'staff_name': staff.full_name,
-        'pending_reports':  staff.report_review.filter(is_reviewed=False).count(),
-        'reviewed_reports': staff.report_review.filter(is_reviewed=True).count(),
-    }
-    return render(request, 'core/staff/staff-home.html', context=context)
-
 
 @allowed_groups(admin=True,)
 def create_staff(request):
