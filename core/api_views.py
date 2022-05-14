@@ -357,13 +357,14 @@ class RequestPostParticipateView(APIView):
         return Response({'Success': f'Participated'}, status=status.HTTP_200_OK)
 
 
-staffs_deque = deque(Staff.objects.all())
-
+staffs_deque: deque = []
+try :
+    deque = deque(Staff.objects.all())
+except:
+    print('----------MIGRATION NEEDED----------')
 
 def get_staff() -> Staff:
     _: Staff = staffs_deque.popleft()
-    # while _:
-    #     _ = staffs_deque.popleft()
     staffs_deque.append(_)
     print('Reported to ->', _)
     return _

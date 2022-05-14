@@ -35,10 +35,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    'bootstrap5',
+    
     'core',
     'dj_rest_auth',
+    'bootstrap5',
     'multiselectfield',
     'phonenumber_field',
     'rest_framework',
