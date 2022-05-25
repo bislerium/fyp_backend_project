@@ -1,0 +1,11 @@
+{
+ "folders": [
+  {
+   "path": "."
+  }
+ ],
+ "settings": {
+  "python.terminal.activateEnvInCurrentTerminal": true,
+  "python.defaultInterpreterPath": "home/bgc/env_fyp/bin/python3"
+ }
+}
