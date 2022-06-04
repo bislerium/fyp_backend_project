@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
+import django_heroku
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-q(5r^*hudd+n2!iyiewxk1y8p(e5*xbnu&g(88ceq&+nw2)qj('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['sasaeb.herokuapp.com', '127.0.0.1']
 
 # Application definition
 
@@ -35,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'core',
     'dj_rest_auth',
     'bootstrap5',
@@ -62,6 +63,7 @@ REST_AUTH_SERIALIZERS = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -163,10 +165,16 @@ LOGIN_URL = 'login'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER=  'my.sasae@gmail.com'
+EMAIL_HOST_USER = 'my.sasae@gmail.com'
 EMAIL_HOST_PASSWORD = 'xzvglexrlwugstxq'
-EMAIL_USE_TLS= True
+EMAIL_USE_TLS = True
 # EMAIL_USE_SSL= 465
 # EMAIL_TIMEOUT=
 # EMAIL_SSL_KEYFILE=
 # EMAIL_SSL_CERTFILE=
+
+# Configure Django App for Heroku.
+django_heroku.settings(locals())
+
+# Add compression and caching support
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"

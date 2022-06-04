@@ -1,0 +1,1 @@
+web: gunicorn fyp_backend.wsgi --log-file -
