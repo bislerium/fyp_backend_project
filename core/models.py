@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
-from django.dispatch import receiver
-from phonenumber_field.modelfields import PhoneNumberField
+from django.core.exceptions import ValidationError
+from core.constants import contact_number_regex
 from multiselectfield import MultiSelectField
 
 from django.db import models
@@ -68,6 +68,14 @@ class Bank(models.Model):
     bank_account_number = models.CharField(max_length=20)
 
 
+def validate_contactnumber(value):
+    for regex_tup in contact_number_regex:
+        for regex in regex_tup:
+            if regex.match(value):
+                return
+    raise ValidationError('Invalid phone number!')
+
+
 class UserCommons(models.Model):
     account = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=150)
@@ -78,7 +86,7 @@ class UserCommons(models.Model):
         ('LGBTQ+', 'LGBTQ+'),
     ]
     gender = models.CharField(max_length=6, choices=GENDER,)
-    phone = PhoneNumberField(blank=True, unique=True, null=True)
+    phone = models.CharField(unique=True, max_length=14, validators=[validate_contactnumber])
     address = models.CharField(max_length=150)
     display_picture = models.ImageField(
         upload_to='display_picture',
