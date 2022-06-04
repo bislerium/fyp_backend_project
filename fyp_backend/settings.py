@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-q(5r^*hudd+n2!iyiewxk1y8p(e5*xbnu&g(88ceq&+nw2)qj('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['sasaeb.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['sasaeb.herokuapp.com', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
     'core',
@@ -141,13 +142,16 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Add compression and caching support
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'static'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_PEOPLE_DP = 'default/default_people_dp.png'
 DEFAULT_NGO_DP = 'default/default_ngo_dp.png'
@@ -176,5 +180,4 @@ EMAIL_USE_TLS = True
 # Configure Django App for Heroku.
 django_heroku.settings(locals())
 
-# Add compression and caching support
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
