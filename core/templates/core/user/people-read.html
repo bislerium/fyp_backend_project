@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% load bootstrap5 %}
 
 {% block title %}View Person{% endblock %}
@@ -53,18 +54,22 @@
                     <th>Verified</th>
                     <td>{{ object.is_verified }}</td>
                 </tr>
-                {% if object.display_picture %}
-                    <tr>
-                        <td colspan="2" class="text-center">Display Picture</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="text-center">
+                <tr>
+                    <td colspan="2" class="text-center fw-bold">Display Picture</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center">
+                        {% if object.display_picture %}
                             <a href="{{ object.display_picture.url }}">
                                 <img src="{{ object.display_picture.url }}" class="img-fluid" style="border-radius: 20px" alt="{{ object.display_picture.name }}"/>
                             </a>
-                        </td>
-                    </tr>
-                {% endif %}
+                        {% else %}
+                            <a href="{% static 'core/img/default_people_dp.png' %}">
+                                <img src="{% static 'core/img/default_people_dp.png' %}" class="img-fluid" style="border-radius: 20px" alt="{{ object.display_picture.name }}"/>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
                 {% if object.citizenship_photo %}
                     <tr>
                         <td colspan="2" class="text-center">Citizenship photo></td>

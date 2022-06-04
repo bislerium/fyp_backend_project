@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 import django_heroku
+import cloudinary
+import cloudinary_storage
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-q(5r^*hudd+n2!iyiewxk1y8p(e5*xbnu&g(88ceq&+nw2)qj('
+SECRET_KEY = config('SECRET_KEY', default="")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default="")
 
 ALLOWED_HOSTS = ['sasaeb.herokuapp.com', 'localhost', '127.0.0.1']
 
@@ -45,6 +48,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'widget_tweaks',
+    # Media Cloudinary
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 REST_FRAMEWORK = {
@@ -153,8 +159,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-DEFAULT_PEOPLE_DP = 'default/default_people_dp.png'
-DEFAULT_NGO_DP = 'default/default_ngo_dp.png'
+# DEFAULT_PEOPLE_DP = '/static/core/img/default_people_dp.png'
+# DEFAULT_NGO_DP = '/static/core/img/default_ngo_dp.png'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -179,5 +185,14 @@ EMAIL_USE_TLS = True
 
 # Configure Django App for Heroku.
 django_heroku.settings(locals())
+
+# Cloudinary stuff
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUD_NAME', default=""),
+    'API_KEY': config('API_KEY', default=""),
+    'API_SECRET': config('API_SECRET', default=""),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 

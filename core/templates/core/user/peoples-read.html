@@ -47,7 +47,7 @@
                             {% if people.display_picture %}
                                 <td data-label="Display Picture"><img src="{{ people.display_picture.url }}" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="{{ people.display_picture.name }}"></td>
                             {% else %}
-                                <td data-label="Display Picture"><img src="/media/default/default_people_dp.png" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="default_people_dp"></td>
+                                <td data-label="Display Picture"><img src="{% static '/core/img/default_people_dp.png' %}" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="Default People DP"></td>
                             {% endif %}
                             <td data-label="User Name">{{ people.account.username }}</td>
                             <td data-label="Date Joined">{{ people.account.date_joined|date }}</td>

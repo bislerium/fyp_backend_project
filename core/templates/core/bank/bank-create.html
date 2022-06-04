@@ -16,7 +16,10 @@
                 {% csrf_token %}
                 {% bootstrap_form form %}
             </form>
-            <button form="bank-form" type="submit" class="btn btn-primary" style="width: 100%">Link</button>
+            <div class="btn-group w-100" role="group" aria-label="Basic example">
+                <button form="bank-form" type="submit" class="btn btn-primary w-50">Link</button>
+                <a href="{% url 'read-ngo' ngo_pk %}" class="text-decoration-none w-50"><button type="submit" class="btn btn-secondary w-100">Skip</button></a>
+            </div>
         </div>
     </div>
 {% endblock %}
