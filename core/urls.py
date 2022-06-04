@@ -39,9 +39,12 @@ urlpatterns = [
                   path('web/home/', home_page_router, name='home-page-router'),
                   path('web/admin/', AdminHome.as_view(), name='admin-home'),
                   path('web/staff/', staff_home, name='staff-home'),
-                  path('web/403/<exception>', forbidden_page, name='forbid'),
-                  path('web/404/<exception>', page_not_found, name='no_page'),
-                  path('web/400/<exception>', bad_request, name='no_page'),
+
+                  # For Testing Web Exceptions, Disable at production
+                  # path('web/403/<exception>', forbidden_page, name='403'),
+                  # path('web/404/<exception>', page_not_found, name='404'),
+                  # path('web/400/<exception>', bad_request, name='400'),
+                  # path('web/500/<exception>', server_error, name='500'),
 
                   # Bank as Resource
                   path('web/ngo/<int:pk>/bank/add', BankCreate.as_view(), name='create-bank'),

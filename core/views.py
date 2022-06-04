@@ -34,6 +34,11 @@ def bad_request(request, exception):
     return render(request, 'core/extensions/400-page.html')
 
 
+def server_error(request, *args, **kwargs):
+    # print(exception)
+    return render(request, 'core/extensions/500-page.html')
+
+
 class CustomWebLoginView(LoginView):
 
     def form_valid(self, form):
