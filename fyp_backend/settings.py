@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'bootstrap5',
     'multiselectfield',
-    'phonenumber_field',
     'rest_framework',
     'rest_framework.authtoken',
     'widget_tweaks',
@@ -160,16 +159,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'home-page-router'
 LOGIN_URL = 'login'
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_HOST=True
-# EMAIL_PORT=5087
-# EMAIL_HOST_USER=
-# EMAIL_HOST_PASSWORD =
-# EMAIL_USE_TLS=
-# EMAIL_USE_SSL=
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER=  'my.sasae@gmail.com'
+EMAIL_HOST_PASSWORD = 'xzvglexrlwugstxq'
+EMAIL_USE_TLS= True
+# EMAIL_USE_SSL= 465
 # EMAIL_TIMEOUT=
 # EMAIL_SSL_KEYFILE=
 # EMAIL_SSL_CERTFILE=
-
-PHONENUMBER_DEFAULT_REGION = 'NP'

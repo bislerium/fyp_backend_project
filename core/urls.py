@@ -28,7 +28,7 @@ urlpatterns = [
                       template_name='core/account/password_change_done.html'), name='password_change_done'),
                   path('web/account/password_reset/', PasswordResetView.as_view(
                       template_name='core/account/password_reset_form.html',
-                      email_template_name='core/account/password_reset_email.html'), name='password_reset'),
+                      html_email_template_name='core/account/password_reset_email.html'), name='password_reset'),
                   path('web/account/password_reset/done/', PasswordResetDoneView.as_view(
                       template_name='core/account/password_reset_done.html'), name='password_reset_done'),
                   path('web/account/reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(
