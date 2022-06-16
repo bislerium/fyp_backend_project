@@ -129,11 +129,11 @@
                     <td colspan="2" class="text-center">
                         {% if object.display_picture %}
                             <a href="{{ object.display_picture.url }}">
-                                <img src="{{ object.display_picture.url }}" loading="lazy" class="img-fluid" style="border-radius: 20px" alt="{{ object.display_picture.name }}"/>
+                                <img src="{{ object.display_picture.url }}" loading="lazy" class="img-fluid" style="border-radius: 20px; width: 50vw" alt="{{ object.display_picture.name }}"/>
                             </a>
                         {% else %}
                             <a href="{% static 'core/img/default_ngo_dp.png' %}">
-                                <img src="{% static 'core/img/default_ngo_dp.png' %}" loading="lazy" class="img-fluid" style="border-radius: 20px" alt="Default NGO DP"/>
+                                <img src="{% static 'core/img/default_ngo_dp.png' %}" loading="lazy" class="img-fluid" style="border-radius: 20px; width: 50vw" alt="Default NGO DP"/>
                             </a>
                         {% endif %}
                     </td>
@@ -145,7 +145,7 @@
                     <tr>
                         <td colspan="2" class="text-center">
                             <a href="{{ object.swc_affl_cert.url }}">
-                                <img src="{{ object.swc_affl_cert.url }}" loading="lazy" class="img-fluid" style="border-radius: 20px" alt="{{ object.swc_affl_cert.name }}"/>
+                                <img src="{{ object.swc_affl_cert.url }}" loading="lazy" class="img-fluid" style="border-radius: 20px; width: 50vw" alt="{{ object.swc_affl_cert.name }}"/>
                             </a>
                         </td>
                     </tr>
@@ -157,7 +157,7 @@
                     <tr>
                         <td colspan="2" class="text-center">
                             <a href="{{ object.pan_cert.url }}">
-                                <img src="{{ object.pan_cert.url }}" loading="lazy" class="img-fluid" style="border-radius: 20px" alt="{{ object.pan_cert.name }}"/>
+                                <img src="{{ object.pan_cert.url }}" loading="lazy" class="img-fluid" style="border-radius: 20px; width: 50vw" alt="{{ object.pan_cert.name }}"/>
                             </a>
                         </td>
                     </tr>

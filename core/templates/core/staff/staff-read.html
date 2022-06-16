@@ -61,11 +61,11 @@
                     <td colspan="2" class="text-center">
                         {% if object.display_picture %}
                             <a href="{{ object.display_picture.url }}">
-                                <img src="{{ object.display_picture.url }}" class="img-fluid" style="border-radius: 20px" alt="{{ object.display_picture.name }}"/>
+                                <img src="{{ object.display_picture.url }}" class="img-fluid" style="border-radius: 20px; width: 50vw" alt="{{ object.display_picture.name }}"/>
                             </a>
                         {% else %}
                             <a href="{% static 'core/img/default_people_dp.png' %}">
-                                <img src="{% static 'core/img/default_people_dp.png' %}" class="img-fluid" style="border-radius: 20px" alt="Default Staff DP"/>
+                                <img src="{% static 'core/img/default_people_dp.png' %}" class="img-fluid" style="border-radius: 20px; width: 50vw" alt="Default Staff DP"/>
                             </a>
                         {% endif %}
                     </td>
@@ -77,7 +77,7 @@
                     <tr>
                         <td colspan="2" class="text-center">
                             <a href="{{ object.citizenship_photo.url }}">
-                                <img src="{{ object.citizenship_photo.url }}" class="img-fluid" style="border-radius: 20px" alt="{{ object.citizenship_photo.name }}"/>
+                                <img src="{{ object.citizenship_photo.url }}" class="img-fluid" style="border-radius: 20px; width: 50vw" alt="{{ object.citizenship_photo.name }}"/>
                             </a>
                         </td>
                     </tr>
