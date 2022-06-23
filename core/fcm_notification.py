@@ -1,9 +1,9 @@
 import json
+
 import requests
 
 from core.enums import ENotificationChannel
 from core.enums import EPostType
-
 
 URL = "https://fcm.googleapis.com/fcm/send"
 TOPIC = '/topics/post'

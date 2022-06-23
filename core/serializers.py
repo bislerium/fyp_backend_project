@@ -5,10 +5,10 @@ from dj_rest_auth.serializers import TokenSerializer, LoginSerializer
 from django.contrib.auth.models import Group
 from django.http.response import HttpResponseServerError
 from django.utils import timezone
+from rest_framework import serializers, status
 from rest_framework.authtoken.models import Token
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import serializers, status
 
 import core.models
 from .enums import EPostType
@@ -439,7 +439,7 @@ def check_ngo(poked_to: list[int]):
     invalid_ngo_id = [i for i in poked_to if not User.objects.filter(pk=i).exists()]
     if invalid_ngo_id:
         raise CustomAPIException(p_status_code=404,
-                                 p_default_detail=f'NGOs with IDs: {invalid_ngo_id} does not exist.',)
+                                 p_default_detail=f'NGOs with IDs: {invalid_ngo_id} does not exist.', )
 
 
 def update_post_poked_ngo(instance: Post, new_poked_to):

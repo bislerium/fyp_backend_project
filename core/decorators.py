@@ -15,6 +15,7 @@ def allowed_groups(admin: bool = False, staff: bool = False):
                 return func(request, *args, **kwargs)
             else:
                 raise PermissionDenied
+
         return wrapper
 
     return inner

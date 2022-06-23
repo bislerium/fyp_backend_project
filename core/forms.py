@@ -20,7 +20,8 @@ class CustomUserCreationForm(UserCreationForm):
 class NGOCreationForm(forms.ModelForm):
     class Meta:
         model = NGOUser
-        fields = ['full_name', 'establishment_date', 'field_of_work', 'phone', 'address', 'latitude', 'longitude', 'display_picture',
+        fields = ['full_name', 'establishment_date', 'field_of_work', 'phone', 'address', 'latitude', 'longitude',
+                  'display_picture',
                   'epay_account', 'swc_affl_cert', 'pan_cert', 'is_verified', ]
         widgets = {'establishment_date': forms.DateInput(attrs={'type': 'date'}), }
 

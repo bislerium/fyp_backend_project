@@ -358,10 +358,11 @@ class RequestPostParticipateView(APIView):
 
 
 staffs_deque: deque = []
-try :
+try:
     deque = deque(Staff.objects.all())
 except:
     print('----------MIGRATION NEEDED----------')
+
 
 def get_staff() -> Staff:
     _: Staff = staffs_deque.popleft()
@@ -459,5 +460,3 @@ def get_ngo_querylist(self):
     if user.groups.first().name == 'NGO':
         _ = _.exclude(pk=user.ngouser.id)
     return _
-
-

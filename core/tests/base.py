@@ -36,4 +36,4 @@ class BaseTest(TestCase):
         return self.client.post(self.login_url, self.admin_user, follow=True)
 
     def login_as_staff(self):
-        return  self.client.post(self.login_url, self.staff_user, follow=True)
+        return self.client.post(self.login_url, self.staff_user, follow=True)

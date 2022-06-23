@@ -25,4 +25,3 @@ handler400 = 'core.views.bad_request'
 handler403 = 'core.views.forbidden_page'
 handler404 = 'core.views.page_not_found'
 handler500 = 'core.views.server_error'
-

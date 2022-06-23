@@ -36,7 +36,7 @@ class StaffCRUDTest(BaseTest):
             'full_name': 'staff2',
             'date_of_birth': '2001-10-25',
             'gender': 'Male',
-            'phone': '9779800756475',
+            'phone': '9800457384',
             'address': 'kalikanagar',
             'display_picture': '',
             'citizenship_photo': '',

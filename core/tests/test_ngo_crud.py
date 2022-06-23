@@ -33,14 +33,14 @@ class NGOCRUDTest(BaseTest):
             'full_name': 'Nepal NGO Federation',
             'establishment_date': '2012-10-25',
             'field_of_work': ['Communication', 'Education'],
-            'phone': '9779844563748',
+            'phone': '9844563748',
             'address': 'Kathmandu',
             'latitude': 82.123,
             'longitude': 120.232,
-            'display_picture': '',
+            # 'display_picture': '',
             'epay_account': '9844563748',
-            'swc_affl_cert': '',
-            'pan_cert': '',
+            # 'swc_affl_cert': '',
+            # 'pan_cert': '',
             'is_verified': False,
         }
 
@@ -87,7 +87,7 @@ class NGOCRUDTest(BaseTest):
         self.client.post(self.create_ngo, self.payload, follow=True)
         old = NGOUser.objects.filter(account__username=self.payload['username']).first()
         self.payload['full_name'] = 'XYZ Company'
-        self.payload['phone'] = '9779856475894'
+        self.payload['phone'] = '9856475894'
         response = self.client.post(get_path(DBOperation.update, pk=old.pk), self.payload, follow=True)
         new = NGOUser.objects.filter(account__username=self.payload['username']).first()
         self.assertEqual(response.status_code, 200)

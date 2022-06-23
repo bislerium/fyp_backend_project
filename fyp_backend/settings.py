@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
-import django_heroku
+from pathlib import Path
+
 import cloudinary
 import cloudinary_storage
-from pathlib import Path
+import django_heroku
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default="")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default="")
+DEBUG = config('DEBUG', default=True)
 
 ALLOWED_HOSTS = ['sasaeb.herokuapp.com', 'localhost', '127.0.0.1']
 
@@ -168,34 +169,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'home-page-router'
 LOGIN_URL = 'login'
 
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_HOST_USER = 'my.sasae@gmail.com'
-    EMAIL_HOST_PASSWORD = 'xzvglexrlwugstxq'
-    EMAIL_USE_TLS = True
-    # EMAIL_USE_SSL= 465
-    # EMAIL_TIMEOUT=
-    # EMAIL_SSL_KEYFILE=
-    # EMAIL_SSL_CERTFILE=
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'my.sasae@gmail.com'
+EMAIL_HOST_PASSWORD = 'xzvglexrlwugstxq'
+EMAIL_USE_TLS = True
+# EMAIL_USE_SSL= 465
+# EMAIL_TIMEOUT=
+# EMAIL_SSL_KEYFILE=
+# EMAIL_SSL_CERTFILE=
 
-# Configure Django App for Heroku.
-django_heroku.settings(locals())
-
-# Cloudinary stuff
+# Cloudinary Credentials for Serving Media files
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUD_NAME', default=""),
     'API_KEY': config('API_KEY', default=""),
     'API_SECRET': config('API_SECRET', default=""),
 }
 
-if not DEBUG:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# For Deployment (Disable while DEBUG: Unstable Testing)
+# Configure Django App for Heroku.
+django_heroku.settings(locals())
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Add compression and caching support
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-

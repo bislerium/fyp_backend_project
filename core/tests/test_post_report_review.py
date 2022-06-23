@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
+
 from core.models import PeopleUser, Post, PostNormal, Report
 from core.tests.base import BaseTest
 
@@ -23,7 +24,7 @@ class PostReportReviewTest(BaseTest):
         self.people = PeopleUser.objects.create(account=user, full_name='mr xyz', phone='9779800730959')
         post = Post.objects.create(related_to=['Communication', 'Labor'], post_content='lorem epsum',
                                    post_type='Normal')
-        normal_post = PostNormal.objects.create(post=post,)
+        normal_post = PostNormal.objects.create(post=post, )
         normal_post.reported_by.add(self.people)
         self.people.posted_post.add(post)
         self.report = Report.objects.create(post=post)

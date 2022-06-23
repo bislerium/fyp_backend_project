@@ -7,7 +7,6 @@ from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDe
     PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
     PostReportView, RequestPostParticipateView, PollPostPollView, RelatedOptionList, TokenVerification, NGOOptionList, \
     UserPostList, PeopleRUD, PostRetrieveUpdateDelete, CustomAPILoginView
-
 from core.views import *
 
 urlpatterns = [

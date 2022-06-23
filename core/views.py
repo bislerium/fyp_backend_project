@@ -1,4 +1,5 @@
 from datetime import date, datetime
+
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
@@ -67,7 +68,7 @@ def staff_home(request):
     staff = request.user.staff
     context = {
         'staff_name': staff.full_name,
-        'pending_reports':  staff.report_review.filter(is_reviewed=False).count(),
+        'pending_reports': staff.report_review.filter(is_reviewed=False).count(),
         'reviewed_reports': staff.report_review.filter(is_reviewed=True).count(),
     }
     return render(request, 'core/staff/staff-home.html', context=context)
@@ -222,6 +223,7 @@ class BankCreate(CreateView):
     form_class = BankCreationForm
     template_name = 'core/bank/bank-create.html'
 
+    @method_decorator(allowed_groups(admin=True, staff=True))
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
@@ -250,6 +252,7 @@ class BankUpdate(UpdateView):
     form_class = BankCreationForm
     template_name = 'core/bank/bank-update.html'
 
+    @method_decorator(allowed_groups(admin=True, staff=True))
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
@@ -274,7 +277,7 @@ class BankDelete(DeleteView):
 
 # Staff Crud
 
-@allowed_groups(admin=True,)
+@allowed_groups(admin=True, )
 def create_staff(request):
     user_form = CustomUserCreationForm()
     staff_form = StaffCreationForm()
@@ -343,6 +346,10 @@ class StaffUpdate(UpdateView):
         return super().form_valid(form)
 
     @method_decorator(allowed_groups(admin=True, staff=False))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @method_decorator(allowed_groups(admin=True, staff=False))
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
@@ -385,6 +392,10 @@ class PeopleUpdate(UpdateView):
     form_class = PeopleCreationForm
     template_name = 'core/general/people-update.html'
     success_url = reverse_lazy('read-peoples')
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
     @method_decorator(allowed_groups(admin=True, staff=True))
     def post(self, request, *args, **kwargs):
@@ -473,6 +484,10 @@ class NGOUpdate(UpdateView):
     form_class = NGOCreationForm
     template_name = 'core/ngo/ngo-update.html'
     success_url = reverse_lazy('read-ngos')
+
+    @method_decorator(allowed_groups(admin=True, staff=True))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
     @method_decorator(allowed_groups(admin=True, staff=True))
     def post(self, request, *args, **kwargs):

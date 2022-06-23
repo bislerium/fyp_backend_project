@@ -1,11 +1,9 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-
-from core.constants import contact_number_regex
+from django.db import models
 from multiselectfield import MultiSelectField
 
-from django.db import models
-
+from core.constants import contact_number_regex
 # Create your models here.
 from fyp_backend import settings
 
@@ -98,7 +96,7 @@ class UserCommons(models.Model):
         ('Female', 'Female'),
         ('LGBTQ+', 'LGBTQ+'),
     ]
-    gender = models.CharField(max_length=6, choices=GENDER,)
+    gender = models.CharField(max_length=6, choices=GENDER, )
     phone = models.CharField(unique=True, max_length=14, validators=[validate_contact_number])
     address = models.CharField(max_length=150)
     display_picture = models.ImageField(

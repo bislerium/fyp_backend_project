@@ -4,4 +4,3 @@ from django.contrib import admin
 from core.models import *
 
 admin.site.register([Staff, PeopleUser, NGOUser, Bank, Post, PostNormal, PostRequest, PostPoll, Report, PollOption])
-

@@ -31,10 +31,10 @@ class PeopleCRUDTest(BaseTest):
             'full_name': 'Mrs XYZ',
             'date_of_birth': '2002-11-14',
             'gender': 'Female',
-            'phone': '9779844657384',
+            'phone': '9844657384',
             'address': 'Lalitpur',
-            'display_picture': '',
-            'citizenship_photo': '',
+            # 'display_picture': '',
+            # 'citizenship_photo': '',
             'is_verified': False
         }
 
