@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+
 from core.constants import contact_number_regex
 from multiselectfield import MultiSelectField
 
@@ -47,10 +48,22 @@ FIELD_OF_WORK = [
 ]
 
 
+def validate_latitude(value):
+    if -90 <= value <= 90:
+        return
+    raise ValidationError('Invalid Latitude: Must be exclusively in a range of -90 to 90!')
+
+
+def validate_longitude(value):
+    if -180 <= value <= 180:
+        return
+    raise ValidationError('Invalid Longitude: Must be exclusively in a range of -180 to 180!')
+
+
 # Supports Decimal Degrees (DD) Coordinate format (i.e, Lat & long)
 class GeoLocation(models.Model):
-    latitude = models.DecimalField(max_digits=22, decimal_places=16)
-    longitude = models.DecimalField(max_digits=22, decimal_places=16)
+    latitude = models.DecimalField(max_digits=22, decimal_places=16, validators=[validate_latitude])
+    longitude = models.DecimalField(max_digits=22, decimal_places=16, validators=[validate_longitude])
 
     @property
     def get_gmap_location_url(self):
@@ -68,7 +81,7 @@ class Bank(models.Model):
     bank_account_number = models.CharField(max_length=20)
 
 
-def validate_contactnumber(value):
+def validate_contact_number(value):
     for regex_tup in contact_number_regex:
         for regex in regex_tup:
             if regex.match(value):
@@ -86,7 +99,7 @@ class UserCommons(models.Model):
         ('LGBTQ+', 'LGBTQ+'),
     ]
     gender = models.CharField(max_length=6, choices=GENDER,)
-    phone = models.CharField(unique=True, max_length=14, validators=[validate_contactnumber])
+    phone = models.CharField(unique=True, max_length=14, validators=[validate_contact_number])
     address = models.CharField(max_length=150)
     display_picture = models.ImageField(
         upload_to='display_picture',
@@ -101,6 +114,7 @@ class UserCommons(models.Model):
     )
     is_verified = models.BooleanField(blank=True, default=False)
 
+    @property
     def get_acronym_name(self):
         return ''.join(c[0].capitalize() for c in self.full_name.split())
 

@@ -148,9 +148,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Add compression and caching support
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -171,17 +168,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'home-page-router'
 LOGIN_URL = 'login'
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'my.sasae@gmail.com'
-EMAIL_HOST_PASSWORD = 'xzvglexrlwugstxq'
-EMAIL_USE_TLS = True
-# EMAIL_USE_SSL= 465
-# EMAIL_TIMEOUT=
-# EMAIL_SSL_KEYFILE=
-# EMAIL_SSL_CERTFILE=
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = 'my.sasae@gmail.com'
+    EMAIL_HOST_PASSWORD = 'xzvglexrlwugstxq'
+    EMAIL_USE_TLS = True
+    # EMAIL_USE_SSL= 465
+    # EMAIL_TIMEOUT=
+    # EMAIL_SSL_KEYFILE=
+    # EMAIL_SSL_CERTFILE=
 
 # Configure Django App for Heroku.
 django_heroku.settings(locals())
@@ -195,5 +194,8 @@ CLOUDINARY_STORAGE = {
 
 if not DEBUG:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Add compression and caching support
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 

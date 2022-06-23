@@ -36,28 +36,28 @@ class AuthTest(BaseTest):
 
     def test_admin_can_login(self):
         response = self.client.post(self.login_url, self.admin_user, follow=True)
-        self.assertTrue(response.context['user'].is_active)
+        self.assertTrue(response.context['general'].is_active)
 
     def test_admin_can_logout(self):
         response = self.client.post(self.logout_url, follow=True)
-        self.assertFalse(response.context['user'].is_active)
+        self.assertFalse(response.context['general'].is_active)
 
     def test_staff_can_login(self):
         response = self.client.post(self.login_url, self.staff_user, follow=True)
-        self.assertTrue(response.context['user'].is_active)
+        self.assertTrue(response.context['general'].is_active)
 
     def test_staff_can_logout(self):
         response = self.client.post(self.logout_url, follow=True)
-        self.assertFalse(response.context['user'].is_active)
+        self.assertFalse(response.context['general'].is_active)
 
     def test_general_cannot_login(self):
         response = self.client.post(self.login_url, self.general_user, follow=True)
-        self.assertFalse(response.context['user'].is_active)
+        self.assertFalse(response.context['general'].is_active)
 
     def test_ngo_cannot_login(self):
         response = self.client.post(self.login_url, self.ngo_user, follow=True)
-        self.assertFalse(response.context['user'].is_active)
+        self.assertFalse(response.context['general'].is_active)
 
     def test_un_authorize_cannot_login(self):
         response = self.client.post(self.login_url, self.wrong_user, follow=True)
-        self.assertFalse(response.context['user'].is_active)
+        self.assertFalse(response.context['general'].is_active)

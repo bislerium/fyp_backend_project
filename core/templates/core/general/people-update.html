@@ -1,23 +1,21 @@
 {% extends 'core/base.html' %}
 {% load bootstrap5 %}
 
-{% block title %}Edit Person{% endblock %}
+{% block title %}Update Person{% endblock %}
 {% block linkscript %}{% endblock %}
 
 {% block body %}
     {% include  'core/extensions/navbar.html' with people='active' %}
     <div class="mt-5 mb-5">
-        <H1 class="text-center">Edit Person</H1>
+        <H1 class="text-center">Update Person</H1>
     </div>
     <div class="d-flex justify-content-center">
-        <div style="min-width: 50%;">
+        <div style="min-width: 50%; max-width: 85%">
             <form method="post" class="form" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% buttons %}
-                    <div>
-                     <button type="submit" class="btn btn-primary" style="width: 100%" onclick="return confirm('Confirm Edit?');">Done</button>
-                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%" onclick="return confirm('Confirm Edit?');"><i class="bi bi-check-lg"></i>&nbsp;Done</button>
                 {% endbuttons %}
             </form>
         </div>

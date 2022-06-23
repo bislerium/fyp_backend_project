@@ -46,19 +46,19 @@ class PeopleCRUDTest(BaseTest):
         self.login_as_staff()
         response = self.client.get(get_path(DBOperation.read, self.people.pk))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/user/people-read.html')
+        self.assertTemplateUsed(response, 'core/general/people-read.html')
 
     def test_staff_read_peoples(self):
         self.login_as_staff()
         response = self.client.get(self.read_peoples)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/user/peoples-read.html')
+        self.assertTemplateUsed(response, 'core/general/peoples-read.html')
 
     def test_staff_access_update_people_form(self):
         self.login_as_staff()
         response = self.client.get(get_path(DBOperation.update, self.people.pk))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/user/people-update.html')
+        self.assertTemplateUsed(response, 'core/general/people-update.html')
 
     def test_staff_update_people(self):
         self.login_as_staff()
@@ -70,11 +70,11 @@ class PeopleCRUDTest(BaseTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(new.address, self.payload['address'])
         self.assertEqual(new.is_verified, self.payload['is_verified'])
-        self.assertTemplateUsed(response, 'core/user/peoples-read.html')
+        self.assertTemplateUsed(response, 'core/general/peoples-read.html')
 
     def test_staff_delete_people(self):
         self.login_as_staff()
         response = self.client.delete(get_path(DBOperation.delete, pk=self.people.pk), follow=True)
         self.assertEqual(PeopleUser.objects.count(), 0)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'core/user/peoples-read.html')
+        self.assertTemplateUsed(response, 'core/general/peoples-read.html')

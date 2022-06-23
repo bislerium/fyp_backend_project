@@ -222,7 +222,6 @@ class BankCreate(CreateView):
     form_class = BankCreationForm
     template_name = 'core/bank/bank-create.html'
 
-    @method_decorator(allowed_groups(admin=True, staff=True))
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
@@ -251,7 +250,6 @@ class BankUpdate(UpdateView):
     form_class = BankCreationForm
     template_name = 'core/bank/bank-update.html'
 
-    @method_decorator(allowed_groups(admin=True, staff=True))
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
@@ -267,8 +265,8 @@ class BankDelete(DeleteView):
     model = Bank
 
     @method_decorator(allowed_groups(admin=True, staff=True))
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse_lazy('read-ngo', kwargs={'pk': self.object.ngouser.id})
@@ -339,9 +337,10 @@ class StaffUpdate(UpdateView):
     template_name = 'core/staff/staff-update.html'
     success_url = reverse_lazy('read-staffs')
 
-    @method_decorator(allowed_groups(admin=True, staff=False))
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+    def form_valid(self, form):
+        if not form.instance.display_picture:
+            form.instance.display_picture = settings.DEFAULT_PEOPLE_DP
+        return super().form_valid(form)
 
     @method_decorator(allowed_groups(admin=True, staff=False))
     def post(self, request, *args, **kwargs):
@@ -361,7 +360,7 @@ class StaffDelete(DeleteView):
 
 class PeoplesRead(ListView):
     paginate_by = 8
-    template_name = 'core/user/peoples-read.html'
+    template_name = 'core/general/peoples-read.html'
 
     @method_decorator(allowed_groups(admin=True, staff=True))
     def get(self, request, *args, **kwargs):
@@ -374,7 +373,7 @@ class PeoplesRead(ListView):
 
 class PeopleRead(DetailView):
     model = PeopleUser
-    template_name = 'core/user/people-read.html'
+    template_name = 'core/general/people-read.html'
 
     @method_decorator(allowed_groups(admin=True, staff=True))
     def get(self, request, *args, **kwargs):
@@ -384,18 +383,16 @@ class PeopleRead(DetailView):
 class PeopleUpdate(UpdateView):
     model = PeopleUser
     form_class = PeopleCreationForm
-    template_name = 'core/user/people-update.html'
+    template_name = 'core/general/people-update.html'
     success_url = reverse_lazy('read-peoples')
-
-    @method_decorator(allowed_groups(admin=True, staff=True))
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
 
     @method_decorator(allowed_groups(admin=True, staff=True))
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
+        if not form.instance.display_picture:
+            form.instance.display_picture = settings.DEFAULT_PEOPLE_DP
         new = form.instance.is_verified
         old = PeopleUser.objects.get(pk=self.object.pk).is_verified
         if new and new != old:
@@ -478,14 +475,12 @@ class NGOUpdate(UpdateView):
     success_url = reverse_lazy('read-ngos')
 
     @method_decorator(allowed_groups(admin=True, staff=True))
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
-    @method_decorator(allowed_groups(admin=True, staff=True))
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
+        if not form.instance.display_picture:
+            form.instance.display_picture = settings.DEFAULT_NGO_DP
         new = form.instance.is_verified
         old = NGOUser.objects.get(pk=self.object.pk).is_verified
         if new and new != old:
@@ -496,7 +491,7 @@ class NGOUpdate(UpdateView):
 def send_verify_notification(account_id: int):
     send_notification(title=f'Account Verification',
                       body=f'Your account has been verified.\nPlease support the community and'
-                           f' follow the guidelines.\nKeep Sasae a better place for enthusiasts. ❤',
+                           f' follow the guidelines.\nKeep Sasae a better place for social enthusiasts. ❤',
                       notification_for=account_id,
                       channel=ENotificationChannel['verify'],
                       post_type=None, post_id=None)
@@ -617,8 +612,8 @@ class ReportUpdate(UpdateView):
 
             send_notification(title=f'{post.post_type} Post Removed',
                               body=f'Your Post has been removed. The action was made upon close '
-                                   f'inspection of your post content after getting multiple user reports.\n\n[REASON]'
-                                   f'\n{reason}',
+                                   f'inspection of your post content after getting multiple general reports.\n\n'
+                                   f'[REASON]\n{reason}',
                               notification_for=(people or ngo).account.id,
                               channel=ENotificationChannel['remove'],
                               post_type=None, post_id=None)
