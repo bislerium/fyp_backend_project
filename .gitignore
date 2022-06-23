@@ -243,4 +243,12 @@ modules.xml
 .idea/sonarlint
 static
 
+# Ignore Media Directory
+media/*
+!media/default/
+
+#Ignore Migration folder
+core/migrations/*
+!core/migrations/__init__.py
+
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all,django

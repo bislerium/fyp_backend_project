@@ -92,7 +92,7 @@ class UserCommons(models.Model):
         upload_to='display_picture',
         blank=True,
         null=True,
-        # default=settings.DEFAULT_PEOPLE_DP
+        default=settings.DEFAULT_PEOPLE_DP
     )
     citizenship_photo = models.ImageField(
         upload_to='citizenship',
@@ -163,7 +163,7 @@ class NGOUser(UserCommons, GeoLocation):
         upload_to='display_picture',
         blank=True,
         null=True,
-        # default=settings.DEFAULT_NGO_DP
+        default=settings.DEFAULT_NGO_DP
     )
     field_of_work = MultiSelectField(choices=FIELD_OF_WORK)
     epay_account = models.CharField(max_length=20, blank=True, help_text=(

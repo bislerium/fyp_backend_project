@@ -159,8 +159,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# DEFAULT_PEOPLE_DP = '/static/core/img/default_people_dp.png'
-# DEFAULT_NGO_DP = '/static/core/img/default_ngo_dp.png'
+DEFAULT_PEOPLE_DP = 'default/default_people_dp.png'
+DEFAULT_NGO_DP = 'default/default_ngo_dp.png'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -193,6 +193,7 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('API_SECRET', default=""),
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+if not DEBUG:
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
