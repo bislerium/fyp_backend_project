@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}List Staffs{% endblock %}
+{% block title %}Staffs{% endblock %}
 {% block linkscript %}
     <link rel="stylesheet" type="text/css" href="{% static 'core/css/table.css' %}">
 {% endblock %}
@@ -11,20 +11,24 @@
     <!--------- Actual Start ---------->
     <div class="container-fluid my-2">
         <div class="d-flex flex-row justify-content-between flex-wrap mb-2">
-            <a class="btn btn-secondary mb-2" href="{% url 'create-staff' %}" role="button"><i class="bi bi-plus-lg"></i>&nbsp;Register Staff</a>
+            <a class="btn btn-secondary mb-2" href="{% url 'create-staff' %}" role="button"><i
+                    class="bi bi-plus-lg"></i>&nbsp;Register Staff</a>
             <div class="d-flex flex-row flex-wrap mb-2">
                 <form class="me-2" action="{% url 'read-staffs' %}" method="get">
                     <div class="input-group">
-                        <input type="search" class="form-control" placeholder="search..." required aria-label="Search" name="name">
+                        <input type="search" class="form-control" placeholder="search..." required aria-label="Search"
+                               name="name">
                         <select class="form-select" aria-label="Default select example" required name="filter_by">
                             <option value="" selected>Filter by</option>
                             <option value="username">Username</option>
                             <option value="fullname">Fullname</option>
                         </select>
-                        <button class="btn btn-secondary" type="submit" id="button-addon2"> <i class="bi bi-search"></i></button>
+                        <button class="btn btn-secondary" type="submit" id="button-addon2"><i class="bi bi-search"></i>
+                        </button>
                     </div>
                 </form>
-                <a class="btn btn-secondary" href="{% url 'read-staffs' %}" role="button"><i class="bi bi-arrow-counterclockwise"></i>&nbsp;Reset</a>
+                <a class="btn btn-secondary" href="{% url 'read-staffs' %}" role="button"><i
+                        class="bi bi-arrow-counterclockwise"></i>&nbsp;Reset</a>
             </div>
         </div>
         {% if page_obj %}
@@ -44,31 +48,41 @@
                 <tbody>
                 {% for staff in page_obj %}
                     <tr>
-                        <td data-label="Display Picture"><img src="{{ staff.display_picture.url }}" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="{{ staff.display_picture.name }}"></td>
+                        <td data-label="Display Picture"><img src="{{ staff.display_picture.url }}" height="30px"
+                                                              width="30px"
+                                                              style="border-radius: 20px; object-fit: cover"
+                                                              alt="{{ staff.display_picture.name }}"></td>
                         <td data-label="User Name">{{ staff.account.username }}</td>
                         <td data-label="Date Joined">{{ staff.account.date_joined|date }}</td>
                         <td data-label="Active">
-                            {%  if staff.account.is_active %}
+                            {% if staff.account.is_active %}
                                 <i class="bi bi-check-circle-fill"></i>
                             {% endif %}
                         </td>
                         <td data-label="Last Login">{{ staff.account.last_login }}</td>
                         <td data-label="Married">
-                            {%  if staff.is_married %}
+                            {% if staff.is_married %}
                                 <i class="bi bi-check-circle-fill"></i>
                             {% endif %}
                         </td>
                         <td data-label="Action">
                             <div class="d-inline-flex">
-                                <a href="{% url 'read-staff' staff.id%}" class="px-1">
-                                    <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="View"><i class="bi bi-eye-fill"></i></button>
+                                <a href="{% url 'read-staff' staff.id %}" class="px-1">
+                                    <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip"
+                                            data-bs-placement="left" title="View"><i class="bi bi-eye-fill"></i>
+                                    </button>
                                 </a>
-                                <a href="{% url 'update-staff' staff.id%}" class="px-1">
-                                    <button type="button" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Update"><i class="bi bi-pencil-fill"></i></button>
+                                <a href="{% url 'update-staff' staff.id %}" class="px-1">
+                                    <button type="button" class="btn btn-success" data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom" title="Update"><i class="bi bi-pencil-fill"></i>
+                                    </button>
                                 </a>
                                 <form action="{% url 'delete-staff' staff.id %}" method="post" class="px-1">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete the Staff account: {{ staff.account.username }}?');" data-bs-toggle="tooltip" data-bs-placement="right" title="Delete"><i class="bi bi-x-square-fill"></i></button>
+                                    <button type="submit" class="btn btn-danger"
+                                            onclick="return confirm('Are you sure you want to delete the Staff account: {{ staff.account.username }}?');"
+                                            data-bs-toggle="tooltip" data-bs-placement="right" title="Delete"><i
+                                            class="bi bi-x-square-fill"></i></button>
                                 </form>
                             </div>
                         </td>
@@ -80,15 +94,18 @@
                 <nav aria-label="Page navigation example">
                     <ul class="pagination">
                         {% if page_obj.has_previous %}
-                            <li class="page-item"> <a class="page-link" href="?page=1">&laquo; first</a></li>
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a></li>
+                            <li class="page-item"><a class="page-link" href="?page=1">&laquo; first</a></li>
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a>
+                            </li>
                         {% endif %}
                         <li class="page-item page-link">
                             Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                         </li>
                         {% if page_obj.has_next %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a></li>
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a></li>
+                            <li class="page-item"><a class="page-link"
+                                                     href="?page={{ page_obj.next_page_number }}">next</a></li>
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last
+                                &raquo;</a></li>
                         {% endif %}
                     </ul>
                 </nav>

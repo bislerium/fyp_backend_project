@@ -15,7 +15,9 @@
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% buttons %}
-                    <button type="submit" class="btn btn-primary" style="width: 100%" onclick="return confirm('Confirm Edit?');"><i class="bi bi-check-lg"></i>&nbsp;Done</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%"
+                            onclick="return confirm('Confirm Edit?');"><i class="bi bi-check-lg"></i>&nbsp;Done
+                    </button>
                 {% endbuttons %}
             </form>
         </div>

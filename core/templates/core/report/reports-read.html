@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Review Report Post{% endblock %}
+{% block title %}Reported Posts{% endblock %}
 {% block linkscript %}
     <link rel="stylesheet" type="text/css" href="{% static 'core/css/reported-posts.css' %}">
 {% endblock %}
@@ -12,7 +12,8 @@
         <div class="container-fluid px-4">
             <div class="row m-lg-2">
                 <div class="col my-2">Total Reported Posts: <span class="fw-bold">{{ total_reports }}</span></div>
-                <div class="col my-2" style="text-align: right">Total Reviewed Posts: <span class="fw-bold">{{ post_reviewed }}</span></div>
+                <div class="col my-2" style="text-align: right">Total Reviewed Posts: <span
+                        class="fw-bold">{{ post_reviewed }}</span></div>
             </div>
             <br/>
             <div class="row">
@@ -25,7 +26,10 @@
                                         <div class="mb-3">
                                             <div class="d-flex flex-wrap mb-3">
                                                 {% for field in post.related_to %}
-                                                    <div class="m-1" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ field }}"><span class="badge bg-secondary">{{ field|slice:"0:2" }}</span></div>
+                                                    <div class="m-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                         title="{{ field }}"><span
+                                                            class="badge bg-secondary">{{ field|slice:"0:2" }}</span>
+                                                    </div>
                                                 {% endfor %}
                                             </div>
                                             <p class="card-text text-dark">{{ post.post_content|truncatewords:25 }}</p>
@@ -33,22 +37,34 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="btn-group">
                                                 {% if post.is_anonymous %}
-                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Posted Anonymously"><span class="badge bg-danger">A</span></div>
+                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                         title="Posted Anonymously"><span
+                                                            class="badge bg-danger">A</span></div>
                                                 {% endif %}
                                                 {% if post.poked_on_rn.count != 0 %}
-                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="NGO was poked in this post"><span class="badge bg-success">P</span></div>
+                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                         title="NGO was poked in this post"><span
+                                                            class="badge bg-success">P</span></div>
                                                 {% endif %}
                                                 {% if post.post_type == 'Normal' %}
-                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Normal Post"><span class="badge bg-primary">P|N</span></div>
+                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                         title="Normal Post"><span class="badge bg-primary">P|N</span>
+                                                    </div>
                                                 {% endif %}
                                                 {% if post.post_type == 'Poll' %}
-                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Poll Post"><span class="badge bg-primary">P|P</span></div>
+                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                         title="Poll Post"><span class="badge bg-primary">P|P</span>
+                                                    </div>
                                                 {% endif %}
-                                                {% if post.post_type == 'Request' and post.postrequest.request_type == 'Petition'%}
-                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Petition-Request Post"><span class="badge bg-primary">P|R|P</span></div>
+                                                {% if post.post_type == 'Request' and post.postrequest.request_type == 'Petition' %}
+                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                         title="Petition-Request Post"><span class="badge bg-primary">P|R|P</span>
+                                                    </div>
                                                 {% endif %}
-                                                {% if post.post_type == 'Request' and post.postrequest.request_type == 'Join'%}
-                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Join-Request Post"><span class="badge bg-primary">P|R|J</span></div>
+                                                {% if post.post_type == 'Request' and post.postrequest.request_type == 'Join' %}
+                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                         title="Join-Request Post"><span
+                                                            class="badge bg-primary">P|R|J</span></div>
                                                 {% endif %}
                                             </div>
                                             <small class="text-muted">{{ post.created_on.date }}</small>

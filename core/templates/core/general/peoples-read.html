@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}List People{% endblock %}
+{% block title %}People{% endblock %}
 {% block linkscript %}
     <link rel="stylesheet" type="text/css" href="{% static 'core/css/table.css' %}">
 {% endblock %}
@@ -15,16 +15,19 @@
             <div class="d-flex flex-row flex-wrap mb-2">
                 <form class="me-2" action="{% url 'read-peoples' %}" method="get">
                     <div class="input-group">
-                        <input type="search" class="form-control" placeholder="search..." required aria-label="Search" name="name">
+                        <input type="search" class="form-control" placeholder="search..." required aria-label="Search"
+                               name="name">
                         <select class="form-select" aria-label="Default select example" required name="filter_by">
                             <option value="" selected>Filter by</option>
                             <option value="username">Username</option>
                             <option value="fullname">Fullname</option>
                         </select>
-                        <button class="btn btn-secondary" type="submit" id="button-addon2"> <i class="bi bi-search"></i></button>
+                        <button class="btn btn-secondary" type="submit" id="button-addon2"><i class="bi bi-search"></i>
+                        </button>
                     </div>
                 </form>
-                <a class="btn btn-secondary" href="{% url 'read-peoples' %}" role="button"><i class="bi bi-arrow-counterclockwise"></i>&nbsp;Reset</a>
+                <a class="btn btn-secondary" href="{% url 'read-peoples' %}" role="button"><i
+                        class="bi bi-arrow-counterclockwise"></i>&nbsp;Reset</a>
             </div>
         </div>
         {% if page_obj %}
@@ -44,11 +47,14 @@
                     <tbody>
                     {% for people in page_obj %}
                         <tr>
-                            <td data-label="Display Picture"><img src="{{ people.display_picture.url }}" height="30px" width="30px" style="border-radius: 20px; object-fit: cover" alt="{{ people.display_picture.name }}"></td>
+                            <td data-label="Display Picture"><img src="{{ people.display_picture.url }}" height="30px"
+                                                                  width="30px"
+                                                                  style="border-radius: 20px; object-fit: cover"
+                                                                  alt="{{ people.display_picture.name }}"></td>
                             <td data-label="User Name">{{ people.account.username }}</td>
                             <td data-label="Date Joined">{{ people.account.date_joined|date }}</td>
                             <td data-label="Active">
-                                {%  if people.account.is_active %}
+                                {% if people.account.is_active %}
                                     <i class="bi bi-check-circle-fill"></i>
                                 {% endif %}
                             </td>
@@ -56,24 +62,31 @@
                             <td data-label="Verified">
                                 {% if people.is_verified %}
                                     <i class="bi bi-patch-check-fill"></i>
-                                {%  endif %}
+                                {% endif %}
                             </td>
                             <td data-label="Action">
                                 <div class="d-inline-flex">
                                     <div>
                                         <a href="{% url 'read-people' people.id %}">
-                                            <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="View"><i class="bi bi-eye-fill"></i></button>
+                                            <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip"
+                                                    data-bs-placement="left" title="View"><i class="bi bi-eye-fill"></i>
+                                            </button>
                                         </a>
                                     </div>
                                     <div class="mx-2">
                                         <a href="{% url 'update-people' people.id %}">
-                                            <button type="button" class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Update"><i class="bi bi-pencil-fill"></i></button>
+                                            <button type="button" class="btn btn-success" data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom" title="Update"><i
+                                                    class="bi bi-pencil-fill"></i></button>
                                         </a>
                                     </div>
                                     <div>
                                         <form action="{% url 'delete-people' people.id %}" method="post">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete the person account: {{ people.account.username }}?');" data-bs-toggle="tooltip" data-bs-placement="right" title="Delete"><i class="bi bi-x-square-fill"></i></button>
+                                            <button type="submit" class="btn btn-danger"
+                                                    onclick="return confirm('Are you sure you want to delete the person account: {{ people.account.username }}?');"
+                                                    data-bs-toggle="tooltip" data-bs-placement="right" title="Delete"><i
+                                                    class="bi bi-x-square-fill"></i></button>
                                         </form>
                                     </div>
                                 </div>
@@ -86,15 +99,20 @@
                     <nav aria-label="Page navigation example">
                         <ul class="pagination">
                             {% if page_obj.has_previous %}
-                                <li class="page-item"> <a class="page-link" href="?page=1">&laquo; first</a></li>
-                                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a></li>
+                                <li class="page-item"><a class="page-link" href="?page=1">&laquo; first</a></li>
+                                <li class="page-item"><a class="page-link"
+                                                         href="?page={{ page_obj.previous_page_number }}">previous</a>
+                                </li>
                             {% endif %}
                             <li class="page-item page-link">
                                 Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                             </li>
                             {% if page_obj.has_next %}
-                                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a></li>
-                                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a></li>
+                                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a>
+                                </li>
+                                <li class="page-item"><a class="page-link"
+                                                         href="?page={{ page_obj.paginator.num_pages }}">last
+                                    &raquo;</a></li>
                             {% endif %}
                         </ul>
                     </nav>

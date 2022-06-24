@@ -1,14 +1,14 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Create NGO User{% endblock %}
+{% block title %}Home{% endblock %}
 {% block linkscript %}
-     <link rel="stylesheet" type="text/css" href="{% static 'core/css/admin-home.css' %}">
-     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'core/css/admin-home.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 {% endblock %}
 
 {% block body %}
-    {% include  'core/extensions/navbar.html' with home='active'%}
+    {% include  'core/extensions/navbar.html' with home='active' %}
     <div class="container-fluid">
         <div class="row" style="color: #343a40">
             <div class="col-md-7 mb-3">
@@ -58,7 +58,7 @@
                                 <div class="p-3 rounded-3" id="box-4">
                                     <div style="text-align: right">
                                         <h1 class="fw-bold">
-                                            <span class="counter">{{ home.total_staffs}}</span>
+                                            <span class="counter">{{ home.total_staffs }}</span>
                                         </h1>
                                     </div>
                                     <div class="pt-1" style="border-top: 1px solid">
@@ -145,7 +145,8 @@
                                 <div class="p-3 rounded-3" id="box-10">
                                     <div style="text-align: right">
                                         <h5>
-                                            <span class="counter">{{ home.avg_pp_options_polled_pp }}</span> polls/option
+                                            <span class="counter">{{ home.avg_pp_options_polled_pp }}</span>
+                                            polls/option
                                         </h5>
                                         <h1 class="fw-bold">
                                             <span class="counter">
@@ -292,14 +293,14 @@
                             </div>
                             <div class="col-md-12 mb-3">
                                 <div class="p-3 rounded-3" id="box-18">
-                                        <div style="text-align: right">
-                                            <h5>
-                                                <span class="counter">{{ home.avg_pr_join_signed_rp }}</span> signs/join
-                                            </h5>
-                                            <h1 class="fw-bold">
-                                                <span class="counter">{{ home.total_post_request_join_signed }}</span>
-                                            </h1>
-                                        </div>
+                                    <div style="text-align: right">
+                                        <h5>
+                                            <span class="counter">{{ home.avg_pr_join_signed_rp }}</span> signs/join
+                                        </h5>
+                                        <h1 class="fw-bold">
+                                            <span class="counter">{{ home.total_post_request_join_signed }}</span>
+                                        </h1>
+                                    </div>
                                     <div class="pt-1" style="border-top: 1px solid">
                                         Total Join Signs
                                     </div>
@@ -420,7 +421,7 @@
                             <div class="col-md-12 mb-3">
                                 <div class="p-3 rounded-3" id="box-25">
                                     <div style="text-align: right">
-                                         <h5>
+                                        <h5>
                                             <span class="counter">{{ home.total_reports_percentage }}</span>%
                                         </h5>
                                         <h5>
@@ -442,7 +443,8 @@
                                 <div class="p-3 rounded-3" id="box-26">
                                     <div style="text-align: right">
                                         <h5>
-                                            <span class="counter">{{ home.avg_pr_petition_signed_rp }}</span> signs/petition
+                                            <span class="counter">{{ home.avg_pr_petition_signed_rp }}</span>
+                                            signs/petition
                                         </h5>
                                         <h1 class="fw-bold">
                                             <span class="counter">{{ home.total_post_request_petition_signed }}</span>
@@ -461,18 +463,18 @@
                 <div class="p-3 rounded-3" id="box-27">
                     <table class="table table-hover" id="table-ngo-count" style="color: #f6f3eb">
                         <thead>
-                            <tr>
-                                <th scope="col">Field of Work</th>
-                                <th scope="col">NGO Count</th>
-                            </tr>
+                        <tr>
+                            <th scope="col">Field of Work</th>
+                            <th scope="col">NGO Count</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {% for k,v in home.ngos_per_field.items %}
-                                <tr>
-                                    <th scope="row">{{ k }}</th>
-                                    <td style="text-align: right"><span class="counter">{{ v }}</span></td>
-                                </tr>
-                            {% endfor %}
+                        {% for k,v in home.ngos_per_field.items %}
+                            <tr>
+                                <th scope="row">{{ k }}</th>
+                                <td style="text-align: right"><span class="counter">{{ v }}</span></td>
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -481,19 +483,20 @@
     </div>
     <script>
         function startCounter() {
-            $('.counter').each(function() {
+            $('.counter').each(function () {
                 const size = $(this).text().split(".")[1] ? $(this).text().split(".")[1].length : 0;
-            $(this).prop('Counter', 0).animate({
-                Counter: $(this).text()
+                $(this).prop('Counter', 0).animate({
+                    Counter: $(this).text()
                 }, {
                     duration: 2000,
                     easing: 'swing',
-                    step: function(now) {
+                    step: function (now) {
                         $(this).text(parseFloat(now).toFixed(size));
                     }
                 });
             });
         }
+
         startCounter();
     </script>
 {% endblock %}

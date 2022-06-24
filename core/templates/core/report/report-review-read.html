@@ -2,7 +2,7 @@
 {% load bootstrap5 %}
 {% load static %}
 
-{% block title %}Review Report Post{% endblock %}
+{% block title %}{% if user.is_superuser %}Review Reviewed Posts{% else %}Review Reported Posts{% endif %}{% endblock %}
 {% block linkscript %}
     <link rel="stylesheet" type="text/css" href="{% static 'core/css/reported-posts.css' %}">
 {% endblock %}
@@ -16,16 +16,19 @@
                     <div class="my-2"><i class="bi bi-person-lines-fill"></i> Posted by:
                         <span class="fw-bold">
                         {% if object.people_posted_post_rn.exists %}
-                            <a href="{% url 'read-people' object.people_posted_post_rn.first.id %}" class="text-decoration-none">
-                            {{ object.people_posted_post_rn.first.account.username  }}
+                            <a href="{% url 'read-people' object.people_posted_post_rn.first.id %}"
+                               class="text-decoration-none">
+                            {{ object.people_posted_post_rn.first.account.username }}
                         {% else %}
-                            <a href="{% url 'read-ngo' object.ngo_posted_post_rn.first.id %}" class="text-decoration-none">
+                            <a href="{% url 'read-ngo' object.ngo_posted_post_rn.first.id %}"
+                               class="text-decoration-none">
                             {{ object.ngo_posted_post_rn.first.account.username }}
                         {% endif %}
                             </a>
                         </span>
                     </div>
-                    <div class="my-2"><i class="bi bi-calendar2-week-fill"></i> Date Posted: {{ object.created_on.astimezone }}</div>
+                    <div class="my-2"><i class="bi bi-calendar2-week-fill"></i> Date
+                        Posted: {{ object.created_on.astimezone }}</div>
                     <div class="my-2"><i class="bi bi-signpost-2-fill"></i> Post Type:
                         <span class="badge bg-primary">{{ object.post_type }}</span>
                         {% if object.post_type == 'Request' %}
@@ -52,30 +55,54 @@
                         {% if object.post_type == 'Normal' %}
                             <div class="fw-bold mb-2" style="display: block;"> Post attached Photo:</div>
                             {% if object.postnormal.post_image %}
-                            <a href="{{ object.postnormal.post_image.url }}">
-                                <img class="img-fluid w-100" src="{{ object.postnormal.post_image.url }}" loading="lazy" style="border-radius: 2vh;" alt="First slide">
-                            </a>
+                                <a href="{{ object.postnormal.post_image.url }}">
+                                    <img class="img-fluid w-100" src="{{ object.postnormal.post_image.url }}"
+                                         loading="lazy" style="border-radius: 2vh;" alt="First slide">
+                                </a>
                             {% endif %}
                         {% endif %}
                         {% if object.post_type == 'Poll' %}
-                            <div class="d-block" style="text-align: right"><span class="badge bg-secondary">Total Reactions: {{ object.poll_reactions }}</span> | Poll ends on: <span class="fw-bold">{{ object.postpoll.ends_on }}</span></div>
+                            <div class="d-block" style="text-align: right"><span class="badge bg-secondary">Total Reactions: {{ object.poll_reactions }}</span>
+                                | Poll ends on: <span class="fw-bold">{{ object.postpoll.ends_on }}</span></div>
                             {% for data in object.poll_data %}
                                 <div class="row">
                                     <div class="col my-2"><strong>{{ data.0 }}</strong></div>
-                                    <div class="col my-2" style="text-align: right"><span class="badge bg-secondary">Reaction: {{ data.1 }}</span> | {{ data.2 }}%</div>
+                                    <div class="col my-2" style="text-align: right"><span class="badge bg-secondary">Reaction: {{ data.1 }}</span>
+                                        | {{ data.2 }}%
+                                    </div>
                                 </div>
                                 <div class="progress">
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{ data.2 }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ data.2 }}%"></div>
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                         role="progressbar" aria-valuenow="{{ data.2 }}" aria-valuemin="0"
+                                         aria-valuemax="100" style="width: {{ data.2 }}%"></div>
                                 </div>
                             {% endfor %}
                         {% endif %}
                         {% if object.post_type == 'Request' %}
-                            <div class="d-block" style="text-align: right"><span class="badge bg-secondary">Total Signs: {{ object.postrequest.reacted_by.count }}</span> | Request ends on: <span class="fw-bold">{{ object.postrequest.ends_on }}</span></div>
+                            <div class="d-block" style="text-align: right"><span
+                                    class="badge bg-secondary">Total Signs: {{ object.postrequest.reacted_by.count }}</span>
+                                | Request ends on: <span class="fw-bold">{{ object.postrequest.ends_on }}</span></div>
                             <div class="progress my-2">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ object.request_data.sign_percentage }}%" aria-valuenow="{{ object.request_data.sign_percentage }}" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" data-bs-placement="top" title="People who signed: {{ object.request_data.sign }} | {{ object.request_data.sign_percentage }}%"></div>
-                                <div class="progress-bar bg-secondary" role="progressbar" style="width: {{ object.request_data.min_percentage }}%" aria-valuenow="{{ object.request_data.min_percentage }}" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" data-bs-placement="top" title="Minimum Number of People: {{ object.request_data.min_ }} | {{ object.request_data.min_percentage }}%"></div>
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ object.request_data.target_percentage }}%" aria-valuenow="{{ object.request_data.target_percentage }}" aria-valuemin="0" aria-valuemax="100" href="" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Targeted Number of People: {{ object.request_data.target }} | {{ object.request_data.target_percentage }}%"></div>
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ object.request_data.max_percentage }}%" aria-valuenow="{{ object.request_data.max_percentage }}" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Max Number of People: {{ object.request_data.max_ }} | {{ object.request_data.max_percentage }}%"></div>
+                                <div class="progress-bar bg-warning" role="progressbar"
+                                     style="width: {{ object.request_data.sign_percentage }}%"
+                                     aria-valuenow="{{ object.request_data.sign_percentage }}" aria-valuemin="0"
+                                     aria-valuemax="100" data-bs-toggle="tooltip" data-bs-placement="top"
+                                     title="People who signed: {{ object.request_data.sign }} | {{ object.request_data.sign_percentage }}%"></div>
+                                <div class="progress-bar bg-secondary" role="progressbar"
+                                     style="width: {{ object.request_data.min_percentage }}%"
+                                     aria-valuenow="{{ object.request_data.min_percentage }}" aria-valuemin="0"
+                                     aria-valuemax="100" data-bs-toggle="tooltip" data-bs-placement="top"
+                                     title="Minimum Number of People: {{ object.request_data.min_ }} | {{ object.request_data.min_percentage }}%"></div>
+                                <div class="progress-bar bg-primary" role="progressbar"
+                                     style="width: {{ object.request_data.target_percentage }}%"
+                                     aria-valuenow="{{ object.request_data.target_percentage }}" aria-valuemin="0"
+                                     aria-valuemax="100" href="" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                     title="Targeted Number of People: {{ object.request_data.target }} | {{ object.request_data.target_percentage }}%"></div>
+                                <div class="progress-bar bg-danger" role="progressbar"
+                                     style="width: {{ object.request_data.max_percentage }}%"
+                                     aria-valuenow="{{ object.request_data.max_percentage }}" aria-valuemin="0"
+                                     aria-valuemax="100" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                     title="Max Number of People: {{ object.request_data.max_ }} | {{ object.request_data.max_percentage }}%"></div>
                             </div>
                         {% endif %}
                     </div>
@@ -122,7 +149,10 @@
                         {% csrf_token %}
                         {% bootstrap_form object.report_form %}
                         {% if user.is_superuser %}
-                            <button type="submit" formaction="{% url 'read-staff' object.report_form.instance.report_reviewed_by.first.id %}" formmethod="get" class="btn btn-secondary w-100">Reviewed by: {{ object.report_form.instance.report_reviewed_by.first.full_name }}</button>
+                            <button type="submit"
+                                    formaction="{% url 'read-staff' object.report_form.instance.report_reviewed_by.first.id %}"
+                                    formmethod="get" class="btn btn-secondary w-100">Reviewed
+                                by: {{ object.report_form.instance.report_reviewed_by.first.full_name }}</button>
                         {% else %}
                             <button type="submit" class="btn btn-primary w-100">Take Action</button>
                         {% endif %}

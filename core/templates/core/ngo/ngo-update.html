@@ -5,7 +5,7 @@
 {% block linkscript %}{% endblock %}
 
 {% block body %}
-    {% include  'core/extensions/navbar.html' with ngo='active'%}
+    {% include  'core/extensions/navbar.html' with ngo='active' %}
     <div class="mt-5 mb-5">
         <H1 class="text-center">Update NGO</H1>
     </div>
@@ -15,7 +15,9 @@
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% buttons %}
-                    <button type="submit" class="btn btn-primary" style="width: 100%" onclick="return confirm('Confirm Edit?');"><i class="bi bi-check-lg"></i>&nbsp;Done</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%"
+                            onclick="return confirm('Confirm Edit?');"><i class="bi bi-check-lg"></i>&nbsp;Done
+                    </button>
                 {% endbuttons %}
             </form>
         </div>

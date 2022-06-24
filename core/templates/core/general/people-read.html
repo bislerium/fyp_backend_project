@@ -43,7 +43,8 @@
                 <tr>
                     <th>Email</th>
                     <td>
-                        <a href="mailto:{{ object.account.email }}" class="text-decoration-none">{{ object.account.email }}</a>
+                        <a href="mailto:{{ object.account.email }}"
+                           class="text-decoration-none">{{ object.account.email }}</a>
                     </td>
                 </tr>
                 <tr>
@@ -61,11 +62,13 @@
                     <td colspan="2" class="text-center">
                         {% if object.display_picture %}
                             <a href="{{ object.display_picture.url }}">
-                                <img src="{{ object.display_picture.url }}" class="img-fluid" style="border-radius: 20px; width: 50vw" alt="{{ object.display_picture.name }}"/>
+                                <img src="{{ object.display_picture.url }}" class="img-fluid"
+                                     style="border-radius: 20px; width: 50vw" alt="{{ object.display_picture.name }}"/>
                             </a>
                         {% else %}
                             <a href="{% static 'core/img/default_people_dp.png' %}">
-                                <img src="{% static 'core/img/default_people_dp.png' %}" class="img-fluid" style="border-radius: 20px; width: 50vw" alt="{{ object.display_picture.name }}"/>
+                                <img src="{% static 'core/img/default_people_dp.png' %}" class="img-fluid"
+                                     style="border-radius: 20px; width: 50vw" alt="{{ object.display_picture.name }}"/>
                             </a>
                         {% endif %}
                     </td>
@@ -77,7 +80,9 @@
                     <tr>
                         <td colspan="2" class="text-center">
                             <a href="{{ object.citizenship_photo.url }}">
-                                <img src="{{ object.citizenship_photo.url }}" class="img-fluid float-center" style="border-radius: 20px; width: 50vw" alt="{{ object.citizenship_photo.name }}"/>
+                                <img src="{{ object.citizenship_photo.url }}" class="img-fluid float-center"
+                                     style="border-radius: 20px; width: 50vw"
+                                     alt="{{ object.citizenship_photo.name }}"/>
                             </a>
                         </td>
                     </tr>
@@ -100,12 +105,17 @@
                 </tr>
             </table>
             <div class="d-flex justify-content-end mb-3">
-                <a href="{% url 'update-people' object.id%}" class="px-1">
-                    <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="Update"></i></button>
+                <a href="{% url 'update-people' object.id %}" class="px-1">
+                    <button type="button" class="btn btn-success"><i class="bi bi-pencil-fill" data-bs-toggle="tooltip"
+                                                                     data-bs-placement="left" title="Update"></i>
+                    </button>
                 </a>
                 <form action="{% url 'delete-people' object.id %}" method="post" class="px-1">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this person account?');" data-bs-toggle="tooltip" data-bs-placement="right" title="Delete"><i class="bi bi-x-square-fill"></i></button>
+                    <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('Are you sure you want to delete this person account?');"
+                            data-bs-toggle="tooltip" data-bs-placement="right" title="Delete"><i
+                            class="bi bi-x-square-fill"></i></button>
                 </form>
             </div>
         </div>
