@@ -54,16 +54,16 @@
                                                               alt="{{ ngo.display_picture.name }}"></td>
                         <td data-label="NGO Name">{{ ngo.full_name }}</td>
                         <td data-label="Date Joined">{{ ngo.account.date_joined|date }}</td>
-                        <td data-label="Active">
+                        <td data-label="Active">&nbsp;
                             {% if ngo.account.is_active %}
                                 <i class="bi bi-check-circle-fill"></i>
-                            {% endif %}
+                            {% endif %}&nbsp;
                         </td>
                         <td data-label="Last Login">{{ ngo.account.last_login }}</td>
-                        <td data-label="Verified">
+                        <td data-label="Verified">&nbsp;
                             {% if ngo.is_verified %}
                                 <i class="bi bi-patch-check-fill"></i>
-                            {% endif %}
+                            {% endif %}&nbsp;
                         </td>
                         <td data-label="Action">
                             <div class="d-inline-flex">

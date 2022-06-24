@@ -54,16 +54,16 @@
                                                               alt="{{ staff.display_picture.name }}"></td>
                         <td data-label="User Name">{{ staff.account.username }}</td>
                         <td data-label="Date Joined">{{ staff.account.date_joined|date }}</td>
-                        <td data-label="Active">
+                        <td data-label="Active">&nbsp;
                             {% if staff.account.is_active %}
                                 <i class="bi bi-check-circle-fill"></i>
-                            {% endif %}
+                            {% endif %}&nbsp;
                         </td>
                         <td data-label="Last Login">{{ staff.account.last_login }}</td>
-                        <td data-label="Married">
+                        <td data-label="Married">&nbsp;
                             {% if staff.is_married %}
                                 <i class="bi bi-check-circle-fill"></i>
-                            {% endif %}
+                            {% endif %}&nbsp;
                         </td>
                         <td data-label="Action">
                             <div class="d-inline-flex">
