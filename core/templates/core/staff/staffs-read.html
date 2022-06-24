@@ -13,8 +13,8 @@
         <div class="d-flex flex-row justify-content-between flex-wrap mb-2">
             <a class="btn btn-secondary mb-2" href="{% url 'create-staff' %}" role="button"><i
                     class="bi bi-plus-lg"></i>&nbsp;Register Staff</a>
-            <div class="d-flex flex-row flex-wrap mb-2">
-                <form class="me-2" action="{% url 'read-staffs' %}" method="get">
+            <div class="d-flex flex-row flex-wrap justify-content-end">
+                <form class="mb-2" action="{% url 'read-staffs' %}" method="get">
                     <div class="input-group">
                         <input type="search" class="form-control" placeholder="search..." required aria-label="Search"
                                name="name">
@@ -27,7 +27,7 @@
                         </button>
                     </div>
                 </form>
-                <a class="btn btn-secondary" href="{% url 'read-staffs' %}" role="button"><i
+                <a class="btn btn-secondary ms-2 mb-2" href="{% url 'read-staffs' %}" role="button"><i
                         class="bi bi-arrow-counterclockwise"></i>&nbsp;Reset</a>
             </div>
         </div>
