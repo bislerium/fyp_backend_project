@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from datetime import timedelta
 
-from dj_rest_auth.serializers import TokenSerializer, LoginSerializer
+from dj_rest_auth.serializers import TokenSerializer, LoginSerializer, PasswordResetSerializer
 from django.contrib.auth.models import Group
 from django.http.response import HttpResponseServerError
 from django.utils import timezone
@@ -46,6 +46,15 @@ class CustomTokenSerializer(TokenSerializer):
         if group == 'NGO':
             data['profile_id'] = user.ngouser.id
         return data
+
+
+class CustomPasswordResetSerializer(PasswordResetSerializer):
+
+    def get_email_options(self):
+        """Override this method to change default e-mail options"""
+        return {
+            'html_email_template_name': 'core/account/password_reset_email.html'
+        }
 
 
 class BankSerializer(serializers.ModelSerializer):

@@ -7,6 +7,7 @@ from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDe
     PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
     PostReportView, RequestPostParticipateView, PollPostPollView, RelatedOptionList, TokenVerification, NGOOptionList, \
     UserPostList, PeopleRUD, PostRetrieveUpdateDelete, CustomAPILoginView
+from core.serializers import CustomPasswordResetSerializer
 from core.views import *
 
 urlpatterns = [
@@ -79,8 +80,8 @@ urlpatterns = [
                   # API Endpoints --------------------------------------------------------------------------------------
                   # URLs that do not require a session or valid token
                   # path('api/', include('dj_rest_auth.urls')),
-                  path('api/password/reset/', rest_view.PasswordResetView.as_view(),
-                       name='rest_password_reset'),
+                  path('api/password/reset/', rest_view.PasswordResetView.as_view(
+                      serializer_class=CustomPasswordResetSerializer), name='rest_password_reset'),
                   path('api/password/reset/confirm/', rest_view.PasswordResetConfirmView.as_view(),
                        name='rest_password_reset_confirm'),
                   path('api/login/', CustomAPILoginView.as_view(), name='rest_login'),
