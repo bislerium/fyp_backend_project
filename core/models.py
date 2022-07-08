@@ -168,7 +168,7 @@ class NGOUser(UserCommons, GeoLocation):
     gender = None
     date_of_birth = None
     citizenship_photo = None
-    # replare by org name
+    # replace by org name
     full_name = models.CharField(max_length=150, verbose_name='Organization Name')
     establishment_date = models.DateField()
     display_picture = models.ImageField(

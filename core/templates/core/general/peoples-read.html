@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load cloudinary %}
 
 {% block title %}People{% endblock %}
 {% block linkscript %}
@@ -47,10 +48,8 @@
                     <tbody>
                     {% for people in page_obj %}
                         <tr>
-                            <td data-label="Display Picture"><img src="{{ people.display_picture.url }}" height="30px"
-                                                                  width="30px"
-                                                                  style="border-radius: 20px; object-fit: cover"
-                                                                  alt="{{ people.display_picture.name }}"></td>
+                            <td data-label="Display Picture">{% cloudinary people.display_picture.url width=30 height=30 style="border-radius: 20px; object-fit: cover" alt=people.display_picture.name %}
+                               </td>
                             <td data-label="User Name">{{ people.account.username }}</td>
                             <td data-label="Date Joined">{{ people.account.date_joined|date }}</td>
                             <td data-label="Active">&nbsp;

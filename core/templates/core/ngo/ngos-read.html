@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load cloudinary %}
 
 {% block title %}NGOs{% endblock %}
 {% block linkscript %}
@@ -48,10 +49,7 @@
                 <tbody>
                 {% for ngo in page_obj %}
                     <tr>
-                        <td data-label="Display Picture"><img src="{{ ngo.display_picture.url }}" height="30px"
-                                                              width="30px"
-                                                              style="border-radius: 20px; object-fit: cover"
-                                                              alt="{{ ngo.display_picture.name }}"></td>
+                        <td data-label="Display Picture">{% cloudinary ngo.display_picture.url width=30 height=30 style="border-radius: 20px; object-fit: cover" alt=ngo.display_picture.name %}</td>
                         <td data-label="NGO Name">{{ ngo.full_name }}</td>
                         <td data-label="Date Joined">{{ ngo.account.date_joined|date }}</td>
                         <td data-label="Active">&nbsp;

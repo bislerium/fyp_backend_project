@@ -80,7 +80,8 @@ class PeopleRUD(RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         instance = self.get_obj().peopleuser
         serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         self.perform_update(serializer)
         return Response({'Success': 'Your profile has been updated!'}, status=status.HTTP_200_OK)
 
