@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -18,6 +18,19 @@ from .forms import *
 
 def division(x, y):
     return x / y if y else 0
+
+
+def ping_test(request):
+    return HttpResponse(status=204)
+
+
+def app_landing_page(request):
+    return render(request, 'core/extensions/app-landing-page.html', context={'disable_footer': True})
+
+
+def coming_soon_page(request):
+    return render(request, 'core/extensions/coming-soon.html', context={'disable_footer': True,
+                                                                        'disable_bootstrap': True})
 
 
 def forbidden_page(request, exception):
@@ -49,9 +62,10 @@ class CustomWebLoginView(LoginView):
         return super().form_valid(form)
 
 
-@allowed_groups(admin=True, staff=True)
 def home(request):
-    return redirect('home-page-router')
+    if 'sessionid' in request.COOKIES.keys():
+        return redirect('home-page-router')
+    return redirect('app-landing-page')
 
 
 @allowed_groups(admin=True, staff=True)

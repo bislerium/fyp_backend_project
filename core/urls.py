@@ -18,6 +18,10 @@ urlpatterns = [
                   #     resource => plural noun for a collection and singular noun for an item
                   path('', home, name='default'),
 
+                  path('ping/', ping_test, name='ping_test'),
+                  path('app/', app_landing_page, name='app-landing-page'),
+                  path('app/coming-soon', coming_soon_page, name='coming-soon'),
+
                   path('web/account/login/', CustomWebLoginView.as_view(
                       template_name='core/account/login.html'), name='login'),
                   path('web/account/logout/', LogoutView.as_view(

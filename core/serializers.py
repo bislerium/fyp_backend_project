@@ -43,8 +43,10 @@ class CustomTokenSerializer(TokenSerializer):
         data['account_id'] = user.id
         if group == 'General':
             data['profile_id'] = user.peopleuser.id
+            data['is_verified'] = user.peopleuser.is_verified
         if group == 'NGO':
             data['profile_id'] = user.ngouser.id
+            data['is_verified'] = user.ngouser.is_verified
         return data
 
 
