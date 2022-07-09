@@ -38,7 +38,7 @@
 {% if not disable_footer %}
     {% include 'core/extensions/footer.html' %}
 {% endif %}
-{% if not disable_bootstrap %}
+{% if not disable_bootstrap and not disable_tooltip %}
     <script>
         // Initialize tooltips
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))

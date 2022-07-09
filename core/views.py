@@ -25,12 +25,14 @@ def ping_test(request):
 
 
 def app_landing_page(request):
-    return render(request, 'core/extensions/app-landing-page.html', context={'disable_footer': True})
+    return render(request, 'core/extensions/app-landing-page.html', context={'disable_footer': True,
+                                                                             'disable_tooltip': True})
 
 
 def coming_soon_page(request):
     return render(request, 'core/extensions/coming-soon.html', context={'disable_footer': True,
-                                                                        'disable_bootstrap': True})
+                                                                        'disable_bootstrap': True,
+                                                                        'disable_tooltip': True})
 
 
 def forbidden_page(request, exception):
