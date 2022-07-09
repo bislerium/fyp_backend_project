@@ -242,6 +242,7 @@ modules.xml
 # Sonarlint plugin
 .idea/sonarlint
 static
+staticfiles
 
 # Ignore Media Directory
 media/*
