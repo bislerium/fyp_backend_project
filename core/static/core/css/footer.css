@@ -1,10 +1,10 @@
 @media only screen and (max-width: 670px) {
 
-        #footer-contact-me {
-            display: none!important;
-        }
-
-        #footer-whole {
-            justify-content: center!important;
-        }
+    #footer-contact-me {
+        display: none !important;
     }
+
+    #footer-whole {
+        justify-content: center !important;
+    }
+}

@@ -7,7 +7,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Sasae is a social media platform only for social-works and social-enthusiasts.">
-    <meta name="keywords" content="NGO, Non-Governmental Organization, Donation, Donate, Normal Post, Poll Post, Join Request Post, Petition Request Post,">
+    <meta name="keywords"
+          content="NGO, Non-Governmental Organization, Donation, Donate, Normal Post, Poll Post, Join Request Post, Petition Request Post,">
     <meta name="author" content="Bishal Gharti Chhetri">
     <title>
         {% block title %}
@@ -35,7 +36,7 @@
     This block contains the body of rendered HTML
 {% endblock %}
 {% if not disable_footer %}
-{% include 'core/extensions/footer.html' %}
+    {% include 'core/extensions/footer.html' %}
 {% endif %}
 {% if not disable_bootstrap %}
     <script>

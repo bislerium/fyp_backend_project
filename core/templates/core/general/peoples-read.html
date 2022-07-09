@@ -49,7 +49,7 @@
                     {% for people in page_obj %}
                         <tr>
                             <td data-label="Display Picture">{% cloudinary people.display_picture.url width=30 height=30 style="border-radius: 20px; object-fit: cover" alt=people.display_picture.name %}
-                               </td>
+                            </td>
                             <td data-label="User Name">{{ people.account.username }}</td>
                             <td data-label="Date Joined">{{ people.account.date_joined|date }}</td>
                             <td data-label="Active">&nbsp;

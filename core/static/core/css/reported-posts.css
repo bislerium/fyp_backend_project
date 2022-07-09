@@ -10,13 +10,14 @@
 
 #report-post {
     position: fixed;
-    padding: 0vh 3vh; right: 0;
+    padding: 0vh 3vh;
+    right: 0;
 }
 
 @media only screen and (max-width: 730px) {
 
     #report-post {
-        position: relative!important;
+        position: relative !important;
         margin-top: 5%;
         width: 100%;
     }
@@ -32,7 +33,8 @@ textarea {
 
 .pills {
     display: inline-block;
-    padding: 5px 10px; margin: 4px 1px;
+    padding: 5px 10px;
+    margin: 4px 1px;
     border-radius: 5px;
     color: white;
     background-color: #6c757d;
