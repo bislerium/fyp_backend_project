@@ -7,33 +7,11 @@
 {% endblock %}
 
 {% block body %}
-    <body class="loading">
-    <h1>500</h1>
-    <h2>Unexpected Error <b>:(</b></h2>
-    <div class="gears">
-        <div class="gear one">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-        </div>
-        <div class="gear two">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-        </div>
-        <div class="gear three">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-        </div>
+    <div class="container">
+        <img src="{% static 'core/gif/500.gif' %}"/>
+        <h1>
+            Internal server error
+        </h1>
+        <p>We are currently trying to fix the problem.</p>
     </div>
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-    <script>
-        $(function () {
-            setTimeout(function () {
-                $('body').removeClass('loading');
-            }, 1000);
-        });
-    </script>
-    </body>
 {% endblock %}

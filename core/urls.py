@@ -48,7 +48,7 @@ urlpatterns = [
                   # path('web/403/<exception>', forbidden_page, name='403'),
                   # path('web/404/<exception>', page_not_found, name='404'),
                   # path('web/400/<exception>', bad_request, name='400'),
-                  # path('web/500/<exception>', server_error, name='500'),
+                  path('web/500/<exception>', server_error, name='500'),
 
                   # Bank as Resource
                   path('web/ngo/<int:pk>/bank/add', BankCreate.as_view(), name='create-bank'),

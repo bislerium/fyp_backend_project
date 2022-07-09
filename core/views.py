@@ -87,6 +87,7 @@ def staff_home(request):
         'pending_reports': staff.report_review.filter(is_reviewed=False).count(),
         'reviewed_reports': staff.report_review.filter(is_reviewed=True).count(),
     }
+    print(context)
     return render(request, 'core/staff/staff-home.html', context=context)
 
 
