@@ -5,7 +5,7 @@ from dj_rest_auth.views import LoginView as RestLoginView
 from django.core.exceptions import PermissionDenied
 from rest_framework import parsers
 from rest_framework.generics import *
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import AllowAny
 from rest_framework.utils import json
@@ -45,10 +45,6 @@ class PeopleList(ListAPIView):
 class PeopleDetail(RetrieveAPIView):
     queryset = PeopleUser.objects.all()
     serializer_class = PeopleSerializer
-
-
-class PaginationClass(PageNumberPagination):
-    page_size = 100
 
 
 class PeopleAdd(CreateAPIView):
@@ -360,7 +356,9 @@ class RequestPostParticipateView(APIView):
 
 staffs_deque: deque = []
 try:
-    deque = deque(Staff.objects.all())
+    staffs_deque = deque(Staff.objects.all())
+    print(staffs_deque)
+    print(type(staffs_deque))
 except:
     print('----------MIGRATION NEEDED----------')
 
@@ -413,20 +411,29 @@ class TokenVerification(APIView):
 class PostList(ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
-    pagination_class = PaginationClass
+    pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
         _ = super().get_queryset()
-        __ = _.filter(people_posted_post_rn__account__is_active=True) | _.filter(
+        __ = _.filter(is_removed=False)
+        ___ = __.filter(people_posted_post_rn__account__is_active=True) | __.filter(
             ngo_posted_post_rn__account__is_active=True)
-        queryset = __.filter(is_removed=False)
-        return sorted(queryset, key=lambda x: random.random())
+        queryset = ___.order_by('-created_on')
+        return queryset
+
+    def get_paginated_response(self, data):
+        """
+        Return a paginated style `Response` object for the given output data.
+        """
+        assert self.paginator is not None
+        random.shuffle(data)
+        return self.paginator.get_paginated_response(data)
 
 
 class UserPostList(ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
-    pagination_class = PaginationClass
+    pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
         _ = super().get_queryset()
