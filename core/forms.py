@@ -51,4 +51,4 @@ class ReportForm(forms.ModelForm):
     class Meta:
         model = Report
         fields = ['reason', 'action']
-        widgets = {'reason': forms.Textarea(attrs={'rows': '12'}), }
+        widgets = {'reason': forms.Textarea(attrs={'rows': '10'}), }

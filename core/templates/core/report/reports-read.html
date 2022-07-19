@@ -36,35 +36,38 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="btn-group">
-                                                {% if post.is_anonymous %}
-                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                         title="Posted Anonymously"><span
-                                                            class="badge bg-danger">A</span></div>
-                                                {% endif %}
-                                                {% if post.poked_on_rn.count != 0 %}
-                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                         title="NGO was poked in this post"><span
-                                                            class="badge bg-success">P</span></div>
-                                                {% endif %}
                                                 {% if post.post_type == 'Normal' %}
                                                     <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                         title="Normal Post"><span class="badge bg-primary">P|N</span>
+                                                         title="Normal Post"><span
+                                                            class="badge bg-primary">Normal</span>
                                                     </div>
                                                 {% endif %}
                                                 {% if post.post_type == 'Poll' %}
                                                     <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                         title="Poll Post"><span class="badge bg-primary">P|P</span>
+                                                         title="Poll Post"><span class="badge bg-primary">Poll</span>
                                                     </div>
                                                 {% endif %}
                                                 {% if post.post_type == 'Request' and post.postrequest.request_type == 'Petition' %}
                                                     <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
-                                                         title="Petition-Request Post"><span class="badge bg-primary">P|R|P</span>
+                                                         title="Petition-Request Post"><span class="badge bg-primary">Petition Request</span>
                                                     </div>
                                                 {% endif %}
                                                 {% if post.post_type == 'Request' and post.postrequest.request_type == 'Join' %}
                                                     <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
                                                          title="Join-Request Post"><span
-                                                            class="badge bg-primary">P|R|J</span></div>
+                                                            class="badge bg-primary">Join Request</span></div>
+                                                {% endif %}
+                                                {% if post.poked_on_rn.count != 0 %}
+                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                         title="NGO was poked in this post"><span
+                                                            class="badge bg-success"><i
+                                                            class="bi bi-shield-fill-plus"></i></span></div>
+                                                {% endif %}
+                                                {% if post.is_anonymous %}
+                                                    <div class="mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                         title="Posted Anonymously"><span
+                                                            class="badge bg-danger"><i
+                                                            class="bi bi-incognito"></i></span></div>
                                                 {% endif %}
                                             </div>
                                             <small class="text-muted">{{ post.created_on.date }}</small>

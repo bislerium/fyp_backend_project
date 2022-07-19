@@ -140,6 +140,15 @@ def post_a_post(request, post_type: EPostType):
     if not request.user.groups.exists() or request.user.groups.first().name not in ['General', 'NGO']:
         return Response({'Fail': f'Only general people and NGO can post.'},
                         status=status.HTTP_403_FORBIDDEN)
+    user: User = request.user
+    is_verified = False
+    match user.groups.first().name:
+        case 'NGO':
+            is_verified = user.ngouser.is_verified
+        case 'General':
+            is_verified = user.peopleuser.is_verified
+    if not is_verified:
+        return Response({'Fail': 'Verified mobile user needed!'}, status=status.HTTP_403_FORBIDDEN)
     match post_type:
         case EPostType.Normal:
             post_serializer = PostNormalSerializer(data=request.data, context={'request': request})
@@ -355,10 +364,10 @@ class RequestPostParticipateView(APIView):
 
 
 staffs_deque: deque = []
+
 try:
     staffs_deque = deque(Staff.objects.all())
     print(staffs_deque)
-    print(type(staffs_deque))
 except:
     print('----------MIGRATION NEEDED----------')
 
@@ -396,6 +405,8 @@ def validate_request_post_id(user, post_id):
     if not user.groups.exists() or user.groups.first().name != 'General':
         return Response({'Fail': f'Only general people can perform this action!'},
                         status=status.HTTP_403_FORBIDDEN)
+    if not user.peopleuser.is_verified:
+        return Response({'Fail': 'Verified general people user needed!'}, status=status.HTTP_403_FORBIDDEN)
     filtered_post = Post.objects.filter(id=post_id)
     if not filtered_post.exists():
         return Response({'Fail': 'Post with given post id not found!'}, status=status.HTTP_404_NOT_FOUND)

@@ -62,6 +62,7 @@ urlpatterns = [
                   path('web/staff/<int:pk>/', StaffRead.as_view(), name='read-staff'),
                   path('web/staff/<int:pk>/edit/', StaffUpdate.as_view(), name='update-staff'),
                   path('web/staff/<int:pk>/remove/', StaffDelete.as_view(), name='delete-staff'),
+                  path('web/staff/<int:pk>/active/', toggle_staff_active, name='toggle-staff-active'),
 
                   # General People as Resource
                   path('web/peoples/', PeoplesRead.as_view(), name='read-peoples'),
@@ -81,6 +82,9 @@ urlpatterns = [
                   path('web/report/<int:pk>/', ReportRead.as_view(), name='read-report'),
                   path('web/report/<int:pk>/review/', ReportUpdate.as_view(), name='review-report'),
 
+                  re_path(r'^web/(?P<user_type>(ngo|people))/(?P<pk>\d+)/(?P<action>(verify|active))/$',
+                          set_profile_active, name='set-profile'),
+
                   # API Endpoints --------------------------------------------------------------------------------------
                   # URLs that do not require a session or valid token
                   # path('api/', include('dj_rest_auth.urls')),
@@ -89,14 +93,14 @@ urlpatterns = [
                   path('api/password/reset/confirm/', rest_view.PasswordResetConfirmView.as_view(),
                        name='rest_password_reset_confirm'),
                   path('api/login/', CustomAPILoginView.as_view(), name='rest_login'),
-                  # URLs that require a general to be logged in with a valid session / token.
+                  # URLs that require a user to be logged in with a valid session / token.
                   path('api/logout/', rest_view.LogoutView.as_view(), name='rest_logout'),
                   path('api/password/change/', rest_view.PasswordChangeView.as_view(),
                        name='rest_password_change'),
-                  path('api/general/verify/', TokenVerification.as_view(), name='token-verify'),
+                  path('api/user/verify/', TokenVerification.as_view(), name='token-verify'),
 
                   re_path(r'^api/(?P<user_type>(ngo|people))/(?P<user_id>\d+)/posts/$', UserPostList.as_view(),
-                          name='api-general-post-list'),
+                          name='api-mobile-user-post-list'),
                   path('api/ngos/', NGOList.as_view(), name='api-ngo-list'),
                   path('api/ngo/<int:pk>/', NGODetail.as_view(), name='api-ngo-detail'),
 

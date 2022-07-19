@@ -377,6 +377,7 @@ class StaffDelete(DeleteView):
 
     @method_decorator(allowed_groups(admin=True, staff=False))
     def delete(self, request, *args, **kwargs):
+        api_views.staffs_deque.remove(self.get_object())
         return super().delete(request, *args, **kwargs)
 
 
@@ -660,3 +661,41 @@ class ReportUpdate(UpdateView):
                 account.is_active = False
                 account.save()
         return HttpResponseRedirect(self.get_success_url())
+
+
+@allowed_groups(admin=True, staff=True)
+def set_profile_active(request, user_type, pk, action):
+    match user_type:
+        case 'people':
+            people_user: PeopleUser = get_object_or_404(PeopleUser, id=pk)
+            match action:
+                case 'verify':
+                    people_user.is_verified = True
+                    people_user.save()
+                    send_verify_notification(people_user.account.id)
+                case 'active':
+                    people_user.account.is_active = True
+                    people_user.account.save()
+            return redirect('read-people', pk=pk)
+        case 'ngo':
+            ngo_user: NGOUser = get_object_or_404(NGOUser, id=pk)
+            match action:
+                case 'verify':
+                    ngo_user.is_verified = True
+                    ngo_user.save()
+                    send_verify_notification(ngo_user.account.id)
+                case 'active':
+                    ngo_user.account.is_active = True
+                    ngo_user.account.save()
+            return redirect('read-ngo', pk=pk)
+
+
+@allowed_groups(admin=True, staff=False)
+def toggle_staff_active(request, pk):
+    user: User = get_object_or_404(Staff, id=pk).account
+    if user.is_active:
+        user.is_active = False
+    else:
+        user.is_active = True
+    user.save()
+    return redirect('read-staff', pk=pk)

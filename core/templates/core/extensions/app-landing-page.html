@@ -55,12 +55,104 @@
                 <div class="col-md-6">
                     <div class="row">
                         <div class="col-md-6">
-                            <img class="img-fluid" src="{% static 'core/img/app/sasae-ngos.png' %}"
-                                 alt="sasae-ngos.png">
+                            <div id="lightCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/light/ngos.png' %}"
+                                             class="d-block w-100 img-fluid" alt="ngos-light">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/light/ngo-profile.png' %}"
+                                             class="d-block w-100 img-fluid" alt="ngo-profile-light">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/light/ngo-donation.png' %}"
+                                             class="d-block w-100 img-fluid" alt="ngo-donation-light">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/light/ngos-filter.png' %}"
+                                             class="d-block w-100 img-fluid" alt="ngos-filter-light">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/light/posts.png' %}"
+                                             class="d-block w-100 img-fluid" alt="posts-light">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/light/post-create.png' %}"
+                                             class="d-block w-100 img-fluid" alt="post-create-light">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/light/post-normal.png' %}"
+                                             class="d-block w-100 img-fluid" alt="post-normal-light">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/light/post-poll.png' %}"
+                                             class="d-block w-100 img-fluid" alt="post-poll-light">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/light/post-request.png' %}"
+                                             class="d-block w-100 img-fluid" alt="post-request-light">
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#lightCarousel"
+                                        data-bs-slide="prev">
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#lightCarousel"
+                                        data-bs-slide="next">
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <img class="img-fluid" src="{% static 'core/img/app/sasae-donate.png' %}"
-                                 alt="sasae-donate.png">
+                            <div id="darkCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/dark/posts.png' %}"
+                                             class="d-block w-100 img-fluid" alt="posts-dark">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/dark/post-create.png' %}"
+                                             class="d-block w-100 img-fluid" alt="post-create-dark">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/dark/post-normal.png' %}"
+                                             class="d-block w-100 img-fluid" alt="post-normal-dark">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/dark/post-poll.png' %}"
+                                             class="d-block w-100 img-fluid" alt="post-poll-dark">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/dark/post-request.png' %}"
+                                             class="d-block w-100 img-fluid" alt="post-request-dark">
+                                    </div>
+                                    <div class="carousel-item active" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/dark/ngos.png' %}"
+                                             class="d-block w-100 img-fluid" alt="ngos-dark">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/dark/ngo-profile.png' %}"
+                                             class="d-block w-100 img-fluid" alt="ngo-profile-dark">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/dark/ngo-donation.png' %}"
+                                             class="d-block w-100 img-fluid" alt="ngo-donation-dark">
+                                    </div>
+                                    <div class="carousel-item" data-bs-interval="2500">
+                                        <img src="{% static 'core/img/app/dark/ngos-filter.png' %}"
+                                             class="d-block w-100 img-fluid" alt="ngos-filter-dark">
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#darkCarousel"
+                                        data-bs-slide="prev">
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#darkCarousel"
+                                        data-bs-slide="next">
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

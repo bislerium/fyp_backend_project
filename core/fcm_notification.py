@@ -8,8 +8,9 @@ from core.enums import EPostType
 URL = "https://fcm.googleapis.com/fcm/send"
 TOPIC = '/topics/post'
 CHANNEL_ID = 'post_channel'
-LEGACY_SERVER_KEY = 'key=AAAAHlsVPwQ:APA91bGrKvS9rAXhg5BqbLrfTlXxZ5fq1drWW4QxV_12IAoPhzf67tXksgOoTP6zI' \
-                    '-DNGE63jlT98PGCRlRwGgWhyomUimh-PZvODVPwT8qFkW7LmXMpl5qsP2jtH0RAh_YY2JHDsuQi'
+LEGACY_SERVER_KEY = 'key=AAAA6-pcyjI:APA91bHWpegtlR-Ysp5if62ftl8tuL4GUoZ8' \
+                    '-3x3NK__ssXSY8BuLBYGruYJIywLgAADv_4X0eB5tXHxSC15hJ2l4wn7gujbLM' \
+                    '-aW9KP7iAiECPV2LA4xMOHqGtMnmog_JH1y8RhTeNG '
 PRIORITY = 'high'
 
 headers = {
@@ -20,6 +21,7 @@ headers = {
 
 def send_notification(title: str, body: str, notification_for: id, channel: ENotificationChannel,
                       post_type: EPostType | None, post_id: str | None):
+    print('wowowwo')
     payload = json.dumps({
         "to": TOPIC,
         "notification": {
