@@ -1,3 +1,5 @@
+import json
+import os
 from datetime import date, datetime
 
 from django.contrib import messages
@@ -6,7 +8,7 @@ from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DeleteView, UpdateView, DetailView, TemplateView, CreateView
 
@@ -25,33 +27,75 @@ def ping_test(request):
 
 
 def app_landing_page(request):
-    return render(request, 'core/extensions/app-landing-page.html', context={'disable_footer': True,
-                                                                             'disable_tooltip': True})
+    section_a_app_image, section_b_app_image = get_section_images()
+    return render(request, 'core/land/app-landing-page.html', context={
+        'section_a_app_image': section_a_app_image,
+        'section_b_app_image': section_b_app_image,
+        'disable_footer': True,
+        'disable_tooltip': True,
+        'downlink_url': download_link['url'], })
+
+
+def get_section_images():
+    section_a_app_image = AppImage.objects.filter(image_section=IMAGE_SECTION[0][0])
+    section_b_app_image = AppImage.objects.filter(image_section=IMAGE_SECTION[1][0])
+    return section_a_app_image, section_b_app_image
+
+
+def alp_setup(request):
+    print('-------------')
+    section_a_app_image, section_b_app_image = get_section_images()
+    downlink = download_link['url'] if download_link['url'] else request.build_absolute_uri(reverse('coming-soon'))
+    context = {
+        'form1': ALPImageForm(),
+        'form2': DownLinkForm(),
+        'section_a_app_image': section_a_app_image,
+        'section_b_app_image': section_b_app_image,
+        'downlink_url':  downlink,
+    }
+    return render(request, 'core/land/page-setup.html', context)
+
+
+def set_downlink_url(request):
+    if request.method == 'POST':
+        downlink_form = DownLinkForm(request.POST)
+        if downlink_form.is_valid():
+            print(downlink_form.data['downlink'])
+            download_link['url'] = downlink_form.data['downlink']
+            write_downlink()
+    return redirect('alp-setup')
+
+
+class ALPImageCreate(CreateView):
+    model = AppImage
+    form_class = ALPImageForm
+    success_url = reverse_lazy('alp-setup')
+
+
+class ALPImageDeleteView(DeleteView):
+    model = AppImage
+    success_url = reverse_lazy('alp-setup')
 
 
 def coming_soon_page(request):
-    return render(request, 'core/extensions/coming-soon.html', context={'disable_footer': True,
-                                                                        'disable_bootstrap': True,
-                                                                        'disable_tooltip': True})
+    return render(request, 'core/land/coming-soon.html', context={'disable_footer': True,
+                                                                  'disable_bootstrap': True,
+                                                                  'disable_tooltip': True})
 
 
 def forbidden_page(request, exception):
-    print(exception)
     return render(request, 'core/extensions/403-page.html')
 
 
 def page_not_found(request, exception):
-    print(exception)
     return render(request, 'core/extensions/404-page.html')
 
 
 def bad_request(request, exception):
-    print(exception)
     return render(request, 'core/extensions/400-page.html')
 
 
 def server_error(request, *args, **kwargs):
-    # print(exception)
     return render(request, 'core/extensions/500-page.html')
 
 
@@ -87,7 +131,6 @@ def staff_home(request):
         'pending_reports': staff.report_review.filter(is_reviewed=False).count(),
         'reviewed_reports': staff.report_review.filter(is_reviewed=True).count(),
     }
-    print(context)
     return render(request, 'core/staff/staff-home.html', context=context)
 
 
@@ -574,7 +617,6 @@ class ReportRead(DetailView):
                           'min_percentage': round((division(100, target)) * min_, 2),
                           'sign_percentage': round(division(100, target) * sign, 2),
                           }
-            print(cont)
             if max_ is not None:
                 cont['max_'] = max_
                 cont['max_percentage'] = 100
@@ -699,3 +741,21 @@ def toggle_staff_active(request, pk):
         user.is_active = True
     user.save()
     return redirect('read-staff', pk=pk)
+
+
+download_link = {'url': None}
+downlink_filename = 'app_downlink.json'
+
+
+def write_downlink():
+    with open(downlink_filename, "w") as outfile:
+        json.dump(download_link, outfile)
+
+
+def read_downlink():
+    if os.path.exists(downlink_filename):
+        with open(downlink_filename, 'r') as openfile:
+            json_object = json.load(openfile)
+
+
+read_downlink()

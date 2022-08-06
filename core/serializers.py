@@ -518,9 +518,10 @@ def create_post(request: Request, validated_data, post_type: EPostType):
     except ValueError as e:
         return Response({"Fail": e.args}, status=status.HTTP_400_BAD_REQUEST)
     else:
+        author = 'Someone' if post.is_anonymous else user.peopleuser.full_name.title()
         for i in poked_ngo:
             send_notification(title=f'Poked on {post_type.name} Post',
-                              body=f'{user.peopleuser.full_name.title()} has poked you in a post.',
+                              body=f'{author} has poked you in a post.',
                               notification_for=i,
                               channel=ENotificationChannel['poke'],
                               post_type=post_type, post_id=str(post.id))

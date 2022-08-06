@@ -1,0 +1,98 @@
+{% extends 'core/base.html' %}
+{% load bootstrap5 %}
+{% load cloudinary %}
+{% load static %}
+
+{% block title %}Setup ALP{% endblock %}
+{% block linkscript %}
+    <link href="{% static 'core/css/hover-image-overlay.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    {% include  'core/extensions/navbar.html' %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mt-5 mb-5">
+                <H1 class="text-center">Set Downlink</H1>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div style="min-width: 50%; max-width: 85%">
+                    <form method="post" action="{% url 'set-alp-downlink' %}" class="form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% bootstrap_form form2 %}
+                        {% buttons %}
+                            <div>
+                                <button type="submit" class="btn btn-primary" style="width: 100%">Set</button>
+                            </div>
+                        {% endbuttons %}
+                    </form>
+                    <div>
+                        Current:
+                        <a href="{{ downlink_url }}" class="text-decoration-none">
+                            {{ downlink_url }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mt-5 mb-5">
+                <H1 class="text-center">Add ALP Images</H1>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div style="min-width: 50%; max-width: 85%">
+                    <form method="post" action="{% url 'create-alp-image' %}" class="form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% bootstrap_form form1 %}
+                        {% buttons %}
+                            <div>
+                                <button type="submit" class="btn btn-primary" style="width: 100%">Add</button>
+                            </div>
+                        {% endbuttons %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row m-2">
+        <div class="col-md-6">
+            <hr>
+            <h3 class="text-center">Section A</h3>
+            <hr>
+            <div class="row-cols-6 d-flex flex-wrap">
+                {% for i in section_a_app_image %}
+                    <div class="content w-25">
+                        {% cloudinary i.image.url  class="d-block img-fluid" alt=i.image.name %}
+                        <form action="{% url 'delete-alp-image' i.id %}" method="post" class="px-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger content-details fadeIn-bottom"
+                                    onclick="return confirm('Are you sure you want to delete the image?');">
+                                <span style="font-weight: 500; letter-spacing: 0.10em; text-transform: uppercase;">Delete</span>
+                            </button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <hr>
+            <h3 class="text-center">Section B</h3>
+            <hr>
+            <div class="d-flex flex-wrap">
+                {% for i in section_b_app_image %}
+                    <div class="content w-25">
+                        {% cloudinary i.image.url  class=" img-fluid" alt=i.image.name %}
+                        <form action="{% url 'delete-alp-image' i.id %}" method="post" class="px-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger content-details fadeIn-bottom"
+                                    onclick="return confirm('Are you sure you want to delete the image?');">
+                                <span style="font-weight: 500; letter-spacing: 0.10em; text-transform: uppercase;">Delete</span>
+                            </button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

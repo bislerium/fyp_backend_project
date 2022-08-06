@@ -4,7 +4,7 @@ from django.contrib.auth.views import *
 from django.urls import path, re_path
 
 from core.api_views import NGODetail, PostList, PostDetail, PeopleList, PeopleDetail, BankDetail, NGOList, \
-    PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpvoteView, ToggleDownvoteView, \
+    PeopleAdd, NormalPostAdd, PollPostAdd, RequestPostAdd, ToggleUpVoteView, ToggleDownVoteView, \
     PostReportView, RequestPostParticipateView, PollPostPollView, RelatedOptionList, TokenVerification, NGOOptionList, \
     UserPostList, PeopleRUD, PostRetrieveUpdateDelete, CustomAPILoginView
 from core.serializers import CustomPasswordResetSerializer
@@ -20,6 +20,10 @@ urlpatterns = [
 
                   path('ping/', ping_test, name='ping_test'),
                   path('app/', app_landing_page, name='app-landing-page'),
+                  path('web/alp/', alp_setup, name='alp-setup'),
+                  path('web/alp/link/set/', set_downlink_url, name='set-alp-downlink'),
+                  path('web/alp/image/add/', ALPImageCreate.as_view(), name='create-alp-image'),
+                  path('web/alp/image/<int:pk>/remove/', ALPImageDeleteView.as_view(), name='delete-alp-image'),
                   path('app/coming-soon', coming_soon_page, name='coming-soon'),
 
                   path('web/account/login/', CustomWebLoginView.as_view(
@@ -113,8 +117,8 @@ urlpatterns = [
                        name='api-post-update-detail'),
                   path('api/post/<int:post_id>/update/', PostRetrieveUpdateDelete.as_view(), name='api-post-update'),
                   path('api/post/<int:post_id>/delete/', PostRetrieveUpdateDelete.as_view(), name='api-post-delete'),
-                  path('api/post/<int:post_id>/upvote/', ToggleUpvoteView.as_view(), name='api-post-upvote'),
-                  path('api/post/<int:post_id>/downvote/', ToggleDownvoteView.as_view(), name='api-post-downvote'),
+                  path('api/post/<int:post_id>/upvote/', ToggleUpVoteView.as_view(), name='api-post-upvote'),
+                  path('api/post/<int:post_id>/downvote/', ToggleDownVoteView.as_view(), name='api-post-downvote'),
                   path('api/post/<int:post_id>/poll/<int:option_id>/', PollPostPollView.as_view(),
                        name='api-post-poll'),
                   path('api/post/<int:post_id>/participate/', RequestPostParticipateView.as_view(),

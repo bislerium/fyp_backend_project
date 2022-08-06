@@ -3,6 +3,7 @@ from collections import deque
 
 from dj_rest_auth.views import LoginView as RestLoginView
 from django.core.exceptions import PermissionDenied
+from django.db import OperationalError
 from rest_framework import parsers
 from rest_framework.generics import *
 from rest_framework.pagination import LimitOffsetPagination
@@ -173,10 +174,10 @@ class PostRetrieveUpdateDelete(APIView):
         if not user.is_active or post.is_removed:
             raise CustomAPIException(p_status_code=404, p_default_detail='Post does not exist.')
         if post.people_posted_post_rn.exists():
-            _: PeopleUser = post.people_posted_post_rn.first()
+            user_first: PeopleUser = post.people_posted_post_rn.first()
         if post.ngo_posted_post_rn.exists():
-            _: NGOUser = post.ngo_posted_post_rn.first()
-        if user != _.account:
+            user_first: NGOUser = post.ngo_posted_post_rn.first()
+        if user != user_first.account:
             raise PermissionDenied
         return post
 
@@ -228,13 +229,13 @@ def validate_post(instance: Post):
     return True
 
 
-class ToggleUpvoteView(APIView):
+class ToggleUpVoteView(APIView):
 
     def post(self, request, post_id):
         return react_post(request.user, post_id, EReactionType.Upvote)
 
 
-class ToggleDownvoteView(APIView):
+class ToggleDownVoteView(APIView):
 
     def post(self, request, post_id):
         return react_post(request.user, post_id, EReactionType.Downvote)
@@ -368,8 +369,8 @@ staffs_deque: deque = []
 try:
     staffs_deque = deque(Staff.objects.all())
     print(staffs_deque)
-except:
-    print('----------MIGRATION NEEDED----------')
+except OperationalError:
+    print('----------------MIGRATION NEEDED----------------')
 
 
 def get_staff() -> Staff:

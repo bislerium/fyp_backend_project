@@ -4,6 +4,17 @@ from django.contrib.auth.forms import UserCreationForm
 from core.models import *
 
 
+class ALPImageForm(forms.ModelForm):
+    class Meta:
+        model = AppImage
+        fields = '__all__'
+
+
+class DownLinkForm(forms.Form):
+    downlink = forms.URLField(required=False, label='App Download Link',
+                              widget=forms.URLInput(attrs={'placeholder': 'link', 'value': 'https://'}))
+
+
 class StaffCreationForm(forms.ModelForm):
     class Meta:
         model = Staff

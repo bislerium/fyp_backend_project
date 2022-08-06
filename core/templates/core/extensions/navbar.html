@@ -27,7 +27,6 @@
                 <li class="nav-item">
                     <a class="nav-link {{ people }}" href="{% url 'read-peoples' %}">People</a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link {{ report }}" href="{% url 'read-reports' %}">
                         {% if user.is_superuser %}
@@ -39,8 +38,12 @@
                 </li>
             </ul>
             <form class="d-flex">
-                <a href="{% url 'app-landing-page' %}" class="btn btn-outline-secondary"><i class="bi bi-app"></i></a>
+                <a href="{% url 'app-landing-page' %}" class="btn btn-outline-dark"><i class="bi bi-app"></i></a>
                 &nbsp;&nbsp;
+                {% if user.is_superuser %}
+                    <a href="{% url 'alp-setup' %}" class="btn btn-outline-dark"><i class="bi bi-app"></i> Setup</a>
+                    &nbsp;&nbsp;
+                {% endif %}
                 <button formaction="{% url 'password_change' %}" class="btn btn-outline-secondary" type="submit">Change
                     Password
                 </button>

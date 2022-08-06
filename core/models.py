@@ -7,6 +7,11 @@ from core.constants import contact_number_regex
 # Create your models here.
 from fyp_backend import settings
 
+IMAGE_SECTION = [
+    ('A', 'A'),
+    ('B', 'B'),
+]
+
 FIELD_OF_WORK = [
     ('Advocacy & Awareness', 'Advocacy & Awareness'),
     ('Agriculture', 'Agriculture'),
@@ -125,7 +130,7 @@ class Post(models.Model):
     post_content = models.TextField(max_length=500)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(blank=True, null=True)
-    # is posted anonymmous rename
+    # is posted anonymous rename
     is_anonymous = models.BooleanField(blank=True, default=False)
     is_removed = models.BooleanField(blank=True, default=False)
     POST_TYPE = [
@@ -245,3 +250,11 @@ class PostPoll(PostAttachment):
     option = models.ManyToManyField(PollOption)
     ends_on = models.DateTimeField(blank=True, null=True)
     reported_by = models.ManyToManyField(PeopleUser, related_name='poll_reported_by_rn', blank=True)
+
+
+class AppImage(models.Model):
+    image_section = models.CharField(max_length=20, choices=IMAGE_SECTION)
+    image = models.ImageField(
+        upload_to='app',
+    )
+
