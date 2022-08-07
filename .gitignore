@@ -252,6 +252,7 @@ media/*
 core/migrations/*
 !core/migrations/__init__.py
 
+app_downlink.json
 #heroku run -a sasaeb python manage.py aroup
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all,django
