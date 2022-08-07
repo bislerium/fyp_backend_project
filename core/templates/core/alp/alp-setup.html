@@ -10,54 +10,49 @@
 
 {% block body %}
     {% include  'core/extensions/navbar.html' %}
-    <div class="row">
+    <div class="row" style="margin: 0">
         <div class="col-md-6">
-            <div class="mt-5 mb-5">
+            <div class="my-5">
                 <H1 class="text-center">Set Downlink</H1>
             </div>
-            <div class="d-flex justify-content-center">
-                <div style="min-width: 50%; max-width: 85%">
-                    <form method="post" action="{% url 'set-alp-downlink' %}" class="form" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {% bootstrap_form form2 %}
-                        {% buttons %}
-                            <div>
-                                <button type="submit" class="btn btn-primary" style="width: 100%">Set</button>
-                            </div>
-                        {% endbuttons %}
-                    </form>
-                    <div>
-                        Current:
-                        <a href="{{ downlink_url }}" class="text-decoration-none">
-                            {{ downlink_url }}
-                        </a>
-                    </div>
+            <div class="mx-5">
+                <form method="post" action="{% url 'set-alp-downlink' %}" class="form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% bootstrap_form form2 %}
+                    {% buttons %}
+                        <div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%">Set</button>
+                        </div>
+                    {% endbuttons %}
+                </form>
+                <div>
+                    Current:
+                    <a href="{{ downlink_url }}" class="text-decoration-none">
+                        {{ downlink_url }}
+                    </a>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="mt-5 mb-5">
-                <H1 class="text-center">Add ALP Images</H1>
+            <div class="my-5">
+                <H1 class="text-center">Add Images</H1>
             </div>
-            <div class="d-flex justify-content-center">
-                <div style="min-width: 50%; max-width: 85%">
-                    <form method="post" action="{% url 'create-alp-image' %}" class="form" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {% bootstrap_form form1 %}
-                        {% buttons %}
-                            <div>
-                                <button type="submit" class="btn btn-primary" style="width: 100%">Add</button>
-                            </div>
-                        {% endbuttons %}
-                    </form>
-                </div>
+            <div class="mx-5">
+                <form method="post" action="{% url 'create-alp-image' %}" class="form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% bootstrap_form form1 %}
+                    {% buttons %}
+                        <div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%">Add</button>
+                        </div>
+                    {% endbuttons %}
+                </form>
             </div>
         </div>
     </div>
 
-    <div class="row m-2">
-        <div class="col-md-6">
-            <hr>
+    <div class="row m-2 mt-5">
+        <div class="col-md-6 mb-2">
             <h3 class="text-center">Section A</h3>
             <hr>
             <div class="row-cols-6 d-flex flex-wrap">
@@ -75,8 +70,7 @@
                 {% endfor %}
             </div>
         </div>
-        <div class="col-md-6">
-            <hr>
+        <div class="col-md-6 mb-2">
             <h3 class="text-center">Section B</h3>
             <hr>
             <div class="d-flex flex-wrap">

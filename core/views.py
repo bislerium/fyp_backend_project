@@ -28,7 +28,7 @@ def ping_test(request):
 
 def app_landing_page(request):
     section_a_app_image, section_b_app_image = get_section_images()
-    return render(request, 'core/land/app-landing-page.html', context={
+    return render(request, 'core/alp/alp.html', context={
         'section_a_app_image': section_a_app_image,
         'section_b_app_image': section_b_app_image,
         'disable_footer': True,
@@ -42,8 +42,8 @@ def get_section_images():
     return section_a_app_image, section_b_app_image
 
 
+@allowed_groups(admin=True, )
 def alp_setup(request):
-    print('-------------')
     section_a_app_image, section_b_app_image = get_section_images()
     downlink = download_link['url'] if download_link['url'] else request.build_absolute_uri(reverse('coming-soon'))
     context = {
@@ -51,16 +51,16 @@ def alp_setup(request):
         'form2': DownLinkForm(),
         'section_a_app_image': section_a_app_image,
         'section_b_app_image': section_b_app_image,
-        'downlink_url':  downlink,
+        'downlink_url': downlink,
     }
-    return render(request, 'core/land/page-setup.html', context)
+    return render(request, 'core/alp/alp-setup.html', context)
 
 
+@allowed_groups(admin=True, )
 def set_downlink_url(request):
     if request.method == 'POST':
         downlink_form = DownLinkForm(request.POST)
         if downlink_form.is_valid():
-            print(downlink_form.data['downlink'])
             download_link['url'] = downlink_form.data['downlink']
             write_downlink()
     return redirect('alp-setup')
@@ -71,16 +71,24 @@ class ALPImageCreate(CreateView):
     form_class = ALPImageForm
     success_url = reverse_lazy('alp-setup')
 
+    @method_decorator(allowed_groups(admin=True, ))
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
 
 class ALPImageDeleteView(DeleteView):
     model = AppImage
     success_url = reverse_lazy('alp-setup')
 
+    @method_decorator(allowed_groups(admin=True, ))
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
+
 
 def coming_soon_page(request):
-    return render(request, 'core/land/coming-soon.html', context={'disable_footer': True,
-                                                                  'disable_bootstrap': True,
-                                                                  'disable_tooltip': True})
+    return render(request, 'core/alp/alp-coming-soon.html', context={'disable_footer': True,
+                                                                     'disable_bootstrap': True,
+                                                                     'disable_tooltip': True})
 
 
 def forbidden_page(request, exception):

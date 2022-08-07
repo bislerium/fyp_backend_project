@@ -253,7 +253,7 @@ class PostPoll(PostAttachment):
 
 
 class AppImage(models.Model):
-    image_section = models.CharField(max_length=20, choices=IMAGE_SECTION)
+    image_section = models.CharField(max_length=20, choices=IMAGE_SECTION, verbose_name='Image Section')
     image = models.ImageField(
         upload_to='app',
     )

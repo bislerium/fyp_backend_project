@@ -20,11 +20,11 @@ urlpatterns = [
 
                   path('ping/', ping_test, name='ping_test'),
                   path('app/', app_landing_page, name='app-landing-page'),
-                  path('web/alp/', alp_setup, name='alp-setup'),
-                  path('web/alp/link/set/', set_downlink_url, name='set-alp-downlink'),
-                  path('web/alp/image/add/', ALPImageCreate.as_view(), name='create-alp-image'),
-                  path('web/alp/image/<int:pk>/remove/', ALPImageDeleteView.as_view(), name='delete-alp-image'),
-                  path('app/coming-soon', coming_soon_page, name='coming-soon'),
+                  path('app/coming-soon/', coming_soon_page, name='coming-soon'),
+                  path('web/alp/setup/', alp_setup, name='alp-setup'),
+                  path('web/alp/downlink/set/', set_downlink_url, name='set-alp-downlink'),
+                  path('web/alp/images/add/', ALPImageCreate.as_view(), name='create-alp-image'),
+                  path('web/alp/images/<int:pk>/remove/', ALPImageDeleteView.as_view(), name='delete-alp-image'),
 
                   path('web/account/login/', CustomWebLoginView.as_view(
                       template_name='core/account/login.html'), name='login'),
@@ -55,8 +55,8 @@ urlpatterns = [
                   path('web/500/<exception>', server_error, name='500'),
 
                   # Bank as Resource
-                  path('web/ngo/<int:pk>/bank/add', BankCreate.as_view(), name='create-bank'),
-                  path('web/Bank/<int:pk>/edit', BankUpdate.as_view(), name='update-bank'),
+                  path('web/ngo/<int:pk>/bank/add/', BankCreate.as_view(), name='create-bank'),
+                  path('web/Bank/<int:pk>/edit/', BankUpdate.as_view(), name='update-bank'),
                   path('web/bank/<int:pk>/remove/', BankDelete.as_view(), name='delete-bank'),
 
                   # Staff as Resource
