@@ -14,7 +14,7 @@ from pathlib import Path
 
 import cloudinary
 import cloudinary_storage
-import django_heroku
+import django_on_heroku
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default="")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['asasae.herokuapp.com', 'localhost', '127.0.0.1']
 
@@ -190,7 +190,7 @@ CLOUDINARY_STORAGE = {
 
 # For Deployment (Disable while DEBUG: Unstable Testing)
 # Configure Django App for Heroku.
-django_heroku.settings(locals())
+django_on_heroku.settings(locals())
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
