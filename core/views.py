@@ -27,13 +27,17 @@ def ping_test(request):
 
 
 def app_landing_page(request):
-    section_a_app_image, section_b_app_image = get_section_images()
-    return render(request, 'core/alp/alp.html', context={
-        'section_a_app_image': section_a_app_image,
-        'section_b_app_image': section_b_app_image,
-        'disable_footer': True,
-        'disable_tooltip': True,
-        'downlink_url': download_link['url'], })
+    try:
+        print('=========app landing page==============')
+        section_a_app_image, section_b_app_image = get_section_images()
+        return render(request, 'core/alp/alp.html', context={
+            'section_a_app_image': section_a_app_image,
+            'section_b_app_image': section_b_app_image,
+            'disable_footer': True,
+            'disable_tooltip': True,
+            'downlink_url': download_link['url'], })
+    except Exception as e:
+        print(e)
 
 
 def get_section_images():
