@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY', default="")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['sasaeb.herokuapp.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['asasae.herokuapp.com', 'localhost', '127.0.0.1']
 
 # Application definition
 

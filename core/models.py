@@ -184,7 +184,7 @@ class NGOUser(UserCommons, GeoLocation):
     )
     field_of_work = MultiSelectField(choices=FIELD_OF_WORK)
     epay_account = models.CharField(max_length=20, blank=True, help_text=(
-        '- Default: Khalti as an Electronic Payment Gateway'
+        '- Any Electronic Payment Gateway (i.e. Esewa, Khalti, Fonepay) account number.'
     ))
     bank = models.OneToOneField(Bank, on_delete=models.SET_NULL, blank=True, null=True, )
     # Social Welfare Council (SWC)

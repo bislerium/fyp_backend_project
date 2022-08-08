@@ -251,6 +251,7 @@ media/*
 #Ignore Migration folder
 core/migrations/*
 !core/migrations/__init__.py
+!core/migrations/0001_initial.py
 
 app_downlink.json
 #heroku run -a sasaeb python manage.py aroup

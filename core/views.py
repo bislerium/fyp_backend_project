@@ -27,39 +27,31 @@ def ping_test(request):
 
 
 def app_landing_page(request):
-    try:
-        print('=========app landing page==============')
-        section_a_app_image, section_b_app_image = get_section_images()
-        return render(request, 'core/alp/alp.html', context={
-            'section_a_app_image': section_a_app_image,
-            'section_b_app_image': section_b_app_image,
-            'disable_footer': True,
-            'disable_tooltip': True,
-            'downlink_url': download_link['url'], })
-    except Exception as e:
-        print(e)
+    section_a_app_image, section_b_app_image = get_section_images()
+    return render(request, 'core/alp/alp.html', context={
+        'section_a_app_image': section_a_app_image,
+        'section_b_app_image': section_b_app_image,
+        'disable_footer': True,
+        'disable_tooltip': True,
+        'downlink_url': downlink['url'], })
 
 
 def get_section_images():
-    print('--------------accessed-------------')
-    try:
-        section_a_app_image = AppImage.objects.filter(image_section=IMAGE_SECTION[0][0])
-        section_b_app_image = AppImage.objects.filter(image_section=IMAGE_SECTION[1][0])
-        return section_a_app_image, section_b_app_image
-    except Exception as e:
-        print(e)
+    section_a_app_image = AppImage.objects.filter(image_section=IMAGE_SECTION[0][0])
+    section_b_app_image = AppImage.objects.filter(image_section=IMAGE_SECTION[1][0])
+    return section_a_app_image, section_b_app_image
 
 
 @allowed_groups(admin=True, )
 def alp_setup(request):
     section_a_app_image, section_b_app_image = get_section_images()
-    downlink = download_link['url'] if download_link['url'] else request.build_absolute_uri(reverse('coming-soon'))
+    downlink_url = downlink['url'] if downlink['url'] else request.build_absolute_uri(reverse('coming-soon'))
     context = {
         'form1': ALPImageForm(),
         'form2': DownLinkForm(),
         'section_a_app_image': section_a_app_image,
         'section_b_app_image': section_b_app_image,
-        'downlink_url': downlink,
+        'downlink_url': downlink_url,
     }
     return render(request, 'core/alp/alp-setup.html', context)
 
@@ -69,7 +61,7 @@ def set_downlink_url(request):
     if request.method == 'POST':
         downlink_form = DownLinkForm(request.POST)
         if downlink_form.is_valid():
-            download_link['url'] = downlink_form.data['downlink']
+            downlink['url'] = downlink_form.data['downlink']
             write_downlink()
     return redirect('alp-setup')
 
@@ -759,19 +751,20 @@ def toggle_staff_active(request, pk):
     return redirect('read-staff', pk=pk)
 
 
-download_link = {'url': None}
+downlink = {'url': None}
 downlink_filename = 'app_downlink.json'
 
 
 def write_downlink():
     with open(downlink_filename, "w") as outfile:
-        json.dump(download_link, outfile)
+        json.dump(downlink, outfile)
 
 
 def read_downlink():
+    global downlink
     if os.path.exists(downlink_filename):
         with open(downlink_filename, 'r') as openfile:
-            json_object = json.load(openfile)
+            downlink = json.load(openfile)
 
 
 read_downlink()
