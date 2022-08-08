@@ -37,9 +37,13 @@ def app_landing_page(request):
 
 
 def get_section_images():
-    section_a_app_image = AppImage.objects.filter(image_section=IMAGE_SECTION[0][0])
-    section_b_app_image = AppImage.objects.filter(image_section=IMAGE_SECTION[1][0])
-    return section_a_app_image, section_b_app_image
+    print('--------------accessed-------------')
+    try:
+        section_a_app_image = AppImage.objects.filter(image_section=IMAGE_SECTION[0][0])
+        section_b_app_image = AppImage.objects.filter(image_section=IMAGE_SECTION[1][0])
+        return section_a_app_image, section_b_app_image
+    except Exception as e:
+        print(e)
 
 
 @allowed_groups(admin=True, )
@@ -62,7 +66,7 @@ def set_downlink_url(request):
         downlink_form = DownLinkForm(request.POST)
         if downlink_form.is_valid():
             download_link['url'] = downlink_form.data['downlink']
-            # write_downlink()
+            write_downlink()
     return redirect('alp-setup')
 
 
@@ -755,15 +759,15 @@ download_link = {'url': None}
 downlink_filename = 'app_downlink.json'
 
 
-# def write_downlink():
-#     with open(downlink_filename, "w") as outfile:
-#         json.dump(download_link, outfile)
-#
-#
-# def read_downlink():
-#     if os.path.exists(downlink_filename):
-#         with open(downlink_filename, 'r') as openfile:
-#             json_object = json.load(openfile)
-#
-#
-# read_downlink()
+def write_downlink():
+    with open(downlink_filename, "w") as outfile:
+        json.dump(download_link, outfile)
+
+
+def read_downlink():
+    if os.path.exists(downlink_filename):
+        with open(downlink_filename, 'r') as openfile:
+            json_object = json.load(openfile)
+
+
+read_downlink()
