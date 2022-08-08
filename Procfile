@@ -1,1 +1,2 @@
-web: gunicorn fyp_backend.wsgi --log-file -
+web: gunicorn fyp_backend.wsgi
+release: python manage.py migrate

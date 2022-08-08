@@ -366,11 +366,11 @@ class RequestPostParticipateView(APIView):
 
 staffs_deque: deque = []
 
-try:
-    staffs_deque = deque(Staff.objects.all())
-    print(staffs_deque)
-except OperationalError:
-    print('----------------MIGRATION NEEDED----------------')
+# try:
+#     staffs_deque = deque(Staff.objects.all())
+#     print(staffs_deque)
+# except OperationalError:
+#     print('----------------MIGRATION NEEDED----------------')
 
 
 def get_staff() -> Staff:
