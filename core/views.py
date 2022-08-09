@@ -44,20 +44,16 @@ def get_section_images():
 
 @allowed_groups(admin=True, )
 def alp_setup(request):
-    print("---------------")
-    try:
-        section_a_app_image, section_b_app_image = get_section_images()
-        downlink_url = downlink['url'] if downlink['url'] else request.build_absolute_uri(reverse('coming-soon'))
-        context = {
-            'form1': ALPImageForm(),
-            'form2': DownLinkForm(),
-            'section_a_app_image': section_a_app_image,
-            'section_b_app_image': section_b_app_image,
-            'downlink_url': downlink_url,
-        }
-        return render(request, 'core/alp/alp-setup.html', context)
-    except Exception as e:
-        print(e)
+    section_a_app_image, section_b_app_image = get_section_images()
+    downlink_url = downlink['url'] if downlink['url'] else request.build_absolute_uri(reverse('coming-soon'))
+    context = {
+        'form1': ALPImageForm(),
+        'form2': DownLinkForm(),
+        'section_a_app_image': section_a_app_image,
+        'section_b_app_image': section_b_app_image,
+        'downlink_url': downlink_url,
+    }
+    return render(request, 'core/alp/alp-setup.html', context)
 
 
 @allowed_groups(admin=True, )
