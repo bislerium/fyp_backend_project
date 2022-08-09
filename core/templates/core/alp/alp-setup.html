@@ -58,7 +58,7 @@
             <div class="row-cols-6 d-flex flex-wrap">
                 {% for i in section_a_app_image %}
                     <div class="content w-25">
-                        {% cloudinary i.image.url  class="d-block img-fluid" alt=i.image.name %}
+                        {% cloudinary i.image.url class="d-block img-fluid" alt=i.image.name %}
                         <form action="{% url 'delete-alp-image' i.id %}" method="post" class="px-1">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger content-details fadeIn-bottom"
@@ -76,7 +76,7 @@
             <div class="d-flex flex-wrap">
                 {% for i in section_b_app_image %}
                     <div class="content w-25">
-                        {% cloudinary i.image.url  class=" img-fluid" alt=i.image.name %}
+                        {% cloudinary i.image.url class=" img-fluid" alt=i.image.name %}
                         <form action="{% url 'delete-alp-image' i.id %}" method="post" class="px-1">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger content-details fadeIn-bottom"

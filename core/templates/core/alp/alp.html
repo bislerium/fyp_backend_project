@@ -39,7 +39,8 @@
                         mobile application to share, notify and organize welfare programmes, campaigns, and
                         events.</p>
                     <div class="mt" id="download-button">
-                        <a href="{% if downlink_url %}{{ downlink_url }}{% else %}{% url 'coming-soon' %}{% endif %}" class="download">
+                        <a href="{% if downlink_url %}{{ downlink_url }}{% else %}{% url 'coming-soon' %}{% endif %}"
+                           class="download">
                             <svg width="700px" height="700px" viewBox="0 0 40 48" id="android">
                                 <path d="M27.4703377,4.19382178 L29.9390848,0.715960396 C30.0856739,0.509227723 30.0491797,0.237861386 29.8575239,0.109544554 C29.666113,-0.0180594059 29.3915493,0.045029703 29.2460623,0.252 L26.6803239,3.8649505 C24.9894667,3.21873267 23.1118522,2.85861386 21.1328377,2.85861386 C19.1538232,2.85861386 17.2757188,3.21837624 15.5849841,3.8649505 L13.019613,0.251881188 C12.8725341,0.0451485149 12.5984601,-0.0181782178 12.4069268,0.109425743 C12.2153935,0.237386139 12.1790217,0.508871287 12.3256109,0.715841584 L14.7952152,4.19370297 C10.8686594,5.96590099 8.11506159,9.33350495 7.7642029,13.263802 L34.5000029,13.263802 C34.1503688,9.33350495 31.3966486,5.9660198 27.4703377,4.19382178 Z M26.7168181,9.67580198 C25.9002297,9.67580198 25.2381906,9.03338614 25.2381906,8.24067327 C25.2381906,7.44784158 25.9002297,6.80542574 26.7168181,6.80542574 C27.5342638,6.80542574 28.196058,7.44807921 28.196058,8.24067327 C28.196058,9.03326733 27.5340188,9.67580198 26.7168181,9.67580198 Z M15.5475101,9.67580198 C14.7303094,9.67580198 14.0681478,9.03338614 14.0681478,8.24067327 C14.0681478,7.44807921 14.729942,6.80542574 15.5475101,6.80542574 C16.3640986,6.80542574 17.0260152,7.44784158 17.0260152,8.24067327 C17.0261377,9.03326733 16.3640986,9.67580198 15.5475101,9.67580198 Z"
                                       id="Shape"></path>
@@ -62,8 +63,9 @@
                                 <div id="lightCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
                                     <div class="carousel-inner">
                                         {% for i in section_a_app_image %}
-                                            <div class="carousel-item {% if i == section_a_app_image.0 %}active{% endif %}" data-bs-interval="2500">
-                                                {% cloudinary i.image.url  class="d-block w-100 img-fluid" alt=i.image.name %}
+                                            <div class="carousel-item {% if i == section_a_app_image.0 %}active{% endif %}"
+                                                 data-bs-interval="2500">
+                                                {% cloudinary i.image.url class="d-block w-100 img-fluid" alt=i.image.name %}
                                             </div>
                                         {% endfor %}
                                     </div>
@@ -85,8 +87,9 @@
                                 <div id="darkCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
                                     <div class="carousel-inner">
                                         {% for i in section_b_app_image %}
-                                            <div class="carousel-item {% if i == section_b_app_image.0 %}active{% endif %}" data-bs-interval="2500">
-                                                {% cloudinary i.image.url  class="d-block w-100 img-fluid" alt=i.image.name %}
+                                            <div class="carousel-item {% if i == section_b_app_image.0 %}active{% endif %}"
+                                                 data-bs-interval="2500">
+                                                {% cloudinary i.image.url class="d-block w-100 img-fluid" alt=i.image.name %}
                                             </div>
                                         {% endfor %}
                                     </div>

@@ -61,7 +61,7 @@ def set_downlink_url(request):
     if request.method == 'POST':
         downlink_form = DownLinkForm(request.POST)
         if downlink_form.is_valid():
-            downlink['url'] = downlink_form.data['downlink']
+            downlink['url'] = downlink_form.data['downlink_url']
             write_downlink()
     return redirect('alp-setup')
 

@@ -11,8 +11,8 @@ class ALPImageForm(forms.ModelForm):
 
 
 class DownLinkForm(forms.Form):
-    downlink = forms.URLField(required=False, label='App Download Link',
-                              widget=forms.URLInput(attrs={'placeholder': 'link', 'value': 'https://'}))
+    downlink_url = forms.URLField(required=False, label='App Download Link',
+                                  widget=forms.URLInput(attrs={'placeholder': 'link', 'value': 'https://'}))
 
 
 class StaffCreationForm(forms.ModelForm):

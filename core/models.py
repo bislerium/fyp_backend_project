@@ -257,4 +257,3 @@ class AppImage(models.Model):
     image = models.ImageField(
         upload_to='app',
     )
-

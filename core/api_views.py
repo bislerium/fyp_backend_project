@@ -1,9 +1,10 @@
 import random
 from collections import deque
+from typing import Type
 
+import django.db
 from dj_rest_auth.views import LoginView as RestLoginView
 from django.core.exceptions import PermissionDenied
-from django.db import OperationalError
 from rest_framework import parsers
 from rest_framework.generics import *
 from rest_framework.pagination import LimitOffsetPagination
@@ -364,13 +365,21 @@ class RequestPostParticipateView(APIView):
         return Response({'Success': f'Participated'}, status=status.HTTP_200_OK)
 
 
+def check_table_exists(*table_models: Type[models.Model]) -> bool:
+    all_tables: list = django.db.connection.introspection.table_names()
+    for i in table_models:
+        if i._meta.db_table not in all_tables:
+            return False
+    return True
+
+
 staffs_deque: deque = []
 
-# try:
-#     staffs_deque = deque(Staff.objects.all())
-#     print(staffs_deque)
-# except OperationalError:
-#     print('----------------MIGRATION NEEDED----------------')
+if check_table_exists(Staff):
+    staffs_deque = deque(Staff.objects.all())
+    print(staffs_deque)
+else:
+    print('----------------MIGRATION NEEDED----------------')
 
 
 def get_staff() -> Staff:
