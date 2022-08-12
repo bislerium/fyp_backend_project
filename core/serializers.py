@@ -164,7 +164,7 @@ class PostListSerializer(serializers.ModelSerializer):
 class NGOOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = NGOUser
-        fields = ['id', 'full_name', 'display_picture']
+        fields = ['id', 'full_name', 'display_picture', 'field_of_work']
 
 
 class PostSerializer(serializers.ModelSerializer):
