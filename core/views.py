@@ -361,6 +361,7 @@ def create_staff(request):
             staff.account = user_account
             staff.save()
             api_views.staffs_deque.append(staff)
+            print(f'============{api_views.staffs_deque}============')
             messages.success(request, f'Account created for {staff_form.data["full_name"]}')
             return redirect('read-staff', staff.id)
     context = {
@@ -429,6 +430,7 @@ class StaffDelete(DeleteView):
     @method_decorator(allowed_groups(admin=True, staff=False))
     def delete(self, request, *args, **kwargs):
         api_views.staffs_deque.remove(self.get_object())
+        print(f'============{api_views.staffs_deque}============')
         return super().delete(request, *args, **kwargs)
 
 

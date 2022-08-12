@@ -21,7 +21,6 @@ headers = {
 
 def send_notification(title: str, body: str, notification_for: id, channel: ENotificationChannel,
                       post_type: EPostType | None, post_id: str | None):
-    print('wowowwo')
     payload = json.dumps({
         "to": TOPIC,
         "notification": {
@@ -39,4 +38,4 @@ def send_notification(title: str, body: str, notification_for: id, channel: ENot
     })
 
     response = requests.request("POST", URL, headers=headers, data=payload, timeout=5)
-    print('Notification sent status =>', response.status_code)
+    print(f'============[NOTIFICATION SENT STATUS => {response.status_code}]============')

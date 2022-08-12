@@ -105,7 +105,7 @@ class CustomMultipartJsonParser(parsers.MultiPartParser):
                 try:
                     data[key] = json.loads(value)
                 except ValueError:
-                    print('raised')
+                    print('Value error in CustomMultipartJsonParser')
             else:
                 data[key] = value
         file = {}
@@ -373,7 +373,7 @@ def check_table_exists(*table_models: Type[models.Model]) -> bool:
     return True
 
 
-staffs_deque: deque = []
+staffs_deque: deque
 
 if check_table_exists(Staff):
     staffs_deque = deque(Staff.objects.all())
@@ -385,7 +385,7 @@ else:
 def get_staff() -> Staff:
     _: Staff = staffs_deque.popleft()
     staffs_deque.append(_)
-    print('Reported to ->', _)
+    print(f'============[REPORTED TO -> {_}]============')
     return _
 
 

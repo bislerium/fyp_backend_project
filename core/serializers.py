@@ -103,7 +103,18 @@ class NormalPostSerializer(serializers.ModelSerializer):
                 data['up_voted'] = True
             if user.peopleuser in instance.down_vote.all():
                 data['down_voted'] = True
+        check_if_posted_personally(user, instance, data)
         return data
+
+
+def check_if_posted_personally(user: User, instance, data):
+    data['is_personal_post'] = False
+    if user.groups.first().name == 'NGO' and instance.post in user.ngouser.posted_post.all():
+        data['is_personal_post'] = True
+        return
+    if user.groups.first().name == 'General' and instance.post in user.peopleuser.posted_post.all():
+        data['is_personal_post'] = True
+        return
 
 
 class PollOptionSerializer(serializers.ModelSerializer):
@@ -126,6 +137,7 @@ class PollPostSerializer(serializers.ModelSerializer):
                     data['choice'] = option.id
         data['options'] = PollOptionSerializer(instance.option, many=True,
                                                context={'request': self.context.get('request')}).data
+        check_if_posted_personally(user, instance, data)
         return data
 
 
@@ -139,6 +151,7 @@ class RequestPostSerializer(serializers.ModelSerializer):
         user: User = self.context.get('request').user
         if user.groups.first().name == 'General' and user.peopleuser in instance.reacted_by.all():
             data['is_participated'] = True
+        check_if_posted_personally(user, instance, data)
         return data
 
 
@@ -474,6 +487,7 @@ def update_post(instance: Post, validated_data):
 def create_post(request: Request, validated_data, post_type: EPostType):
     user: User = request.user
     poked_ngo = set(validated_data['poked_to'])
+    poked_ngo_account_ids = []
     serialized_post_head = PostCreateSerializer(data=validated_data['post_head'], )
     try:
         group = user.groups.first().name
@@ -509,7 +523,9 @@ def create_post(request: Request, validated_data, post_type: EPostType):
                 if group == 'NGO':
                     user.ngouser.posted_post.add(post)
                 for i in poked_ngo:
-                    NGOUser.objects.get(id=i).poked_on.add(post)
+                    _ = NGOUser.objects.get(id=i)
+                    _.poked_on.add(post)
+                    poked_ngo_account_ids.append(_.account.id)
             else:
                 post.delete()
                 raise ValueError(serialized_post_extension.errors)
@@ -518,14 +534,14 @@ def create_post(request: Request, validated_data, post_type: EPostType):
     except ValueError as e:
         return Response({"Fail": e.args}, status=status.HTTP_400_BAD_REQUEST)
     else:
-        author = 'Someone' if post.is_anonymous else user.peopleuser.full_name.title()
-        for i in poked_ngo:
+        author = 'Someone' if post.is_anonymous else user.peopleuser.full_name \
+            if group == 'General' else user.ngouser.full_name
+        for i in poked_ngo_account_ids:
             send_notification(title=f'Poked on {post_type.name} Post',
                               body=f'{author} has poked you in a post.',
                               notification_for=i,
                               channel=ENotificationChannel['poke'],
                               post_type=post_type, post_id=str(post.id))
-
         return Response({"Success": f"{post_type.name} Post created successfully!",
                          "post_data": PostListSerializer(post, ).data}, status=status.HTTP_201_CREATED)
 
