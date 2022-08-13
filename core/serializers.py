@@ -499,7 +499,7 @@ def create_post(request: Request, validated_data, post_type: EPostType):
             print('b')
             raise ValueError(f'You cannot poke yourself!')
 
-        invalid_ngo_id = [i for i in poked_ngo if not User.objects.filter(pk=i).exists()]
+        invalid_ngo_id = [i for i in poked_ngo if not NGOUser.objects.filter(pk=i).exists()]
         if invalid_ngo_id:
             print('c')
             raise ValueError(f'NGOs with IDs: {invalid_ngo_id} does not exist.')
@@ -543,7 +543,7 @@ def create_post(request: Request, validated_data, post_type: EPostType):
             print(f'=> {serialized_post_head.errors}')
             raise ValueError(serialized_post_head.errors)
     except ValueError as e:
-        print(e)
+        print(f'==========> {e}')
         return Response({"Fail": e.args}, status=status.HTTP_400_BAD_REQUEST)
     else:
         author = 'Someone' if post.is_anonymous else user.peopleuser.full_name \
