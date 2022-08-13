@@ -487,24 +487,17 @@ def update_post(instance: Post, validated_data):
 def create_post(request: Request, validated_data, post_type: EPostType):
     user: User = request.user
     poked_ngo = set(validated_data['poked_to'])
-    print(poked_ngo)
     poked_ngo_account_ids = []
     serialized_post_head = PostCreateSerializer(data=validated_data['post_head'], )
     try:
         group = user.groups.first().name
         if group not in ['NGO', 'General']:
-            print('a')
             raise ValueError('Only NGO and general people can post!')
         if group == 'NGO' and user.ngouser.id in poked_ngo:
-            print('b')
             raise ValueError(f'You cannot poke yourself!')
-
         invalid_ngo_id = [i for i in poked_ngo if not NGOUser.objects.filter(pk=i).exists()]
         if invalid_ngo_id:
-            print('c')
             raise ValueError(f'NGOs with IDs: {invalid_ngo_id} does not exist.')
-        print('d')
-
         if serialized_post_head.is_valid():
             post: Post = serialized_post_head.save()
             match post_type:
@@ -531,19 +524,13 @@ def create_post(request: Request, validated_data, post_type: EPostType):
                     user.ngouser.posted_post.add(post)
                 for i in poked_ngo:
                     _ = NGOUser.objects.get(id=i)
-                    print('---------------')
-                    print(_)
                     _.poked_on.add(post)
                     poked_ngo_account_ids.append(_.account.id)
             else:
-                post.delete()
-                print(f'->{serialized_post_extension.errors}')
                 raise ValueError(serialized_post_extension.errors)
         else:
-            print(f'=> {serialized_post_head.errors}')
             raise ValueError(serialized_post_head.errors)
     except ValueError as e:
-        print(f'==========> {e}')
         return Response({"Fail": e.args}, status=status.HTTP_400_BAD_REQUEST)
     else:
         author = 'Someone' if post.is_anonymous else user.peopleuser.full_name \
@@ -554,7 +541,6 @@ def create_post(request: Request, validated_data, post_type: EPostType):
                               notification_for=i,
                               channel=ENotificationChannel['poke'],
                               post_type=post_type, post_id=str(post.id))
-        print('success...')
         return Response({"Success": f"{post_type.name} Post created successfully!",
                          "post_data": PostListSerializer(post, ).data}, status=status.HTTP_201_CREATED)
 
