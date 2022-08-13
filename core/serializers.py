@@ -493,12 +493,18 @@ def create_post(request: Request, validated_data, post_type: EPostType):
     try:
         group = user.groups.first().name
         if group not in ['NGO', 'General']:
+            print('a')
             raise ValueError('Only NGO and general people can post!')
         if group == 'NGO' and user.ngouser.id in poked_ngo:
+            print('b')
             raise ValueError(f'You cannot poke yourself!')
+
         invalid_ngo_id = [i for i in poked_ngo if not User.objects.filter(pk=i).exists()]
         if invalid_ngo_id:
+            print('c')
             raise ValueError(f'NGOs with IDs: {invalid_ngo_id} does not exist.')
+        print('d')
+
         if serialized_post_head.is_valid():
             post: Post = serialized_post_head.save()
             match post_type:
@@ -537,6 +543,7 @@ def create_post(request: Request, validated_data, post_type: EPostType):
             print(f'=> {serialized_post_head.errors}')
             raise ValueError(serialized_post_head.errors)
     except ValueError as e:
+        print(e)
         return Response({"Fail": e.args}, status=status.HTTP_400_BAD_REQUEST)
     else:
         author = 'Someone' if post.is_anonymous else user.peopleuser.full_name \
