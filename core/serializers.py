@@ -487,6 +487,7 @@ def update_post(instance: Post, validated_data):
 def create_post(request: Request, validated_data, post_type: EPostType):
     user: User = request.user
     poked_ngo = set(validated_data['poked_to'])
+    print(poked_ngo)
     poked_ngo_account_ids = []
     serialized_post_head = PostCreateSerializer(data=validated_data['post_head'], )
     try:
@@ -524,12 +525,16 @@ def create_post(request: Request, validated_data, post_type: EPostType):
                     user.ngouser.posted_post.add(post)
                 for i in poked_ngo:
                     _ = NGOUser.objects.get(id=i)
+                    print('---------------')
+                    print(_)
                     _.poked_on.add(post)
                     poked_ngo_account_ids.append(_.account.id)
             else:
                 post.delete()
+                print(f'->{serialized_post_extension.errors}')
                 raise ValueError(serialized_post_extension.errors)
         else:
+            print(f'=> {serialized_post_head.errors}')
             raise ValueError(serialized_post_head.errors)
     except ValueError as e:
         return Response({"Fail": e.args}, status=status.HTTP_400_BAD_REQUEST)
@@ -542,6 +547,7 @@ def create_post(request: Request, validated_data, post_type: EPostType):
                               notification_for=i,
                               channel=ENotificationChannel['poke'],
                               post_type=post_type, post_id=str(post.id))
+        print('success...')
         return Response({"Success": f"{post_type.name} Post created successfully!",
                          "post_data": PostListSerializer(post, ).data}, status=status.HTTP_201_CREATED)
 

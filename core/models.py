@@ -102,7 +102,7 @@ class UserCommons(models.Model):
         ('LGBTQ+', 'LGBTQ+'),
     ]
     gender = models.CharField(max_length=6, choices=GENDER, )
-    phone = models.CharField(unique=True, max_length=14, validators=[validate_contact_number])
+    phone = models.CharField(unique=True, max_length=20, validators=[validate_contact_number])
     address = models.CharField(max_length=150)
     display_picture = models.ImageField(
         upload_to='display_picture',
