@@ -12,9 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
-import cloudinary
-import cloudinary_storage
-import django_on_heroku
+import dj_database_url
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY', default="")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['asasae.herokuapp.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['sasae.onrender.com', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -104,10 +102,11 @@ WSGI_APPLICATION = 'fyp_backend.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    },
+    'default': dj_database_url.parse(config('RAILWAY_POSTGRESQL_URL', default=""))
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # },
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME': 'sasae_schema',
@@ -187,10 +186,6 @@ CLOUDINARY_STORAGE = {
     'API_KEY': config('API_KEY', default=""),
     'API_SECRET': config('API_SECRET', default=""),
 }
-
-# For Deployment (Disable while DEBUG: Unstable Testing)
-# Configure Django App for Heroku.
-django_on_heroku.settings(locals())
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
