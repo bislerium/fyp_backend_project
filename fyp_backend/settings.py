@@ -67,6 +67,9 @@ REST_AUTH_SERIALIZERS = {
     'TOKEN_SERIALIZER': 'core.serializers.CustomTokenSerializer',
 }
 
+if not DEBUG:
+    CSRF_TRUSTED_ORIGINS = ['sasae.up.railway.app']
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
