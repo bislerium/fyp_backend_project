@@ -68,7 +68,7 @@ REST_AUTH_SERIALIZERS = {
 }
 
 if not DEBUG:
-    CSRF_TRUSTED_ORIGINS = ['sasae.up.railway.app']
+    CSRF_TRUSTED_ORIGINS = ['https://sasae.up.railway.app/']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
