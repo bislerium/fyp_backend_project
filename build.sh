@@ -3,5 +3,6 @@
 set -o errexit
 
 python manage.py collectstatic --no-input
-python manage.py migrate
-python manage.py aroup
+
+#python manage.py migrate
+#python manage.py aroup
