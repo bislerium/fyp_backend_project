@@ -1,0 +1,29 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #ecf0f1;
+}
+
+.container {
+    text-align: center;
+    margin: auto;
+    padding: 4em;
+}
+
+.container img {
+    width: 300px;
+}
+
+.container h1 {
+    font-size: 35px;
+    text-align: center;
+}
+

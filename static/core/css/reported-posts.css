@@ -1,0 +1,41 @@
+.card {
+    transition: all 0.2s ease;
+    cursor: pointer
+}
+
+.card:hover {
+    box-shadow: 5px 6px 6px 2px #eae2e2;
+    transform: scale(1.01);
+}
+
+#report-post {
+    position: fixed;
+    padding: 0vh 3vh;
+    right: 0;
+}
+
+@media only screen and (max-width: 730px) {
+
+    #report-post {
+        position: relative !important;
+        margin-top: 5%;
+        width: 100%;
+    }
+
+    #post-section {
+        width: 100%;
+    }
+}
+
+textarea {
+    resize: none;
+}
+
+.pills {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 4px 1px;
+    border-radius: 5px;
+    color: white;
+    background-color: #6c757d;
+}
